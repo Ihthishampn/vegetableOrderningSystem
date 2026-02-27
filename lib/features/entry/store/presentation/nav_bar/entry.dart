@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/entry_provider.dart';
+
+class Entry extends StatelessWidget {
+  const Entry({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<EntryProvider>(context);
+
+    return Scaffold(
+      body: IndexedStack(
+        index: provider.selectedIndex,
+        children: provider.widgetStack,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: provider.selectedIndex,
+        selectedItemColor: Colors.black,
+        onTap: provider.changeIndex,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.eco), label: "Vegetables"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: "Orders",
+          ),
+        ],
+      ),
+    );
+  }
+}
