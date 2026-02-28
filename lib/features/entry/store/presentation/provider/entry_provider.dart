@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/home_screen_store.dart/store_home_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/home_screen_store.dart/store_home_screen.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/screens/store_orders_screen.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/screens/store_vegetable_screens.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/staff_managment/add_staff_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_managment/add_staff_screen.dart';
 
 import 'edit_staff_screen.dart';
 

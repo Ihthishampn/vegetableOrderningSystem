@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/app/role_slect.dart';
-import 'package:vegetable_ordering_system/features/auth/auth_shop/presentation/screens/login_screen_shop.dart';
-import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/provider/entry_provider.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/my_cart_order_screen.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/shop_home_screen.dart';
 
 void main() {
   runApp(
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // home: RoleSelect()
-      home: LoginScreenShop(),
+      home: ShopHomeScreen(),
     );
   }
 }

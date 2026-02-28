@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/home_screen_store.dart/menu_screen.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/home_screen_store.dart/profile_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/home_screen_store.dart/store_menu_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/home_screen_store.dart/store_profile_screen.dart';
 
 import '../../../widgets/circular_icon_widget.dart';
 import '../../../widgets/home_order_items_store.dart';
@@ -19,7 +19,6 @@ class StoreHomeScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // Curved AppBar with title, subtitle, and icons
           SliverAppBar(
             expandedHeight: size.height * 0.12,
             backgroundColor: Colors.transparent,
@@ -36,7 +35,7 @@ class StoreHomeScreen extends StatelessWidget {
                 icon: Icons.person_outline,
                 ontap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                    MaterialPageRoute(builder: (context) => StoreProfilePage()),
                   );
                 },
               ),
@@ -46,7 +45,6 @@ class StoreHomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Pinned Cards
           SliverAppBar(
             pinned: true,
             backgroundColor: Colors.white,
@@ -57,10 +55,8 @@ class StoreHomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Orders header
           const SliverToBoxAdapter(child: OrdersHeader()),
 
-          // Orders list
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => const OrderItemCard(

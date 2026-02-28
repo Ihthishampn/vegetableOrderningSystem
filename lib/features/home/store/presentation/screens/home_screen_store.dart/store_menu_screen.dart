@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/sales_report_screen.dart/sales_report_screen.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/shops_management_screen/shops_managment_screen.dart';
-import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/staff_managment/staff_management_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_shops_management_screen/shops_managment_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_managment/staff_management_screen.dart';
+
+import '../sales_report_screen.dart/sales_report_screen.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -27,14 +28,12 @@ class MenuPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
-            // 1. Staff Management Tile
             _buildMenuTile(
               context,
               icon: Icons.people_outline,
               title: "Staff Management",
               subtitle: "Add, view, and manage staffs",
               onTap: () {
-                // Navigate to Staff Management
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => StaffManagementScreen(),
@@ -44,14 +43,12 @@ class MenuPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 2. Shops Tile
             _buildMenuTile(
               context,
               icon: Icons.storefront_outlined,
               title: "Shops",
               subtitle: "Add, view, and manage shops",
               onTap: () {
-                // Navigate to Shops
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ShopsManagmentScreen(),
@@ -61,14 +58,12 @@ class MenuPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 3. Sales Reports Tile
             _buildMenuTile(
               context,
               icon: Icons.description_outlined,
               title: "Sales Reports",
               subtitle: "View sales report",
               onTap: () {
-                // Navigate to Sales Reports
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => SalesReportScreen()),
                 );
@@ -93,12 +88,11 @@ class MenuPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FA), // Very light grey background
+          color: const Color(0xFFF8F9FA), 
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(
           children: [
-            // Icon Container
             Container(
               padding: const EdgeInsets.all(10),
               decoration: const BoxDecoration(
@@ -109,7 +103,6 @@ class MenuPage extends StatelessWidget {
             ),
             const SizedBox(width: 16),
 
-            // Title and Subtitle
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +124,6 @@ class MenuPage extends StatelessWidget {
               ),
             ),
 
-            // Trailing Chevron
             const Icon(
               Icons.arrow_forward_ios,
               color: Colors.black54,
