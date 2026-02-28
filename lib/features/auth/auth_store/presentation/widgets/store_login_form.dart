@@ -9,19 +9,14 @@ import 'mobile_label_store.dart';
 import 'send_otp_store_button.dart';
 
 class LoginFormStore extends StatefulWidget {
-  /// Size from parent to drive responsive paddings.
   final Size size;
 
-  /// The role this form should handle ("store" or "shop").
   final String role;
 
-  /// The color applied to the title graphic (blue/green for store/shop).
   final Color titleColor;
 
-  /// The color applied to the mobile label text.
   final Color labelColor;
 
-  /// The screen to navigate to when verification succeeds.
   final Widget successScreen;
 
   const LoginFormStore({
@@ -49,10 +44,8 @@ class _LoginFormStoreState extends State<LoginFormStore> {
 
   @override
   Widget build(BuildContext context) {
-    // We only need a reference to call methods, so read without listening.
     final auth = context.read<AuthProvider>();
 
-    // consumer will rebuild only the parts that care about auth state (loading/error)
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
         return Container(
@@ -96,13 +89,11 @@ class _LoginFormStoreState extends State<LoginFormStore> {
                   },
                 ),
                 const SizedBox(height: 20),
-                // show progress indicator while we're checking the role
                 authProvider.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : SendOtpButton(
                         isStore: widget.role == 'store',
                         ontap: () async {
-                          // dismiss keyboard before validation
                           FocusScope.of(context).unfocus();
 
                           if (formKey.currentState!.validate()) {
@@ -117,17 +108,24 @@ class _LoginFormStoreState extends State<LoginFormStore> {
                             if (!mounted) return;
 
                             if (success) {
+                              final navigator = Navigator.of(context);
+
                               showModalBottomSheet(
                                 isScrollControlled: true,
                                 context: context,
-                                builder: (_) => OtpVerificationSheet(
+                                builder: (sheetContext) => OtpVerificationSheet(
                                   role: widget.role,
-                                  onSuccess: () =>
-                                      Navigator.of(context).pushReplacement(
+                                  onSuccess: () {
+                                    // Pop the bottom sheet using its own context
+                                    Navigator.pop(sheetContext);
+                                    // Then navigate to home screen
+                                      navigator.pushAndRemoveUntil(
                                         MaterialPageRoute(
                                           builder: (_) => widget.successScreen,
                                         ),
-                                      ),
+                                        (route) => false,
+                                      );
+                                  },
                                 ),
                               );
                             } else {

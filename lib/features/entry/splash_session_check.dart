@@ -4,7 +4,6 @@ import 'package:vegetable_ordering_system/app/role_slect.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/shop_home_screen.dart';
 
-/// Checks if user is logged in, and routes accordingly.
 class SplashSessionCheck extends StatefulWidget {
   const SplashSessionCheck({super.key});
 
@@ -27,7 +26,6 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
     if (!mounted) return;
 
     if (isLoggedIn && role != null) {
-      // User is logged in, navigate to appropriate home screen
       late Widget homeScreen;
       if (role == 'store') {
         homeScreen = const StoreEntry();
@@ -41,7 +39,6 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => homeScreen));
     } else {
-      // Not logged in, show role selection
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const RoleSelect()));

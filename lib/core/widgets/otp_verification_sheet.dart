@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/provider/auth_provider.dart';
 
@@ -15,17 +16,41 @@ class OtpVerificationSheet extends StatefulWidget {
 class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
   final TextEditingController otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _otpFocus = FocusNode();
   String? _verificationError;
 
   @override
   void dispose() {
     otpController.dispose();
+    _otpFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+
+    // Role-based styling
+    final isStore = widget.role == 'store';
+    final buttonColor = isStore
+        ? const Color(0xFF2D2926) // Black for store
+        : const Color(0xFF5C79FF); // Blue for shop
+
+    // Gradient decoration based on role
+    final decoration = isStore
+        ? const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            color: Colors.white,
+          )
+        : const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFD4DCFF), Colors.white],
+              stops: [0.0, 0.16],
+            ),
+          );
 
     return SingleChildScrollView(
       child: Container(
@@ -35,15 +60,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
           left: 24,
           right: 24,
         ),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFD4DCFF), Colors.white],
-            stops: [0.0, 0.16],
-          ),
-        ),
+        decoration: decoration,
         child: Form(
           key: _formKey,
           child: Column(
@@ -51,41 +68,102 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
             children: [
               const Text(
                 "OTP Verification",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 8),
+              const Text(
+                "Enter 6 digit verification\ncode sent to your mobile number",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 12),
 
-              TextFormField(
-                controller: otpController,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                decoration: InputDecoration(
-                  hintText: "Enter 6 digit OTP",
-                  border: OutlineInputBorder(),
-                  errorText: _verificationError,
+              // OTP digit circles display - directly clickable and editable
+              GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(_otpFocus);
+                },
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(6, (index) {
+                      final digit = index < otpController.text.length
+                          ? otpController.text[index]
+                          : '';
+                      final isFilled = digit.isNotEmpty;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFilled
+                                  ? buttonColor
+                                  : Colors.grey.shade300,
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              digit,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: isFilled
+                                    ? buttonColor
+                                    : Colors.transparent,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
-                validator: (value) {
-                  if (_verificationError != null) return _verificationError;
-                  if (value == null || value.trim().isEmpty) {
-                    return "OTP can't be empty";
-                  }
-                  if (!RegExp(r'^[0-9]{6}$').hasMatch(value.trim())) {
-                    return "Enter valid 6 digit OTP";
-                  }
-                  return null; 
-                },
-                onChanged: (val) {
-                  if (_verificationError != null) {
-                    setState(() => _verificationError = null);
-                    _formKey.currentState?.validate();
-                  }
-                },
               ),
 
-              const SizedBox(height: 20),
+              // Completely hidden input field - no visibility at all
+              SizedBox(
+                width: 0,
+                height: 0,
+                child: TextField(
+                  focusNode: _otpFocus,
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    counterText: '',
+                  ),
+                  onChanged: (val) {
+                    setState(() {});
+                    if (_verificationError != null) {
+                      setState(() => _verificationError = null);
+                    }
+                  },
+                ),
+              ),
+
+              // Error message display
+              if (_verificationError != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(
+                    _verificationError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+
+              if (_verificationError == null) const SizedBox(height: 12),
 
               SizedBox(
                 width: double.infinity,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: authProvider.isLoading
                       ? null
@@ -99,7 +177,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context);
+                            // Call onSuccess callback - it handles sheet closing and navigation
                             widget.onSuccess?.call();
                           } else {
                             setState(() {
@@ -109,14 +187,39 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                             _formKey.currentState?.validate();
                           }
                         },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   child: authProvider.isLoading
                       ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
                         )
-                      : const Text("Verify"),
+                      : const Text(
+                          "Verify",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
+              ),
+
+              const SizedBox(height: 16),
+              const Text(
+                "Didn't receive resend in 60 sec",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
 
               const SizedBox(height: 20),

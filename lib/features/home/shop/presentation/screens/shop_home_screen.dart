@@ -11,118 +11,127 @@ class ShopHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 80.0,
-            collapsedHeight: 80.0,
-            toolbarHeight: 80.0,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: const FlexibleSpaceBar(background: ShopHeader()),
-          ),
-
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 1),
-                _buildAddressRow(),
-                const SizedBox(height: 1),
-
-                _buildActionBanner(
-                  ontap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => OrderInAdvanceScreen(),
-                      ),
-                    );
-                  },
-
-                  icon: Icons.history,
-                  text: "Order in advance.",
-                  color: const Color(0xFFFFF9E5),
-                  iconColor: const Color.fromARGB(255, 136, 82, 1),
-                ),
-                const SizedBox(height: 8),
-                _buildActionBanner(
-                  ontap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => RepeatLastOrder()),
-                  ),
-                  icon: Icons.refresh,
-                  text: "Repeat the last order.",
-                  color: const Color(0xFFE8F5E9),
-                  iconColor: const Color.fromARGB(255, 58, 134, 61),
-                ),
-                const SizedBox(height: 8),
-
-                const SearchBarWidget(),
-                const SizedBox(height: 7),
-                const ProductCard(
-                  name: "Carrot",
-                  image: "assets/carrot.png",
-                  units: ["kg", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const ProductCard(
-                  name: "Tomato",
-                  image: "assets/tomato.png",
-                  units: ["kg", "Box", "Bag"],
-                ),
-                const SizedBox(height: 10),
-              ]),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+      
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 80.0,
+              collapsedHeight: 80.0,
+              toolbarHeight: 80.0,
+              pinned: true,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+              flexibleSpace: const FlexibleSpaceBar(background: ShopHeader()),
             ),
-          ),
-        ],
+
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 1),
+                  _buildAddressRow(),
+                  const SizedBox(height: 1),
+
+                  _buildActionBanner(
+                    ontap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => OrderInAdvanceScreen(),
+                        ),
+                      );
+                    },
+
+                    icon: Icons.history,
+                    text: "Order in advance.",
+                    color: const Color(0xFFFFF9E5),
+                    iconColor: const Color.fromARGB(255, 136, 82, 1),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionBanner(
+                    ontap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RepeatLastOrder(),
+                      ),
+                    ),
+                    icon: Icons.refresh,
+                    text: "Repeat the last order.",
+                    color: const Color(0xFFE8F5E9),
+                    iconColor: const Color.fromARGB(255, 58, 134, 61),
+                  ),
+                  const SizedBox(height: 8),
+
+                  const SearchBarWidget(),
+                  const SizedBox(height: 7),
+                  const ProductCard(
+                    name: "Carrot",
+                    image: "assets/carrot.png",
+                    units: ["kg", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const ProductCard(
+                    name: "Tomato",
+                    image: "assets/tomato.png",
+                    units: ["kg", "Box", "Bag"],
+                  ),
+                  const SizedBox(height: 10),
+                ]),
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: _buildBottomOrderButton(context),
       ),
-      bottomNavigationBar: _buildBottomOrderButton(context),
     );
   }
 

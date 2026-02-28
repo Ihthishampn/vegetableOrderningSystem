@@ -17,9 +17,10 @@ class ShopProfileLogOutButton extends StatelessWidget {
 
             if (!context.mounted) return;
 
-            // Navigate back to RoleSelect
-            Navigator.of(context).pushReplacement(
+            // Navigate back to RoleSelect and remove all previous screens from stack
+            Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const RoleSelect()),
+              (route) => false,
             );
           },
           child: Container(

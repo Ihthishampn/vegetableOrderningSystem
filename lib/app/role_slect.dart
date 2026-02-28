@@ -24,7 +24,6 @@ class _RoleSelectState extends State<RoleSelect> {
             children: [
               const SizedBox(height: 60),
 
-              // Header Section
               const Text(
                 "Welcome",
                 style: TextStyle(
@@ -41,7 +40,6 @@ class _RoleSelectState extends State<RoleSelect> {
               ),
               const SizedBox(height: 50),
 
-              // Role Selection Cards
               _buildRoleCard(
                 role: 'store',
                 title: 'Continue as Store',

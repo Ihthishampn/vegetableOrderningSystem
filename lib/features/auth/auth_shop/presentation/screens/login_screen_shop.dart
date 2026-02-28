@@ -2,21 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/auth/auth_store/presentation/widgets/store_login_form.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/shop_home_screen.dart';
 
-class LoginScreenShop extends StatefulWidget {
+class LoginScreenShop extends StatelessWidget {
   const LoginScreenShop({super.key});
-
-  @override
-  State<LoginScreenShop> createState() => _LoginScreenShopState();
-}
-
-class _LoginScreenShopState extends State<LoginScreenShop> {
-  final TextEditingController mobileNumberController = TextEditingController();
-
-  @override
-  void dispose() {
-    mobileNumberController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
