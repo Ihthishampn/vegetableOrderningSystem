@@ -1,29 +1,29 @@
-
-
 import 'package:flutter/material.dart';
-
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'order_list_item.dart';
 
-
 class DirectOrdersList extends StatelessWidget {
-  const DirectOrdersList({super.key});
+  final List<Order> orders;
+
+  const DirectOrdersList({super.key, required this.orders});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    if (orders.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Text('No orders', style: TextStyle(color: Colors.grey)),
+        ),
+      );
+    }
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      children: const [
-        OrderListItem(
-          orderId: "4. ORD1731234567890",
-          status: "Approved",
-          date: "18 Nov 2025, 10:00 am",
-        ),
-        OrderListItem(
-          orderId: "6. ORD1731234567890",
-          status: "Cancelled",
-          date: "19 Nov 2025, 11:30 am",
-        ),
-      ],
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final o = orders[index];
+        return OrderListItem(order: o);
+      },
     );
   }
 }

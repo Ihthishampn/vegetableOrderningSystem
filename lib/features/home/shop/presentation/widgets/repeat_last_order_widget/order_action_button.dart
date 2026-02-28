@@ -1,9 +1,13 @@
-
-
 import 'package:flutter/material.dart';
 
 class OrderActionButtons extends StatelessWidget {
-  const OrderActionButtons({super.key});
+  /// Called when user taps "Edit Order" (may be used to navigate to cart)
+  final VoidCallback? onEdit;
+
+  /// Called when user taps "Confirm Order" (should repeat order)
+  final VoidCallback? onConfirm;
+
+  const OrderActionButtons({super.key, this.onEdit, this.onConfirm});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +17,7 @@ class OrderActionButtons extends StatelessWidget {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: onEdit,
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: Color(0xFFE0E0E0)),
@@ -33,7 +37,7 @@ class OrderActionButtons extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onConfirm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5B7FFF),
                 padding: const EdgeInsets.symmetric(vertical: 16),

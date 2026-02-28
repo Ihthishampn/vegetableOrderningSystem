@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/sales_report/presentation/provider/sales_report_provider.dart';
 
@@ -49,7 +50,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sales Reports')),
+      appBar: AppBar(centerTitle: true, title: const Text('Sales Reports')),
       body: Consumer<SalesReportProvider>(
         builder: (context, salesReportProvider, _) {
           if (salesReportProvider.isLoading) {
@@ -117,15 +118,19 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
-                    _buildSummaryCard(
-                      "Total Reports",
-                      "${salesReportProvider.filteredReports.length}",
-                      const Color(0xFFCDEBFF),
+                    Consumer<OrderProvider>(
+                      builder: (context, orderProvider, _) {
+                        return _buildSummaryCard(
+                          "Total Orders",
+                          "${orderProvider.allOrders.length}",
+                          const Color(0xFFCDEBFF),
+                        );
+                      },
                     ),
                     const SizedBox(width: 12),
                     _buildSummaryCard(
-                      "Total Sales",
-                      "₹${salesReportProvider.totalSales.toStringAsFixed(2)}",
+                      "Completed Orders",
+                      "${salesReportProvider.allReports.length}",
                       const Color(0xFFCFFFE2),
                     ),
                   ],
@@ -188,31 +193,14 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "₹${item.totalPrice.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
                 ],
               ),
             );
           }).toList(),
-          const Divider(height: 24, thickness: 0.5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Total: ₹${report.totalAmount.toStringAsFixed(2)}",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Colors.black87,
-                ),
-              ),
+              const SizedBox.shrink(),
               Text(
                 "${report.date.day}/${report.date.month}/${report.date.year}",
                 style: const TextStyle(color: Colors.grey, fontSize: 11),

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 class OrderItemCard extends StatelessWidget {
-  final String storeName, date;
-  const OrderItemCard({super.key, required this.storeName, required this.date});
+  final String storeName;
+  final String date;
+  final List<OrderItem> items;
+
+  const OrderItemCard({
+    super.key,
+    required this.storeName,
+    required this.date,
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +42,16 @@ class OrderItemCard extends StatelessWidget {
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            _buildVegRow("1 Ridge gourd", "20 Kg"),
-            _buildVegRow("2 Carrot", "15 Kg"),
-            _buildVegRow("3 Cauliflower", "10 Kg"),
-            _buildVegRow("4 Tomato", "20 Box"),
-            _buildVegRow("5 Green chili", "15 Kg"),
+            // render each item in the order
+            ...items.asMap().entries.map((entry) {
+              final idx = entry.key + 1;
+              final item = entry.value;
+              final unit = item.unit ?? '';
+              final qtyStr = unit.isNotEmpty
+                  ? '${item.quantity} $unit'
+                  : '${item.quantity}';
+              return _buildVegRow('$idx ${item.productName}', qtyStr);
+            }),
             Align(
               alignment: Alignment.centerRight,
               child: Text(

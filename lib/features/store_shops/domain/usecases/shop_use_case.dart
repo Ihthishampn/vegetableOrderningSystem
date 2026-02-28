@@ -14,6 +14,10 @@ class ShopUseCase {
     return repository.getShopById(storeId, shopId);
   }
 
+  Future<Shop?> getShopByPhone(String phone) {
+    return repository.getShopByPhone(phone);
+  }
+
   Future<String> addShop(Shop shop) {
     return repository.addShop(shop);
   }

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 import 'row_items.dart';
 
-
 class OrderSummaryCard extends StatelessWidget {
-  const OrderSummaryCard({super.key});
+  final Order order;
+  const OrderSummaryCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
+    final date =
+        '${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}, ${order.createdAt.hour}:${order.createdAt.minute.toString().padLeft(2, '0')}${order.createdAt.hour >= 12 ? 'pm' : 'am'}';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -16,14 +19,25 @@ class OrderSummaryCard extends StatelessWidget {
         border: Border.all(color: Colors.blue.shade100),
       ),
       child: Column(
-        children: const [
-          RowItem(label: "Order ID", value: "ORD001", valueColor: Colors.blue),
-          RowItem(label: "Shop", value: "Green Valley Wholesale", icon: Icons.store_outlined),
-          RowItem(label: "Order Date", value: "24/11/2025, 02:30am", icon: Icons.calendar_today_outlined),
-          RowItem(label: "Items", value: "5 Items", icon: Icons.layers_outlined),
+        children: [
+          RowItem(label: "Order ID", value: order.id, valueColor: Colors.blue),
+          RowItem(
+            label: "Customer",
+            value: order.customerName,
+            icon: Icons.person_outline,
+          ),
+          RowItem(
+            label: "Order Date",
+            value: date,
+            icon: Icons.calendar_today_outlined,
+          ),
+          RowItem(
+            label: "Items",
+            value: '${order.items.length} Items',
+            icon: Icons.layers_outlined,
+          ),
         ],
       ),
     );
   }
 }
-

@@ -1,42 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 class CompletedItemsList extends StatelessWidget {
-  const CompletedItemsList({super.key});
+  final List<OrderItem> items;
+  const CompletedItemsList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      {"n": "1 Ridge gourd", "q": "20 Kg"},
-      {"n": "2 Carrot", "q": "15 Kg"},
-      {"n": "3 Cauliflower", "q": "10 Kg"},
-      {"n": "4 Tomato", "q": "20 Box"},
-      {"n": "5 Green chili", "q": "15 Kg"},
-    ];
+    final totalItems = items.fold<int>(0, (p, e) => p + e.quantity);
 
     return Column(
       children: [
-        ...items.map((i) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(i['n']!),
-              Text(i['q']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-        )),
+        ...items.map((item) {
+          final unit = item.unit ?? '';
+          final displayQty = unit.isNotEmpty
+              ? '${item.quantity} $unit'
+              : item.quantity.toString();
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: Text(item.productName)),
+                Text(
+                  displayQty,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          );
+        }),
         const SizedBox(height: 15),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100, 
-            borderRadius: BorderRadius.circular(8)
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Total Items", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("05", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Total Items",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                totalItems.toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

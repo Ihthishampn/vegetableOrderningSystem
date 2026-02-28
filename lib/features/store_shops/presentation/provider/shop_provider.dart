@@ -12,9 +12,18 @@ class ShopProvider with ChangeNotifier {
   String? _error;
   String? _storeId;
 
+  // For fetching single shop by ID
+  Shop? _currentShop;
+  bool _isLoadingSingleShop = false;
+  String? _errorSingleShop;
+
   List<Shop> get shopList => _shopList;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  Shop? get currentShop => _currentShop;
+  bool get isLoadingSingleShop => _isLoadingSingleShop;
+  String? get errorSingleShop => _errorSingleShop;
 
   Future<void> initialize(String storeId) async {
     _storeId = storeId;
@@ -39,10 +48,38 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
+  /// Fetch a single shop by ID (used for shop profile)
+  Future<void> fetchShopById(String storeId, String shopId) async {
+    _isLoadingSingleShop = true;
+    _errorSingleShop = null;
+    notifyListeners();
+
+    try {
+      _currentShop = await _useCase.getShopById(storeId, shopId);
+      _isLoadingSingleShop = false;
+      notifyListeners();
+    } catch (e) {
+      _errorSingleShop = e.toString();
+      _isLoadingSingleShop = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> addShop(Shop shop) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
+    // Defensive validation: ensure required fields are present
+    if (shop.shopName.trim().isEmpty ||
+        shop.address.trim().isEmpty ||
+        shop.city.trim().isEmpty ||
+        shop.phone.trim().isEmpty ||
+        (shop.managerName ?? '').trim().isEmpty) {
+      _error = 'All shop fields are required';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
 
     try {
       final id = await _useCase.addShop(shop);

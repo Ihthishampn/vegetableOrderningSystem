@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
-import '../widgets/pendings_widgets/edit_order_button.dart';
 import '../widgets/pendings_widgets/pending_action_footer.dart';
 import '../widgets/pendings_widgets/pending_order_info_card.dart';
 import '../widgets/pendings_widgets/pending_order_item_list.dart';
@@ -18,6 +17,7 @@ class PendingOrderOverview extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () {
             //  navigation logic
+            Navigator.of(context).pop();
           },
         ),
         title: const Text(
@@ -32,21 +32,21 @@ class PendingOrderOverview extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            OrderInfoCard(),
-            SizedBox(height: 30),
-            Text(
+          children: [
+            OrderInfoCard(order: order),
+            const SizedBox(height: 30),
+            const Text(
               "Ordered items",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 15),
-            OrderedItemsList(),
-            SizedBox(height: 20),
-            EditOrderButton(),
+            const SizedBox(height: 15),
+            OrderedItemsList(items: order.items),
+            const SizedBox(height: 20),
           ],
         ),
       ),
-      bottomNavigationBar: const PendingActionFooter(),
+      // Use callback footer to allow store actions to update order status via provider
+      bottomNavigationBar: PendingActionFooterWithCallback(order: order),
     );
   }
 }

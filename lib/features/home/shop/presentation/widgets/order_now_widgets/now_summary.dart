@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class OrderSummaryCard extends StatelessWidget {
@@ -29,27 +28,43 @@ class OrderSummaryCard extends StatelessWidget {
           const SizedBox(height: 12),
           _infoRow("Store", storeName, icon: Icons.store_outlined),
           const SizedBox(height: 12),
-          _infoRow("Items", "$itemCount Items", icon: Icons.inventory_2_outlined),
+          _infoRow(
+            "Items",
+            "$itemCount Items",
+            icon: Icons.inventory_2_outlined,
+          ),
         ],
       ),
     );
   }
 
-  Widget _infoRow(String label, String value, {IconData? icon, bool isBlue = false}) {
+  Widget _infoRow(
+    String label,
+    String value, {
+    IconData? icon,
+    bool isBlue = false,
+  }) {
     return Row(
       children: [
         if (icon != null) ...[
           Icon(icon, size: 18, color: Colors.black54),
           const SizedBox(width: 8),
         ],
-        Text(label, style: const TextStyle(color: Colors.black54, fontSize: 14)),
-        const Spacer(),
         Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isBlue ? const Color(0xFF4A68FF) : Colors.black87,
+          label,
+          style: const TextStyle(color: Colors.black54, fontSize: 14),
+        ),
+        const Spacer(),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isBlue ? const Color(0xFF4A68FF) : Colors.black87,
+            ),
           ),
         ),
       ],

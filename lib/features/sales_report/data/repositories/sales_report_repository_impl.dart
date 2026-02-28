@@ -53,8 +53,8 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
         reports.add(
           SalesReport(
             orderId: doc.id,
-            shopName: data['shopName'] ?? 'Unknown',
-            date: (data['deliveredAt'] as dynamic)?.toDate() ?? DateTime.now(),
+            shopName: data['shopName'] ?? 'Green Valley Shop',
+            date: _parseDate(data['deliveredAt']),
             items: items,
             totalAmount: (data['totalPrice'] ?? 0).toDouble(),
           ),
@@ -114,8 +114,8 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
         reports.add(
           SalesReport(
             orderId: doc.id,
-            shopName: data['shopName'] ?? 'Unknown',
-            date: (data['deliveredAt'] as dynamic)?.toDate() ?? DateTime.now(),
+            shopName: data['shopName'] ?? 'Green Valley Shop',
+            date: _parseDate(data['deliveredAt']),
             items: items,
             totalAmount: (data['totalPrice'] ?? 0).toDouble(),
           ),
@@ -125,6 +125,23 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
       return reports;
     } catch (e) {
       throw Exception('Failed to fetch sales reports by shop: $e');
+    }
+  }
+
+  /// Helper to parse date from Timestamp or ISO 8601 string
+  DateTime _parseDate(dynamic dateValue) {
+    if (dateValue == null) return DateTime.now();
+    if (dateValue is String) {
+      try {
+        return DateTime.parse(dateValue);
+      } catch (e) {
+        return DateTime.now();
+      }
+    }
+    try {
+      return (dateValue as dynamic).toDate();
+    } catch (e) {
+      return DateTime.now();
     }
   }
 

@@ -19,6 +19,9 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
   final _formKey = GlobalKey<FormState>();
   final _otpFocus = FocusNode();
 
+  // length of the one-time password
+  static const int _otpLength = 6;
+
   @override
   void dispose() {
     otpController.dispose();
@@ -72,8 +75,8 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Enter 6 digit verification\ncode sent to your mobile number",
+              Text(
+                "Enter $_otpLength digit verification\ncode sent to your mobile number",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
@@ -88,7 +91,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(6, (index) {
+                    children: List.generate(_otpLength, (index) {
                       final digit = index < otpProvider.otp.length
                           ? otpProvider.otp[index]
                           : '';
@@ -135,8 +138,14 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   focusNode: _otpFocus,
                   controller: otpController,
                   keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: _otpLength,
+                  // enforce both numeric and length limits so users cannot
+                  // accidentally enter a seventh digit (was causing 7
+                  // circles to appear if they typed too fast).
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(_otpLength),
+                  ],
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     counterText: '',
@@ -145,8 +154,8 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                     if (authProvider.error != null) {
                       return authProvider.error;
                     }
-                    if (val == null || val.trim().length < 6) {
-                      return "Enter 6 digit code";
+                    if (val == null || val.trim().length < _otpLength) {
+                      return "Enter $_otpLength digit code";
                     }
                     return null;
                   },

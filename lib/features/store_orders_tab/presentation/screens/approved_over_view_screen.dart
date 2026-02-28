@@ -30,19 +30,19 @@ class ApprovedOrderOverview extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            OrderSummaryCard(),
-            SizedBox(height: 30),
-            Text(
+          children: [
+            OrderSummaryCard(order: order),
+            const SizedBox(height: 30),
+            const Text(
               "Ordered items",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 15),
-            ApprovedItemsList(),
+            const SizedBox(height: 15),
+            ApprovedItemsList(items: order.items),
           ],
         ),
       ),
-      bottomNavigationBar: const ApprovedActionFooter(),
+      bottomNavigationBar: ApprovedActionFooterWithCallback(order: order),
     );
   }
 }

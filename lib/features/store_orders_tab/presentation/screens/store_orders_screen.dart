@@ -4,6 +4,11 @@ import '../provider/order_provider.dart';
 import '../widgets/order_screen_widgets/status_filter_bar.dart';
 import '../widgets/order_screen_widgets/store_order_card.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
+import 'pending_over_view_screen.dart';
+import 'approved_over_view_screen.dart';
+import 'completed_over_view.dart';
+import 'rejected_over_view.dart';
 
 /// Screen displaying all orders for the store with filtering by status
 class StoreOrdersScreen extends StatefulWidget {
@@ -14,6 +19,7 @@ class StoreOrdersScreen extends StatefulWidget {
 }
 
 class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
+  OrderStatus _selectedStatus = OrderStatus.pending;
   @override
   void initState() {
     super.initState();
@@ -32,7 +38,13 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(elevation: 0, title: const StatusFilterBar()),
+      appBar: AppBar(
+        elevation: 0,
+        title: StatusFilterBar(
+          selectedStatus: _selectedStatus,
+          onStatusSelected: (s) => setState(() => _selectedStatus = s),
+        ),
+      ),
       body: Consumer<OrderProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
@@ -75,24 +87,70 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.allOrders.length,
-            itemBuilder: (context, index) {
-              final order = provider.allOrders[index];
-              return StoreOrderCard(
-                storeNumber: 1,
-                storeName: order.customerName,
-                orderId: order.id,
-                orderStatus: order.status.toString().split('.').last,
-                totalPrice: order.totalPrice,
-                itemCount: order.items.length,
-                createdAt: order.createdAt,
-              );
-            },
+          final filtered = provider.allOrders
+              .where((o) => o.status == _selectedStatus)
+              .toList();
+
+          // overview counts removed (no overview chips)
+
+          return Column(
+            children: [
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final order = filtered[index];
+                    return GestureDetector(
+                      onTap: () => _openOrderOverview(order),
+                      child: StoreOrderCard(
+                        storeNumber: index + 1,
+                        storeName: order.customerName,
+                        orderId: order.id,
+                        orderStatus: order.status.toString().split('.').last,
+                        totalPrice: order.totalPrice,
+                        itemCount: order.items.length,
+                        items: order.items,
+                        createdAt: order.createdAt,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
     );
+  }
+
+  // Overview chips removed per user request
+
+  void _openOrderOverview(Order order) {
+    // Navigate to appropriate overview screen based on order.status
+    final status = order.status;
+    if (status == OrderStatus.pending) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => PendingOrderOverview(order: order)),
+      );
+    } else if (status == OrderStatus.approved) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => ApprovedOrderOverview(order: order)),
+      );
+    } else if (status == OrderStatus.completed) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => CompletedOrderOverview(order: order)),
+      );
+    } else if (status == OrderStatus.rejected) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => RejectedOrderOverview(order: order)),
+      );
+    } else {
+      // default
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => PendingOrderOverview(order: order)),
+      );
+    }
   }
 }

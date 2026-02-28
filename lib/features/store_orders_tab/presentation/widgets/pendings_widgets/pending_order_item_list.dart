@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 class OrderedItemsList extends StatelessWidget {
-  const OrderedItemsList({super.key});
+  final List<OrderItem> items;
+  const OrderedItemsList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> items = [
-      {"n": "1 Ridge gourd", "q": "20 Kg"},
-      {"n": "2 Carrot", "q": "15 Kg"},
-      {"n": "3 Cauliflower", "q": "10 Kg"},
-      {"n": "4 Tomato", "q": "20 Box"},
-      {"n": "5 Green chili", "q": "15 Kg"},
-    ];
+    final totalItems = items.fold<int>(0, (p, e) => p + e.quantity);
 
     return Column(
       children: [
@@ -21,9 +17,10 @@ class OrderedItemsList extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(item['n']!),
+                Expanded(child: Text(item.productName)),
+                const SizedBox(width: 8),
                 Text(
-                  item['q']!,
+                  '${item.quantity} ${item.unit ?? ''}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -39,12 +36,15 @@ class OrderedItemsList extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "Total Items",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text("05"),
+              Text(
+                totalItems.toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

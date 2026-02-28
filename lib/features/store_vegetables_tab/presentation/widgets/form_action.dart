@@ -78,7 +78,11 @@ class FormActionsWithCallback extends StatelessWidget {
   final VoidCallback onSubmit;
   final bool enabled;
 
-  const FormActionsWithCallback({super.key, required this.onSubmit, this.enabled = true});
+  const FormActionsWithCallback({
+    super.key,
+    required this.onSubmit,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +114,10 @@ class FormActionsWithCallback extends StatelessWidget {
               backgroundColor: enabled ? const Color(0xFF2D2626) : Colors.grey,
               minimumSize: const Size(0, 45),
             ),
-            child: Text("Submit", style: TextStyle(color: enabled ? Colors.white : Colors.black54)),
+            child: Text(
+              "Submit",
+              style: TextStyle(color: enabled ? Colors.white : Colors.black54),
+            ),
           ),
         ),
       ],

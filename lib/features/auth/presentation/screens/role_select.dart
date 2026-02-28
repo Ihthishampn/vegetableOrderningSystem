@@ -27,7 +27,7 @@ class _RoleSelectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RoleProvider>();
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size; // unused
     final selectedRole = provider.selectedRole;
 
     return Scaffold(

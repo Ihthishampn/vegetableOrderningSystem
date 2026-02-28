@@ -18,6 +18,9 @@ class AuthProvider with ChangeNotifier {
   String? get uid => _userId; // Alias for userId - Firebase UID
   String? get storeId => _storeId;
 
+  /// Phone number used during login (if any)
+  String? get phoneNumber => _phoneNumber;
+
   String? _phoneNumber;
 
   Future<bool> checkUserRole({
@@ -29,6 +32,35 @@ class AuthProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      // For shop login, check the shops collection for the phone number
+      if (selectedRole == 'shop') {
+        final shopQuery = await _firestore
+            .collection('shops')
+            .where('phone', isEqualTo: phone)
+            .limit(1)
+            .get();
+
+        if (shopQuery.docs.isEmpty) {
+          _error = "No shop found with this phone number";
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
+
+        final shopData = shopQuery.docs.first.data();
+        final shopId = shopQuery.docs.first.id;
+
+        _phoneNumber = phone;
+        _userRole = 'shop';
+        _userId = shopId; // Use shopId as userId for shops
+        _storeId = shopData['storeId'] ?? shopId;
+
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+
+      // For store login, check the users collection
       final query = await _firestore
           .collection("users")
           .where("phone", isEqualTo: phone)

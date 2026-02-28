@@ -25,6 +25,7 @@ import 'package:vegetable_ordering_system/features/store_shops/presentation/prov
 import 'package:vegetable_ordering_system/features/sales_report/data/repositories/sales_report_repository_impl.dart';
 import 'package:vegetable_ordering_system/features/sales_report/domain/usecases/sales_report_use_case.dart';
 import 'package:vegetable_ordering_system/features/sales_report/presentation/provider/sales_report_provider.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,9 @@ void main() async {
               SalesReportRepositoryImpl(FirebaseFirestore.instance),
             ),
           ),
+        ),
+        ChangeNotifierProvider<CartProvider>(
+          create: (context) => CartProvider(),
         ),
       ],
 

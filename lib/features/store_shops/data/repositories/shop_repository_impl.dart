@@ -44,6 +44,24 @@ class ShopRepositoryImpl implements ShopRepository {
     }
   }
 
+  /// Get a shop by phone number (for shop login verification).
+  Future<Shop?> getShopByPhone(String phone) async {
+    try {
+      final snapshot = await _firestore
+          .collection(_shopsCollection)
+          .where('phone', isEqualTo: phone.trim())
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isEmpty) return null;
+
+      final doc = snapshot.docs.first;
+      return Shop.fromFirestore(doc.data(), doc.id);
+    } catch (e) {
+      throw Exception('Failed to fetch shop by phone: $e');
+    }
+  }
+
   @override
   Future<String> addShop(Shop shop) async {
     try {

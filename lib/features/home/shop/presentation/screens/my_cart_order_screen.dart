@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/order_type_toggle.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/status_filter_bar.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/store_dropdowm_menu.dart';
@@ -62,6 +66,14 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ensure order provider is initialized with supplier id
+    final authProv = Provider.of<AuthProvider>(context, listen: false);
+    final orderProv = Provider.of<OrderProvider>(context, listen: false);
+    if (orderProv.storeId == null && authProv.storeId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        orderProv.initialize(authProv.storeId!);
+      });
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -85,7 +97,7 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
             onChanged: (index) => setState(() => selectedMainTab = index),
           ),
 
-      //Dropdown Filters
+          //Dropdown Filters
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -121,13 +133,52 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
           ),
 
           Expanded(
-            child: selectedMainTab == 0
-                ? const ScheduledOrdersList()
-                : const DirectOrdersList(),
+            child: Consumer<OrderProvider>(
+              builder: (context, orderProv, _) {
+                final auth = Provider.of<AuthProvider>(context, listen: false);
+                // only show orders for this customer
+                final customerOrders = orderProv.allOrders
+                    .where((o) => o.customerId == auth.uid)
+                    .cast<Order>()
+                    .toList();
+
+                // apply status filter if not 'All'
+                List<Order> filtered = customerOrders;
+                if (selectedStatus != 'All') {
+                  filtered = filtered
+                      .where(
+                        (o) =>
+                            o.status.toString().split('.').last.toLowerCase() ==
+                            selectedStatus.toLowerCase(),
+                      )
+                      .toList();
+                }
+
+                // For simplicity we ignore store dropdown filter – all orders belong to same supplier
+
+                // split based on scheduled date: scheduled orders are those with scheduledDate in future
+                final now = DateTime.now();
+                final scheduledOrders = filtered.where((o) {
+                  final sd = o.scheduledDate;
+                  return sd != null && sd.isAfter(now);
+                }).toList();
+                final directOrders = filtered.where((o) {
+                  final sd = o.scheduledDate;
+                  return sd == null ||
+                      sd.isBefore(now) ||
+                      sd.isAtSameMomentAs(now);
+                }).toList();
+
+                if (selectedMainTab == 0) {
+                  return ScheduledOrdersList(orders: scheduledOrders);
+                } else {
+                  return DirectOrdersList(orders: directOrders);
+                }
+              },
+            ),
           ),
         ],
       ),
     );
   }
 }
-

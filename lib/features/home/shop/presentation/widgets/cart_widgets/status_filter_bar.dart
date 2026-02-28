@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class StatusFilterBarCart extends StatelessWidget {
@@ -13,7 +12,14 @@ class StatusFilterBarCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statuses = ['All', 'Approved', 'Rejected', 'Cancelled', 'Completed'];
+    final statuses = [
+      'All',
+      'Pending',
+      'Approved',
+      'Rejected',
+      'Cancelled',
+      'Completed',
+    ];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

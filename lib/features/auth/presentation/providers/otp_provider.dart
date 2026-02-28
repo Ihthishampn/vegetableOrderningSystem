@@ -11,6 +11,10 @@ class OtpProvider extends ChangeNotifier {
   String get otp => _otp;
 
   void updateOtp(String value) {
+    // only keep up to 6 digits
+    if (value.length > 6) {
+      value = value.substring(0, 6);
+    }
     if (_otp == value) return;
     _otp = value;
     notifyListeners();

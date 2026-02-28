@@ -132,7 +132,8 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
           // The card shows the confirmation dialog; when confirmed we call
           // the provider directly to delete the product so no second dialog
           // is shown.
-          onDelete: () => context.read<ProductProvider>().deleteProduct(product.id),
+          onDelete: () =>
+              context.read<ProductProvider>().deleteProduct(product.id),
           onToggleAvailability: () => _toggleAvailability(context, product),
         );
       },

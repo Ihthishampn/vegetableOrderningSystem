@@ -29,7 +29,8 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
   void _updateCanSubmit() {
     final hasName = _nameController.text.trim().length >= 2;
     final sortText = _sortNumberController.text.trim();
-    final sortValid = int.tryParse(sortText) != null && (int.parse(sortText) > 0);
+    final sortValid =
+        int.tryParse(sortText) != null && (int.parse(sortText) > 0);
     final hasImage = _selectedImageUrl != null && _selectedImageUrl!.isNotEmpty;
     final hasUnit = _selectedUnit.isNotEmpty;
 
@@ -224,7 +225,10 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
               ),
               const SizedBox(height: 30),
 
-              FormActionsWithCallback(onSubmit: _submitForm, enabled: _canSubmit),
+              FormActionsWithCallback(
+                onSubmit: _submitForm,
+                enabled: _canSubmit,
+              ),
             ],
           ),
         ),

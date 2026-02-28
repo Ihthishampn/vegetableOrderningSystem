@@ -29,15 +29,15 @@ class RejectedOrderOverview extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            RejectedSummaryCard(),
-            SizedBox(height: 30),
-            Text(
+          children: [
+            RejectedSummaryCard(order: order),
+            const SizedBox(height: 30),
+            const Text(
               "Ordered items",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 15),
-            RejectedItemsList(),
+            const SizedBox(height: 15),
+            RejectedItemsList(items: order.items),
           ],
         ),
       ),

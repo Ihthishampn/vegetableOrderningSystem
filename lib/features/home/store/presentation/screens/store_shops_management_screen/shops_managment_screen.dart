@@ -284,7 +284,10 @@ class _AddShopPageState extends State<AddShopPage> {
   late final TextEditingController _managerController;
   late final TextEditingController _phoneController;
   late final TextEditingController _addressController;
+  late final TextEditingController _cityController;
   bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  bool _canSubmit = false;
 
   bool get isEdit => widget.shop != null;
 
@@ -299,6 +302,15 @@ class _AddShopPageState extends State<AddShopPage> {
     _addressController = TextEditingController(
       text: widget.shop?.address ?? '',
     );
+    _cityController = TextEditingController(text: widget.shop?.city ?? '');
+    // For edit mode, initialize _canSubmit based on prefilled fields
+    _canSubmit =
+        widget.shop != null &&
+        _nameController.text.trim().isNotEmpty &&
+        _managerController.text.trim().isNotEmpty &&
+        _phoneController.text.trim().isNotEmpty &&
+        _cityController.text.trim().isNotEmpty &&
+        _addressController.text.trim().isNotEmpty;
   }
 
   @override
@@ -307,6 +319,7 @@ class _AddShopPageState extends State<AddShopPage> {
     _managerController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -332,17 +345,8 @@ class _AddShopPageState extends State<AddShopPage> {
     final provider = Provider.of<ShopProvider>(context, listen: false);
     final auth = Provider.of<AuthProvider>(context, listen: false);
     if (auth.uid == null) return;
-    // basic validation: shop name and phone required for login
-    if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Shop name is required')));
-      return;
-    }
-    if (_phoneController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mobile number is required')),
-      );
+    // Use form validation to ensure all fields are provided
+    if (!_formKey.currentState!.validate()) {
       return;
     }
     final now = DateTime.now();
@@ -351,11 +355,9 @@ class _AddShopPageState extends State<AddShopPage> {
       storeId: auth.uid!,
       shopName: _nameController.text.trim(),
       address: _addressController.text.trim(),
-      city: '',
+      city: _cityController.text.trim(),
       phone: _phoneController.text.trim(),
-      managerName: _managerController.text.trim().isEmpty
-          ? null
-          : _managerController.text.trim(),
+      managerName: _managerController.text.trim(),
       createdAt: widget.shop?.createdAt ?? now,
       updatedAt: now,
       isActive: widget.shop?.isActive ?? true,
@@ -412,10 +414,83 @@ class _AddShopPageState extends State<AddShopPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildLabel("Store Name *"),
-              TextField(
-                controller: _nameController,
-                decoration: _inputDecoration("Enter shop name"),
+              Form(
+                key: _formKey,
+                onChanged: () {
+                  setState(() {
+                    _canSubmit = _formKey.currentState?.validate() ?? false;
+                  });
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel("Store Name *"),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: _inputDecoration("Enter shop name"),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'Shop name is required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    _buildLabel("Contact Person Name *"),
+                    TextFormField(
+                      controller: _managerController,
+                      decoration: _inputDecoration("Enter contact person name"),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'Contact person is required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    _buildLabel("Mobile Number *"),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: _inputDecoration(
+                        "Enter 10-digit mobile number",
+                      ),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'Mobile number is required';
+                        if (v.trim().length < 7)
+                          return 'Enter a valid mobile number';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    _buildLabel("City *"),
+                    TextFormField(
+                      controller: _cityController,
+                      decoration: _inputDecoration("Enter city"),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'City is required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    _buildLabel("Location / Address *"),
+                    TextFormField(
+                      controller: _addressController,
+                      maxLines: 4,
+                      decoration: _inputDecoration("Enter Location"),
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'Address is required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
 
@@ -464,7 +539,7 @@ class _AddShopPageState extends State<AddShopPage> {
                   const SizedBox(width: 15),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submit,
+                      onPressed: (_isLoading || !_canSubmit) ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2D2926),
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -510,32 +585,5 @@ class _AddShopPageState extends State<AddShopPage> {
     );
   }
 
-  Widget _buildTextField(
-    String hint, {
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return TextField(
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: Colors.black12),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: Color(0xFF2D2926)),
-        ),
-      ),
-    );
-  }
+  // Removed _buildTextField - not used, using TextFormField with validators instead
 }

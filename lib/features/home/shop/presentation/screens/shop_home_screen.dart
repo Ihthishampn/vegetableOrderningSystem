@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_in_advance_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_now_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/repeat_last_order_screen.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/provider/product_provider.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import '../widgets/shop_home_widget/shop_header.dart';
 import '../widgets/shop_home_widget/shop_product_card.dart';
 import '../widgets/shop_home_widget/shop_search_widget.dart';
@@ -34,7 +39,7 @@ class ShopHomeScreen extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 1),
-                  _buildAddressRow(),
+                  _buildAddressRow(context),
                   const SizedBox(height: 1),
 
                   _buildActionBanner(
@@ -67,61 +72,7 @@ class ShopHomeScreen extends StatelessWidget {
 
                   const SearchBarWidget(),
                   const SizedBox(height: 7),
-                  const ProductCard(
-                    name: "Carrot",
-                    image: "assets/carrot.png",
-                    units: ["kg", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
-                  const ProductCard(
-                    name: "Tomato",
-                    image: "assets/tomato.png",
-                    units: ["kg", "Box", "Bag"],
-                  ),
+                  _buildProductList(),
                   const SizedBox(height: 10),
                 ]),
               ),
@@ -133,7 +84,7 @@ class ShopHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressRow() {
+  Widget _buildAddressRow(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -152,6 +103,83 @@ class ShopHomeScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  /// Build the product list from ProductProvider
+  Widget _buildProductList() {
+    return Consumer<ProductProvider>(
+      builder: (context, productProvider, _) {
+        // Initialize with the store ID from auth
+        final auth = Provider.of<AuthProvider>(context, listen: false);
+        // also initialize order provider for the same supplier store
+        final orderProvider = Provider.of<OrderProvider>(
+          context,
+          listen: false,
+        );
+        if (productProvider.storeId == null && auth.storeId != null) {
+          // Initialize product provider with store ID
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            productProvider.initialize(auth.storeId!);
+            orderProvider.initialize(auth.storeId!);
+          });
+        }
+
+        if (productProvider.isLoading) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (productProvider.error != null) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: Text('Error: ${productProvider.error}')),
+          );
+        }
+
+        final products = productProvider.availableProducts.isEmpty
+            ? productProvider.allProducts
+            : productProvider.availableProducts;
+
+        if (products.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: Text('No products available')),
+          );
+        }
+
+        return Column(
+          children: products
+              .map(
+                (product) => ProductCard(
+                  product: product,
+                  name: product.name,
+                  image: product.imageUrl ?? "assets/placeholder.png",
+                  units: [product.unit],
+                  isOutOfStock: !product.isAvailable,
+                  onAddToCart: !product.isAvailable
+                      ? null
+                      : () {
+                          final cart = Provider.of<CartProvider>(
+                            context,
+                            listen: false,
+                          );
+                          // Add 1 unit by default; user can adjust in cart
+                          cart.addToCart(product, 1, product.unit);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${product.name} added to cart'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 

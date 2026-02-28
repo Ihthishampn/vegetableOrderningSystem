@@ -30,15 +30,15 @@ class CompletedOrderOverview extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            CompletedSummaryCard(),
-            SizedBox(height: 30),
-            Text(
+          children: [
+            CompletedSummaryCard(order: order),
+            const SizedBox(height: 30),
+            const Text(
               "Ordered items",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 15),
-            CompletedItemsList(), //  vegetable list
+            const SizedBox(height: 15),
+            CompletedItemsList(items: order.items), //  vegetable list
           ],
         ),
       ),

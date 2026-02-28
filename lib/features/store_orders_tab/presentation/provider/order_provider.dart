@@ -64,6 +64,7 @@ class OrderProvider extends ChangeNotifier {
     required List<OrderItem> items,
     required double totalPrice,
     String? notes,
+    DateTime? scheduledDate,
   }) async {
     if (_storeId == null) return false;
 
@@ -85,6 +86,7 @@ class OrderProvider extends ChangeNotifier {
         notes: notes,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        scheduledDate: scheduledDate,
       );
 
       await useCase.addOrder(order);

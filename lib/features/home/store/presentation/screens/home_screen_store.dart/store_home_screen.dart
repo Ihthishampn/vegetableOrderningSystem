@@ -128,7 +128,11 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
                       ? order.customerName
                       : 'Store Order';
                   final date = _formatDate(order.createdAt);
-                  return OrderItemCard(storeName: storeName, date: date);
+                  return OrderItemCard(
+                    storeName: storeName,
+                    date: date,
+                    items: order.items,
+                  );
                 }, childCount: list.length),
               );
             },

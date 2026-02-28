@@ -14,6 +14,9 @@ class Order {
   final DateTime updatedAt;
   final DateTime? deliveredAt;
 
+  /// Optional date the customer asked for delivery (used when scheduling)
+  final DateTime? scheduledDate;
+
   Order({
     required this.id,
     required this.storeId,
@@ -28,6 +31,7 @@ class Order {
     required this.createdAt,
     required this.updatedAt,
     this.deliveredAt,
+    this.scheduledDate,
   });
 
   /// Convert Order to Firestore document map
@@ -46,6 +50,7 @@ class Order {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
+      'scheduledDate': scheduledDate?.toIso8601String(),
     };
   }
 
@@ -74,6 +79,9 @@ class Order {
       ),
       deliveredAt: data['deliveredAt'] != null
           ? DateTime.parse(data['deliveredAt'] as String)
+          : null,
+      scheduledDate: data['scheduledDate'] != null
+          ? DateTime.parse(data['scheduledDate'] as String)
           : null,
     );
   }
@@ -108,6 +116,7 @@ class Order {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deliveredAt: deliveredAt ?? this.deliveredAt,
+      scheduledDate: scheduledDate ?? this.scheduledDate,
     );
   }
 
@@ -133,6 +142,7 @@ class OrderItem {
   final String productName;
   final double price;
   final int quantity;
+  final String? unit;
   final double subtotal;
 
   OrderItem({
@@ -140,6 +150,7 @@ class OrderItem {
     required this.productName,
     required this.price,
     required this.quantity,
+    this.unit,
     required this.subtotal,
   });
 
@@ -149,6 +160,7 @@ class OrderItem {
       'productName': productName,
       'price': price,
       'quantity': quantity,
+      'unit': unit,
       'subtotal': subtotal,
     };
   }
@@ -159,6 +171,7 @@ class OrderItem {
       productName: map['productName'] ?? '',
       price: (map['price'] ?? 0).toDouble(),
       quantity: map['quantity'] ?? 0,
+      unit: map['unit'] as String?,
       subtotal: (map['subtotal'] ?? 0).toDouble(),
     );
   }

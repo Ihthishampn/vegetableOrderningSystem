@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
 
 import '../widgets/order_now_widgets/now_confirm_order_button.dart';
 import '../widgets/order_now_widgets/now_summary.dart';
@@ -25,56 +28,96 @@ class OrderNowScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          // Highlighted Summary Card
-          const OrderSummaryCard(
-            orderId: "ORD1763532470082",
-            storeName: "Green Valley Wholesale",
-            itemCount: 5,
-          ),
-
-          const SizedBox(height: 24),
-
-          // Ordered Items Section
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+      body: Consumer<CartProvider>(
+        builder: (context, cart, _) {
+          if (cart.cartItems.isEmpty) {
+            return Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Ordered items",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  const Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 80,
+                    color: Colors.grey,
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView(
-                      children: const [
-                        SummaryItemRow(label: "1 Ridge gourd", quantity: "20 Kg"),
-                        SummaryItemRow(label: "2 Carrot", quantity: "15 Kg"),
-                        SummaryItemRow(label: "3 Cauliflower", quantity: "10Kg"),
-                        SummaryItemRow(label: "4 Tomato", quantity: "20 Box"),
-                        SummaryItemRow(label: "5 Green chili", quantity: "15 Kg"),
-                      ],
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Your cart is empty',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5C79FF),
+                    ),
+                    child: const Text(
+                      'Continue Shopping',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
+            );
+          }
 
-          //  Total Items Calculation
-          const TotalItemsBanner(total: "05"),
+          return Column(
+            children: [
+              // Highlighted Summary Card
+              OrderSummaryCard(
+                orderId: "ORD${DateTime.now().millisecondsSinceEpoch}",
+                storeName:
+                    Provider.of<AuthProvider>(context, listen: false).storeId ??
+                    "Your Store",
+                itemCount: cart.itemCount,
+              ),
 
-          //  Final Confirmation Button
-          const ConfirmOrderButton(),
-          const SizedBox(height: 20),
-        ],
+              const SizedBox(height: 24),
+
+              // Ordered Items Section
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Ordered items",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: cart.cartItems.length,
+                          itemBuilder: (context, index) {
+                            final item = cart.cartItems[index];
+                            return SummaryItemRow(
+                              label: "${index + 1} ${item.product.name}",
+                              quantity: "${item.quantity} ${item.selectedUnit}",
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              //  Total Items Calculation
+              TotalItemsBanner(
+                total: cart.itemCount.toString().padLeft(2, '0'),
+              ),
+
+              //  Final Confirmation Button
+              const ConfirmOrderButton(),
+              const SizedBox(height: 20),
+            ],
+          );
+        },
       ),
     );
   }
 }
-
-
-

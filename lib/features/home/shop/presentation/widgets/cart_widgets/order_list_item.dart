@@ -1,24 +1,30 @@
-
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 import 'status_badge.dart';
 
 class OrderListItem extends StatelessWidget {
-  final String orderId;
-  final String status;
-  final String date;
-  final String? deliveryDate;
+  final Order order;
 
-  const OrderListItem({
-    super.key,
-    required this.orderId,
-    required this.status,
-    required this.date,
-    this.deliveryDate,
-  });
+  const OrderListItem({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
+    final orderId = order.id;
+    final status = order.status.toString().split('.').last;
+    final itemCount = order.items.length;
+    final createdAt = order.createdAt;
+    final scheduled = order.scheduledDate;
+
+    String dateText() {
+      return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
+    }
+
+    String? deliveryDate;
+    if (scheduled != null) {
+      deliveryDate = '${scheduled.day}/${scheduled.month}/${scheduled.year}';
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
@@ -46,14 +52,14 @@ class OrderListItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
-            "5 Items",
-            style: TextStyle(color: Colors.grey, fontSize: 13),
+          Text(
+            '$itemCount Items',
+            style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 8),
           if (deliveryDate != null) ...[
             Text(
-              "Ordered Date: $date",
+              "Ordered Date: ${dateText()}",
               style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
             Text(
@@ -65,7 +71,7 @@ class OrderListItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  date,
+                  dateText(),
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 const Icon(
