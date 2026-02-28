@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vegetable_ordering_system/app/role_slect.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/screens/role_select.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/shop_home_screen.dart';
 

@@ -15,7 +15,6 @@ class AuthProvider with ChangeNotifier {
 
   String? _phoneNumber;
 
- 
   Future<bool> checkUserRole({
     required String phone,
     required String selectedRole,
@@ -61,7 +60,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-
   Future<bool> verifyOtp(String otp) async {
     if (otp != "123456") {
       _error = "Incorrect OTP";
@@ -77,9 +75,16 @@ class AuthProvider with ChangeNotifier {
     return true;
   }
 
- 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  /// Clears the last error message (used by UI when user modifies input).
+  void clearError() {
+    if (_error != null) {
+      _error = null;
+      notifyListeners();
+    }
   }
 }

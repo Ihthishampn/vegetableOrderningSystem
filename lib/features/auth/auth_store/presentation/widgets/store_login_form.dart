@@ -119,12 +119,12 @@ class _LoginFormStoreState extends State<LoginFormStore> {
                                     // Pop the bottom sheet using its own context
                                     Navigator.pop(sheetContext);
                                     // Then navigate to home screen
-                                      navigator.pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                          builder: (_) => widget.successScreen,
-                                        ),
-                                        (route) => false,
-                                      );
+                                    navigator.pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (_) => widget.successScreen,
+                                      ),
+                                      (route) => false,
+                                    );
                                   },
                                 ),
                               );

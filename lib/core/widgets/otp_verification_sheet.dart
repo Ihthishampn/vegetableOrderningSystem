@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/provider/auth_provider.dart';
+import '../../features/auth/presentation/providers/otp_provider.dart';
 
 class OtpVerificationSheet extends StatefulWidget {
   final String role;
@@ -17,7 +18,6 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
   final TextEditingController otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _otpFocus = FocusNode();
-  String? _verificationError;
 
   @override
   void dispose() {
@@ -29,6 +29,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final otpProvider = context.watch<OtpProvider>();
 
     // Role-based styling
     final isStore = widget.role == 'store';
@@ -88,8 +89,8 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(6, (index) {
-                      final digit = index < otpController.text.length
-                          ? otpController.text[index]
+                      final digit = index < otpProvider.otp.length
+                          ? otpProvider.otp[index]
                           : '';
                       final isFilled = digit.isNotEmpty;
 
@@ -130,7 +131,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
               SizedBox(
                 width: 0,
                 height: 0,
-                child: TextField(
+                child: TextFormField(
                   focusNode: _otpFocus,
                   controller: otpController,
                   keyboardType: TextInputType.number,
@@ -140,26 +141,33 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                     border: InputBorder.none,
                     counterText: '',
                   ),
-                  onChanged: (val) {
-                    setState(() {});
-                    if (_verificationError != null) {
-                      setState(() => _verificationError = null);
+                  validator: (val) {
+                    if (authProvider.error != null) {
+                      return authProvider.error;
                     }
+                    if (val == null || val.trim().length < 6) {
+                      return "Enter 6 digit code";
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    otpProvider.updateOtp(val.trim());
+                    authProvider.clearError();
                   },
                 ),
               ),
 
               // Error message display
-              if (_verificationError != null)
+              if (authProvider.error != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Text(
-                    _verificationError!,
+                    authProvider.error!,
                     style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
 
-              if (_verificationError == null) const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               SizedBox(
                 width: double.infinity,
@@ -177,13 +185,8 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                           if (!mounted) return;
 
                           if (success) {
-                            // Call onSuccess callback - it handles sheet closing and navigation
                             widget.onSuccess?.call();
                           } else {
-                            setState(() {
-                              _verificationError =
-                                  authProvider.error ?? "Verification failed";
-                            });
                             _formKey.currentState?.validate();
                           }
                         },

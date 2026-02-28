@@ -13,9 +13,7 @@ class ShopHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-      
-      },
+      onPopInvokedWithResult: (didPop, result) {},
       child: Scaffold(
         backgroundColor: Colors.white,
         body: CustomScrollView(

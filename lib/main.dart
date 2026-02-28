@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/provider/entry_provider.dart';
 import 'package:vegetable_ordering_system/features/entry/splash_session_check.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/providers/otp_provider.dart';
 import 'package:vegetable_ordering_system/firebase_options.dart';
 
 void main() async {
@@ -19,6 +20,7 @@ void main() async {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(),
         ),
+        ChangeNotifierProvider<OtpProvider>(create: (context) => OtpProvider()),
       ],
 
       child: const MyApp(),
