@@ -1,26 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 
 class StatusCardsRow extends StatelessWidget {
   const StatusCardsRow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 18),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            StatusCard(
-              label: "Scheduled",
-              value: "49",
-              color: Color.fromARGB(255, 243, 96, 17),
+    return Consumer<OrderProvider>(
+      builder: (context, orderProvider, _) {
+        final pendingCount = orderProvider.pendingOrders.length;
+        final completedCount = orderProvider.completedOrders.length;
+        final totalCount = orderProvider.allOrders.length;
+
+        return Column(
+          children: [
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                StatusCard(
+                  label: "Scheduled",
+                  value: pendingCount.toString(),
+                  color: const Color.fromARGB(255, 243, 96, 17),
+                ),
+                StatusCard(
+                  label: "Order",
+                  value: totalCount.toString(),
+                  color: const Color(0xFFFFAC11),
+                ),
+                StatusCard(
+                  label: "Completed",
+                  value: completedCount.toString(),
+                  color: Colors.green,
+                ),
+              ],
             ),
-            StatusCard(label: "Order", value: "251", color: Color(0xFFFFAC11)),
-            StatusCard(label: "Completed", value: "203", color: Colors.green),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

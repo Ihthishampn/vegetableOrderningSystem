@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_shops_management_screen/shops_managment_screen.dart';
-import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_managment/staff_management_screen.dart';
+// use updated staff management UI with Firebase integration
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_management_screen/staff_managment_screen.dart';
 
 import '../store_sales_report_screen.dart/sales_report_screen.dart';
-
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -89,7 +89,7 @@ class MenuPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FA), 
+          color: const Color(0xFFF8F9FA),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Row(

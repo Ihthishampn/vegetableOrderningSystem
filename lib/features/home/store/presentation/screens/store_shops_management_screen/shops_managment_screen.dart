@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../store_vegetables_tab/presentation/widgets/add_success_message.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/store_shops/presentation/provider/shop_provider.dart';
+import 'package:vegetable_ordering_system/features/store_shops/domain/entities/shop.dart';
 
 class ShopsManagmentScreen extends StatefulWidget {
   const ShopsManagmentScreen({super.key});
@@ -10,33 +14,17 @@ class ShopsManagmentScreen extends StatefulWidget {
 }
 
 class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
-  // Mock data based on your shared screenshot
-  final List<Map<String, dynamic>> shops = [
-    {
-      "name": "Green Valley Grocery",
-      "contact": "Rajesh Kumar",
-      "mobile": "+91 98765 43210",
-      "location": "Mumbai Market, Zone A",
-      "date": "24/11/2025, 02:30am",
-      "isActive": true,
-    },
-    {
-      "name": "Demo Shop Name",
-      "contact": "Rajesh Kumar",
-      "mobile": "+91 98765 43210",
-      "location": "Mumbai Market, Zone A",
-      "date": "24/11/2025, 02:30am",
-      "isActive": false,
-    },
-    {
-      "name": "Demo Shop Name",
-      "contact": "Rajesh Kumar",
-      "mobile": "+91 98765 43210",
-      "location": "Mumbai Market, Zone A",
-      "date": "24/11/2025, 02:30am",
-      "isActive": true,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final shopProv = Provider.of<ShopProvider>(context, listen: false);
+      if (auth.uid != null) {
+        shopProv.initialize(auth.uid!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +50,24 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
       body: Stack(
         children: [
           // 1. Scrollable Shop List
-          ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
-            itemCount: shops.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemBuilder: (context, index) {
-              return _buildShopCard(index);
+          Consumer<ShopProvider>(
+            builder: (context, shopProv, _) {
+              if (shopProv.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (shopProv.error != null) {
+                return Center(child: Text('Error: ${shopProv.error}'));
+              }
+              final shops = shopProv.shopList;
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
+                itemCount: shops.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  return _buildShopCard(shops[index]);
+                },
+              );
             },
           ),
 
@@ -94,12 +94,10 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to Add Shop Page
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AddShopPage(isEdit: false),
+                      builder: (context) => const AddShopPage(),
                     ),
                   );
                 },
@@ -126,9 +124,8 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
     );
   }
 
-  Widget _buildShopCard(int index) {
-    final shop = shops[index];
-    bool active = shop["isActive"];
+  Widget _buildShopCard(Shop shop) {
+    bool active = shop.isActive;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -147,15 +144,18 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${index + 1}. ${shop["name"]}",
+            shop.shopName,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15),
 
-          _buildInfoRow("Contact Person", shop["contact"]),
-          _buildInfoRow("Mobile Number", shop["mobile"]),
-          _buildInfoRow("Location", shop["location"]),
-          _buildInfoRow("Added Date", shop["date"]),
+          _buildInfoRow("Contact Person", shop.managerName ?? ""),
+          _buildInfoRow("Mobile Number", shop.phone),
+          _buildInfoRow("Location", shop.address),
+          _buildInfoRow(
+            "Added Date",
+            "${shop.createdAt.day}/${shop.createdAt.month}/${shop.createdAt.year}",
+          ),
 
           const SizedBox(height: 15),
 
@@ -171,7 +171,7 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const AddShopPage(isEdit: true),
+                          builder: (context) => AddShopPage(shop: shop),
                         ),
                       );
                     }
@@ -233,8 +233,12 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                         value: active,
                         // This is key: it removes the extra padding around the switch
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (val) {
-                          setState(() => shops[index]["isActive"] = val);
+                        onChanged: (val) async {
+                          final provider = Provider.of<ShopProvider>(
+                            context,
+                            listen: false,
+                          );
+                          await provider.toggleShopStatus(shop.id, val);
                         },
                         activeColor: Colors.green,
                         activeTrackColor: Colors.green.withOpacity(0.5),
@@ -267,9 +271,119 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
   }
 }
 
-class AddShopPage extends StatelessWidget {
-  final bool isEdit;
-  const AddShopPage({super.key, this.isEdit = false});
+class AddShopPage extends StatefulWidget {
+  final Shop? shop;
+  const AddShopPage({super.key, this.shop});
+
+  @override
+  State<AddShopPage> createState() => _AddShopPageState();
+}
+
+class _AddShopPageState extends State<AddShopPage> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _managerController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _addressController;
+  bool _isLoading = false;
+
+  bool get isEdit => widget.shop != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.shop?.shopName ?? '');
+    _managerController = TextEditingController(
+      text: widget.shop?.managerName ?? '',
+    );
+    _phoneController = TextEditingController(text: widget.shop?.phone ?? '');
+    _addressController = TextEditingController(
+      text: widget.shop?.address ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _managerController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      filled: true,
+      fillColor: Colors.white,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Colors.black12),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Color(0xFF2D2926)),
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    final provider = Provider.of<ShopProvider>(context, listen: false);
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    if (auth.uid == null) return;
+    // basic validation: shop name and phone required for login
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Shop name is required')));
+      return;
+    }
+    if (_phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mobile number is required')),
+      );
+      return;
+    }
+    final now = DateTime.now();
+    final shop = Shop(
+      id: widget.shop?.id ?? '',
+      storeId: auth.uid!,
+      shopName: _nameController.text.trim(),
+      address: _addressController.text.trim(),
+      city: '',
+      phone: _phoneController.text.trim(),
+      managerName: _managerController.text.trim().isEmpty
+          ? null
+          : _managerController.text.trim(),
+      createdAt: widget.shop?.createdAt ?? now,
+      updatedAt: now,
+      isActive: widget.shop?.isActive ?? true,
+    );
+    setState(() => _isLoading = true);
+    final success = isEdit
+        ? await provider.updateShop(shop)
+        : await provider.addShop(shop);
+    setState(() => _isLoading = false);
+    if (success) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AddSuccessDialog(
+          title: isEdit ? "Shop Updated" : "Added New Shop",
+          message: isEdit
+              ? "The shop details have been successfully updated."
+              : "The shop has been successfully added.",
+        ),
+      );
+      Future.delayed(const Duration(seconds: 3), () {
+        if (context.mounted) {
+          Navigator.pop(context); // close dialog
+          Navigator.pop(context); // close page
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,22 +413,33 @@ class AddShopPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildLabel("Store Name *"),
-              _buildTextField("Enter shop name"),
+              TextField(
+                controller: _nameController,
+                decoration: _inputDecoration("Enter shop name"),
+              ),
               const SizedBox(height: 12),
 
               _buildLabel("Contact Person Name *"),
-              _buildTextField("Enter contact person name"),
+              TextField(
+                controller: _managerController,
+                decoration: _inputDecoration("Enter contact person name"),
+              ),
               const SizedBox(height: 12),
 
               _buildLabel("Mobile Number"),
-              _buildTextField(
-                "Enter 10-digit mobile number",
+              TextField(
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
+                decoration: _inputDecoration("Enter 10-digit mobile number"),
               ),
               const SizedBox(height: 12),
 
               _buildLabel("Location / Address"),
-              _buildTextField("Enter Location", maxLines: 4),
+              TextField(
+                controller: _addressController,
+                maxLines: 4,
+                decoration: _inputDecoration("Enter Location"),
+              ),
               const SizedBox(height: 120),
 
               // Bottom Action Buttons
@@ -339,27 +464,7 @@ class AddShopPage extends StatelessWidget {
                   const SizedBox(width: 15),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // 1. Show the success dialog
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => AddSuccessDialog(
-                            title: isEdit ? "Shop Updated" : "Added New Shop",
-                            message: isEdit
-                                ? "The shop details have been successfully updated."
-                                : "The shop has been successfully added.",
-                          ),
-                        );
-
-                        // 2. Auto-close after animation
-                        Future.delayed(const Duration(seconds: 3), () {
-                          if (context.mounted) {
-                            Navigator.pop(context); // Close Dialog
-                            Navigator.pop(context); // Close Page
-                          }
-                        });
-                      },
+                      onPressed: _isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2D2926),
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -367,10 +472,19 @@ class AddShopPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: const Text(
-                        "Submit",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "Submit",
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                 ],

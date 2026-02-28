@@ -1,40 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
-import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/screens/editVegitableScreen.dart';
+import '../../domain/entities/product.dart';
 
+/// Card widget displaying a single vegetable/product.
+/// Accepts a Product object and callbacks for edit, delete, and toggle operations.
 class VegetableItemCard extends StatelessWidget {
-  const VegetableItemCard({super.key});
+  final Product product;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onToggleAvailability;
 
-  // Function to show the Delete Confirmation Dialog
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: const Text("Delete Vegetable"),
-          content: const Text(
-            "Are you sure you want to delete this tomato? This action cannot be undone.",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
-              onPressed: () {
-                // TODO: Implement actual delete logic here
-                Navigator.pop(context);
-              },
-              child: const Text("Delete", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  const VegetableItemCard({
+    super.key,
+    required this.product,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onToggleAvailability,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,17 +40,32 @@ class VegetableItemCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  "assets/images/plantlets.png",
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
-                ),
+                child: product.imageUrl != null
+                    ? Image.network(
+                        product.imageUrl!,
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildPlaceholderImage(),
+                      )
+                    : _buildPlaceholderImage(),
               ),
               const SizedBox(width: 12),
-              const Text(
-                "Tomato",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -84,14 +81,11 @@ class VegetableItemCard extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) => CustomConfirmationDialog(
-                        title: "Delete Vegetable",
+                        title: "Delete Product",
                         message:
-                            "Are you sure you want to delete this vegetable?",
+                            "Are you sure you want to delete ${product.name}?",
                         primaryColor: Colors.red,
-                        onConfirm: () {
-                          print("Item Deleted");
-                          // Add your delete logic here
-                        },
+                        onConfirm: onDelete,
                       ),
                     );
                   },
@@ -115,13 +109,7 @@ class VegetableItemCard extends StatelessWidget {
               SizedBox(
                 height: 36,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EditVegetablePage(),
-                      ),
-                    );
-                  },
+                  onPressed: onEdit,
                   icon: const Icon(
                     Icons.edit_note,
                     color: Colors.black87,
@@ -146,16 +134,22 @@ class VegetableItemCard extends StatelessWidget {
                 height: 36,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: product.isAvailable
+                      ? Colors.green.withOpacity(0.1)
+                      : Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withOpacity(0.3)),
+                  border: Border.all(
+                    color: product.isAvailable
+                        ? Colors.green.withOpacity(0.3)
+                        : Colors.red.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Text(
-                      "Available",
+                    Text(
+                      product.isAvailable ? "Available" : "Unavailable",
                       style: TextStyle(
-                        color: Colors.green,
+                        color: product.isAvailable ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -164,8 +158,8 @@ class VegetableItemCard extends StatelessWidget {
                     Transform.scale(
                       scale: 0.7,
                       child: Switch(
-                        value: true,
-                        onChanged: (val) {},
+                        value: product.isAvailable,
+                        onChanged: (_) => onToggleAvailability(),
                         activeColor: Colors.green,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -177,6 +171,18 @@ class VegetableItemCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      height: 50,
+      width: 50,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.image_not_supported, color: Colors.grey[400], size: 24),
     );
   }
 }

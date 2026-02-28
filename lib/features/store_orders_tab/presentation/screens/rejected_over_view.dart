@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
 import '../widgets/rejected_widgets/rehected_item_list.dart';
 import '../widgets/rejected_widgets/reject_sunnary.dart';
 
 class RejectedOrderOverview extends StatelessWidget {
-  const RejectedOrderOverview({super.key});
+  final Order order;
+  const RejectedOrderOverview({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +17,9 @@ class RejectedOrderOverview extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Order Details", 
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
+        title: const Text(
+          "Order Details",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -27,17 +30,17 @@ class RejectedOrderOverview extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            RejectedSummaryCard(), 
+            RejectedSummaryCard(),
             SizedBox(height: 30),
-            Text("Ordered items", 
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+            Text(
+              "Ordered items",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 15),
-            RejectedItemsList(), 
+            RejectedItemsList(),
           ],
         ),
       ),
     );
   }
 }
-

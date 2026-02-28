@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
 
 import '../../../widgets/store_account_info_seccion.dart';
 import '../../../widgets/store_log_out_button.dart';
 import '../../../widgets/store_shops_identify.dart';
 
-class StoreProfilePage extends StatelessWidget {
+class StoreProfilePage extends StatefulWidget {
   const StoreProfilePage({super.key});
+
+  @override
+  State<StoreProfilePage> createState() => _StoreProfilePageState();
+}
+
+class _StoreProfilePageState extends State<StoreProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    // defer loading until after the first frame to avoid calling
+    // provider methods during build
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadStoreProfile());
+  }
+
+  void _loadStoreProfile() {
+    final authProvider = context.read<AuthProvider>();
+    final storeProfileProvider = context.read<StoreProfileProvider>();
+
+    if (authProvider.userId != null) {
+      storeProfileProvider.fetchStoreProfile(authProvider.userId!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,4 +102,3 @@ class StoreProfilePage extends StatelessWidget {
     );
   }
 }
-

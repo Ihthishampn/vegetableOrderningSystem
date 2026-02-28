@@ -8,10 +8,15 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   String? _userRole;
+  String? _userId;
+  String? _storeId;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get userRole => _userRole;
+  String? get userId => _userId;
+  String? get uid => _userId; // Alias for userId - Firebase UID
+  String? get storeId => _storeId;
 
   String? _phoneNumber;
 
@@ -48,6 +53,8 @@ class AuthProvider with ChangeNotifier {
 
       _phoneNumber = phone;
       _userRole = dbRole;
+      _userId = query.docs.first.id;
+      _storeId = data["storeId"] ?? _userId;
 
       _isLoading = false;
       notifyListeners();
@@ -71,8 +78,29 @@ class AuthProvider with ChangeNotifier {
     await prefs.setBool("isLoggedIn", true);
     await prefs.setString("role", _userRole ?? "");
     await prefs.setString("phone", _phoneNumber ?? "");
+    await prefs.setString("userId", _userId ?? "");
+    await prefs.setString("storeId", _storeId ?? "");
 
     return true;
+  }
+
+  /// Restore authentication state from SharedPreferences (call on app startup)
+  Future<void> restoreAuthState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+
+      if (isLoggedIn) {
+        _userRole = prefs.getString("role");
+        _phoneNumber = prefs.getString("phone");
+        _userId = prefs.getString("userId");
+        _storeId = prefs.getString("storeId");
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/auth/presentation/screens/role_select.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/shop_home_screen.dart';
@@ -22,6 +24,16 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     final role = prefs.getString('role');
+
+    if (!mounted) return;
+
+    // Read auth provider before async calls
+    final authProvider = context.read<AuthProvider>();
+
+    // Restore auth state if logged in
+    if (isLoggedIn && role != null) {
+      await authProvider.restoreAuthState();
+    }
 
     if (!mounted) return;
 

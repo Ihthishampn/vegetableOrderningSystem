@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/sales_report/presentation/provider/sales_report_provider.dart';
 
 class SalesReportScreen extends StatefulWidget {
   const SalesReportScreen({super.key});
@@ -8,125 +11,213 @@ class SalesReportScreen extends StatefulWidget {
 }
 
 class _SalesReportScreenState extends State<SalesReportScreen> {
-  String selectedShop = "All";
   DateTime? selectedDate;
 
-  // Mock data for the report list
-  final List<Map<String, dynamic>> reports = [
-    {
-      "shop": "Green Valley Store",
-      "date": "24/11/2025, 04:30am",
-      "items": [
-        "1 Ridge gourd 20 Kg",
-        "2 Carrot 15 Kg",
-        "3 Cauliflower 10 Kg",
-        "4 Tomato 20 Box",
-        "5 Green chili 15 Kg",
-      ],
-    },
-    {
-      "shop": "Fresh Harvest Market",
-      "date": "24/11/2025, 04:30am",
-      "items": [
-        "1 Ridge gourd 20 Kg",
-        "2 Carrot 15 Kg",
-        "3 Cauliflower 10 Kg",
-        "4 Tomato 20 Box",
-        "5 Green chili 15 Kg",
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // wait until after first frame to access providers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final reportProvider = Provider.of<SalesReportProvider>(
+        context,
+        listen: false,
+      );
+      if (auth.uid != null) {
+        reportProvider.initialize(auth.uid!);
+      }
+    });
+  }
+
+  Future<void> _showCalendar() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      if (!mounted) return;
+      setState(() {
+        selectedDate = picked;
+      });
+      final provider = Provider.of<SalesReportProvider>(context, listen: false);
+      provider.fetchSalesReports(startDate: picked, endDate: picked);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Sales Report",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          // 1. Filter Section (Dropdown and Calendar)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                // Shop Dropdown Filter
-                Expanded(
-                  child: _buildDropdownFilter(
-                    value: selectedShop,
-                    hint: "Filter by Shop",
-                    icon: Icons.filter_list,
-                    items: [
-                      "All",
-                      "Veg Graam",
-                      "Green Haven",
-                      "Veggie Delight",
-                      "Harvest Basket",
-                    ],
-                    onChanged: (val) => setState(() => selectedShop = val!),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Date Picker Filter
-                Expanded(
-                  child: _buildFilterButton(
-                    selectedDate == null
-                        ? "Filter by Date"
-                        : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                    Icons.calendar_today,
-                    _showCalendar,
-                  ),
-                ),
-              ],
-            ),
-          ),
+      appBar: AppBar(title: const Text('Sales Reports')),
+      body: Consumer<SalesReportProvider>(
+        builder: (context, salesReportProvider, _) {
+          if (salesReportProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (salesReportProvider.error != null) {
+            return Center(child: Text('Error: ${salesReportProvider.error}'));
+          }
 
-          // 2. Summary Cards
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                _buildSummaryCard(
-                  "Total Orders",
-                  "300",
-                  const Color(0xFFCDEBFF),
-                ),
-                const SizedBox(width: 12),
-                _buildSummaryCard(
-                  "Complete Orders",
-                  "200",
-                  const Color(0xFFCFFFE2),
-                ),
-              ],
-            ),
-          ),
+          final shops = salesReportProvider.getUniqueShops();
 
-          const SizedBox(height: 16),
-
-          // 3. Scrollable Report List
-          Expanded(
-            child: ListView.separated(
+          Widget listSection;
+          if (salesReportProvider.filteredReports.isEmpty) {
+            listSection = const Center(
+              child: Text(
+                'No sales reports found',
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+            );
+          } else {
+            listSection = ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: reports.length,
+              itemCount: salesReportProvider.filteredReports.length,
               separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) =>
-                  _buildReportCard(reports[index], index + 1),
-            ),
+              itemBuilder: (context, index) {
+                final report = salesReportProvider.filteredReports[index];
+                return _buildReportCard(report, index + 1);
+              },
+            );
+          }
+
+          return Column(
+            children: [
+              // 1. Filter Section (Dropdown and Calendar)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildDropdownFilter(
+                        value: salesReportProvider.selectedShop,
+                        hint: "Filter by Shop",
+                        icon: Icons.filter_list,
+                        items: shops,
+                        onChanged: (val) =>
+                            salesReportProvider.setSelectedShop(val!),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildFilterButton(
+                        selectedDate == null
+                            ? "Filter by Date"
+                            : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+                        Icons.calendar_today,
+                        _showCalendar,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 2. Summary Cards
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    _buildSummaryCard(
+                      "Total Reports",
+                      "${salesReportProvider.filteredReports.length}",
+                      const Color(0xFFCDEBFF),
+                    ),
+                    const SizedBox(width: 12),
+                    _buildSummaryCard(
+                      "Total Sales",
+                      "₹${salesReportProvider.totalSales.toStringAsFixed(2)}",
+                      const Color(0xFFCFFFE2),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // 3. Scrollable Report List
+              Expanded(child: listSection),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // Helper: Detailed Report Card with SalesReport data
+  Widget _buildReportCard(dynamic report, int index) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$index. ${report.shopName}",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const SizedBox(height: 12),
+          ...report.items.map<Widget>((item) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.productName,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "${item.quantity.toStringAsFixed(2)} ${item.unit}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "₹${item.totalPrice.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          const Divider(height: 24, thickness: 0.5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Total: ₹${report.totalAmount.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black87,
+                ),
+              ),
+              Text(
+                "${report.date.day}/${report.date.month}/${report.date.year}",
+                style: const TextStyle(color: Colors.grey, fontSize: 11),
+              ),
+            ],
           ),
         ],
       ),
@@ -142,7 +233,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      height: 48, // Fixed height to match the Date button
+      height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFEEEEEE),
@@ -182,7 +273,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 48, // Fixed height to match the Dropdown
+        height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: const Color(0xFFEEEEEE),
@@ -243,101 +334,5 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
         ),
       ),
     );
-  }
-
-  // Helper: Detailed Report Card with Error-Safe Parsing
-  Widget _buildReportCard(Map<String, dynamic> data, int index) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$index. ${data['shop']}",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          const SizedBox(height: 12),
-          ...data['items'].map<Widget>((item) {
-            List<String> parts = item.split(' ');
-            String quantity = "";
-            String name = item;
-
-            // Logic to separate Name and Quantity (last two words) safely
-            if (parts.length >= 2) {
-              quantity =
-                  "${parts[parts.length - 2]} ${parts[parts.length - 1]}";
-              name = parts.sublist(0, parts.length - 2).join(' ');
-            }
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      name,
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    quantity,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          const Divider(height: 24, thickness: 0.5),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              data['date'] ?? "",
-              style: const TextStyle(color: Colors.grey, fontSize: 11),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Standard Flutter Calendar Logic
-  Future<void> _showCalendar() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2024),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2D2926), // Match your dark theme color
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) setState(() => selectedDate = picked);
   }
 }

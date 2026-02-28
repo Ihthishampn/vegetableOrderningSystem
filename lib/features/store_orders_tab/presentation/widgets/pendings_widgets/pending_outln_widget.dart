@@ -5,15 +5,24 @@ import 'pending_edit_order_screen.dart';
 class OutlineBtn extends StatelessWidget {
   final String text;
   final Color color;
-  const OutlineBtn({super.key, required this.text, required this.color});
+  final VoidCallback? onPressed;
+
+  const OutlineBtn({
+    super.key,
+    required this.text,
+    required this.color,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) => OutlinedButton(
-    onPressed: () {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (context) => EditOrderScreen()));
-    },
+    onPressed:
+        onPressed ??
+        () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => EditOrderScreen()));
+        },
     style: OutlinedButton.styleFrom(
       foregroundColor: color,
       side: BorderSide(color: color),

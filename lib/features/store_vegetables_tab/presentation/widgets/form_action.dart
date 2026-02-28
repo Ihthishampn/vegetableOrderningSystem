@@ -72,3 +72,48 @@ class FormActions extends StatelessWidget {
     );
   }
 }
+
+/// FormActions with custom submit callback for Firebase integration
+class FormActionsWithCallback extends StatelessWidget {
+  final VoidCallback onSubmit;
+  final bool enabled;
+
+  const FormActionsWithCallback({super.key, required this.onSubmit, this.enabled = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Color(0xFFD1D1D1)),
+              ),
+              minimumSize: const Size(0, 45),
+            ),
+            child: const Text("Cancel", style: TextStyle(color: Colors.black)),
+          ),
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: enabled ? onSubmit : null,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              backgroundColor: enabled ? const Color(0xFF2D2626) : Colors.grey,
+              minimumSize: const Size(0, 45),
+            ),
+            child: Text("Submit", style: TextStyle(color: enabled ? Colors.white : Colors.black54)),
+          ),
+        ),
+      ],
+    );
+  }
+}

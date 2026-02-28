@@ -2,8 +2,36 @@ import 'package:flutter/material.dart';
 
 import 'unit_chip.dart';
 
-class DefaultUnitSelector extends StatelessWidget {
-  const DefaultUnitSelector({super.key});
+class DefaultUnitSelector extends StatefulWidget {
+  final Function(String)? onUnitSelected;
+  final String? initialUnit;
+
+  const DefaultUnitSelector({
+    super.key,
+    this.onUnitSelected,
+    this.initialUnit = 'Kg',
+  });
+
+  @override
+  State<DefaultUnitSelector> createState() => _DefaultUnitSelectorState();
+}
+
+class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
+  late String _selectedUnit;
+  final List<String> _units = ['Kg', 'Box', 'Bag', 'Packet'];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedUnit = widget.initialUnit ?? 'Kg';
+  }
+
+  void _selectUnit(String unit) {
+    setState(() => _selectedUnit = unit);
+    if (widget.onUnitSelected != null) {
+      widget.onUnitSelected!(unit);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,30 +46,14 @@ class DefaultUnitSelector extends StatelessWidget {
             color: Color.fromARGB(255, 138, 138, 138),
           ),
         ),
-        const SizedBox(height: 5),
-        DropdownButtonFormField(
-          decoration: InputDecoration(
-            hintText: "Kg, Box, Bag",
-            hintStyle: const TextStyle(fontSize: 13),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
-          items: const [],
-          onChanged: (v) {},
-        ),
-        const SizedBox(height: 8),
-        const Text("Select Default unit", style: TextStyle(color: Colors.grey)),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Row(
-          children: const [
-            UnitChip(label: "Kg", isSelected: true),
-            UnitChip(label: "Box", isSelected: false),
-            UnitChip(label: "Bag", isSelected: false),
-            UnitChip(label: "Packet", isSelected: false),
-          ],
+          children: _units.map((unit) {
+            return GestureDetector(
+              onTap: () => _selectUnit(unit),
+              child: UnitChip(label: unit, isSelected: _selectedUnit == unit),
+            );
+          }).toList(),
         ),
       ],
     );
