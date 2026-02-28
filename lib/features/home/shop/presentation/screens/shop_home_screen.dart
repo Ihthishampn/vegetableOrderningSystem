@@ -4,7 +4,7 @@ import 'package:vegetable_ordering_system/features/home/shop/presentation/screen
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/repeat_last_order_screen.dart';
 import '../widgets/shop_home_widget/shop_header.dart';
 import '../widgets/shop_home_widget/shop_product_card.dart';
-import '../widgets/shop_search_widget.dart';
+import '../widgets/shop_home_widget/shop_search_widget.dart';
 
 class ShopHomeScreen extends StatelessWidget {
   const ShopHomeScreen({super.key});

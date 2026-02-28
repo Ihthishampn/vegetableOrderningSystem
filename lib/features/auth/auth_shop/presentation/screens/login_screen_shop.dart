@@ -6,8 +6,21 @@ import 'package:vegetable_ordering_system/features/auth/auth_store/presentation/
 
 import '../../../../../core/widgets/otp_verification_sheet.dart';
 
-class LoginScreenShop extends StatelessWidget {
+class LoginScreenShop extends StatefulWidget {
   const LoginScreenShop({super.key});
+
+  @override
+  State<LoginScreenShop> createState() => _LoginScreenShopState();
+}
+
+class _LoginScreenShopState extends State<LoginScreenShop> {
+  final TextEditingController mobileNumberController = TextEditingController();
+
+  @override
+  void dispose() {
+    mobileNumberController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +69,12 @@ class LoginScreenShop extends StatelessWidget {
                     const SizedBox(height: 24),
                     MobileLabel(color: Colors.black),
                     const SizedBox(height: 8),
-                    MobileInput(),
+                    MobileInput(
+                      controller: mobileNumberController,
+                      val: (value) {
+                        // shop val
+                      },
+                    ),
                     const SizedBox(height: 12),
                     // Inside your Column in LoginScreenShop
                     SendOtpButton(
@@ -67,7 +85,9 @@ class LoginScreenShop extends StatelessWidget {
                           isScrollControlled:
                               true, // Allows sheet to move up with keyboard
                           backgroundColor: Colors.transparent,
-                          builder: (context) => const OtpVerificationSheet(),
+                          builder: (context) =>  OtpVerificationSheet(role: "shop",onSuccess: () {
+                            //
+                          },),
                         );
                       },
                     ),
@@ -92,4 +112,3 @@ class LoginScreenShop extends StatelessWidget {
     );
   }
 }
-

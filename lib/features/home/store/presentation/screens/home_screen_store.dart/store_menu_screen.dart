@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_shops_management_screen/shops_managment_screen.dart';
 import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_managment/staff_management_screen.dart';
 
-import '../sales_report_screen.dart/sales_report_screen.dart';
+import '../store_sales_report_screen.dart/sales_report_screen.dart';
+
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});

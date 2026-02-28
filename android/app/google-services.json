@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "119320217007",
+    "project_id": "vegetableorderingsystem",
+    "storage_bucket": "vegetableorderingsystem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119320217007:android:850fd656b9d7cd094b1b5a",
+        "android_client_info": {
+          "package_name": "com.example.vegetable_ordering_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTALnlfWlE4LWxHTJm5eniWOtpaUdnq0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

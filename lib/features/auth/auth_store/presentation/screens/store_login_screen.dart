@@ -16,7 +16,7 @@ class StoreLoginScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        toolbarHeight: size.height * 0.25, // responsive height
+        toolbarHeight: size.height * 0.25, 
         title: SafeArea(
           child: Image.asset(
             "assets/images/no_bg.png",

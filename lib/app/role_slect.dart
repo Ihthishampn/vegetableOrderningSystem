@@ -10,7 +10,7 @@ class RoleSelect extends StatefulWidget {
 }
 
 class _RoleSelectState extends State<RoleSelect> {
-  String? selectedRole; // 'store' or 'shop'
+  String? selectedRole; 
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,6 @@ class _RoleSelectState extends State<RoleSelect> {
 
               const Spacer(),
 
-              // Single "Continue" Button with Navigation Logic
               SizedBox(
                 width: double.infinity,
                 height: 55,
