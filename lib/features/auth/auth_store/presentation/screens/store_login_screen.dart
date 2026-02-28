@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../entry/store/presentation/nav_bar_store/store_entry.dart';
 import '../widgets/store_bg_image_image.dart';
 import '../widgets/store_login_form.dart';
 
@@ -16,7 +17,7 @@ class StoreLoginScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        toolbarHeight: size.height * 0.25, 
+        toolbarHeight: size.height * 0.25,
         title: SafeArea(
           child: Image.asset(
             "assets/images/no_bg.png",
@@ -30,12 +31,16 @@ class StoreLoginScreen extends StatelessWidget {
           const StoreBackgroundImage(),
           Align(
             alignment: Alignment.bottomCenter,
-            child: LoginFormStore(size: size),
+            child: LoginFormStore(
+              size: size,
+              role: 'store',
+              titleColor: Colors.blue,
+              labelColor: Colors.white70,
+              successScreen: const StoreEntry(),
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-

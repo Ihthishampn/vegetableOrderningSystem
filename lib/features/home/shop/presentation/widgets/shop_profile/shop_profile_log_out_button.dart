@@ -1,5 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/app/role_slect.dart';
 
 class ShopProfileLogOutButton extends StatelessWidget {
   const ShopProfileLogOutButton({super.key});
@@ -9,8 +11,16 @@ class ShopProfileLogOutButton extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
-            // Logout logic
+          onTap: () async {
+            final auth = context.read<AuthProvider>();
+            await auth.logout();
+
+            if (!context.mounted) return;
+
+            // Navigate back to RoleSelect
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const RoleSelect()),
+            );
           },
           child: Container(
             padding: const EdgeInsets.all(12),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/core/widgets/otp_verification_sheet.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
-import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 
 import 'login_title_store.dart';
 import 'mobile_input_store.dart';
@@ -10,8 +9,29 @@ import 'mobile_label_store.dart';
 import 'send_otp_store_button.dart';
 
 class LoginFormStore extends StatefulWidget {
+  /// Size from parent to drive responsive paddings.
   final Size size;
-  const LoginFormStore({super.key, required this.size});
+
+  /// The role this form should handle ("store" or "shop").
+  final String role;
+
+  /// The color applied to the title graphic (blue/green for store/shop).
+  final Color titleColor;
+
+  /// The color applied to the mobile label text.
+  final Color labelColor;
+
+  /// The screen to navigate to when verification succeeds.
+  final Widget successScreen;
+
+  const LoginFormStore({
+    super.key,
+    required this.size,
+    required this.role,
+    required this.titleColor,
+    required this.labelColor,
+    required this.successScreen,
+  });
 
   @override
   State<LoginFormStore> createState() => _LoginFormStoreState();
@@ -55,11 +75,13 @@ class _LoginFormStoreState extends State<LoginFormStore> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 LoginTitleStore(
-                  blueOrgreen: Colors.green,
-                  whiteOrblack: Colors.white,
+                  blueOrgreen: widget.titleColor,
+                  whiteOrblack: widget.role == 'store'
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 const SizedBox(height: 24),
-                MobileLabel(color: Colors.white70),
+                MobileLabel(color: widget.labelColor),
                 const SizedBox(height: 8),
                 MobileInput(
                   controller: mobileNumberController,
@@ -78,7 +100,7 @@ class _LoginFormStoreState extends State<LoginFormStore> {
                 authProvider.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : SendOtpButton(
-                        isStore: true,
+                        isStore: widget.role == 'store',
                         ontap: () async {
                           // dismiss keyboard before validation
                           FocusScope.of(context).unfocus();
@@ -89,21 +111,21 @@ class _LoginFormStoreState extends State<LoginFormStore> {
 
                             final success = await auth.checkUserRole(
                               phone: fullNumber,
-                              selectedRole: "store",
+                              selectedRole: widget.role,
                             );
 
-                              if (!mounted) return;
+                            if (!mounted) return;
 
                             if (success) {
                               showModalBottomSheet(
                                 isScrollControlled: true,
                                 context: context,
                                 builder: (_) => OtpVerificationSheet(
-                                  role: "store",
+                                  role: widget.role,
                                   onSuccess: () =>
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
-                                          builder: (_) => StoreEntry(),
+                                          builder: (_) => widget.successScreen,
                                         ),
                                       ),
                                 ),

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/provider/entry_provider.dart';
+import 'package:vegetable_ordering_system/features/entry/splash_session_check.dart';
 import 'package:vegetable_ordering_system/firebase_options.dart';
-
-import 'app/role_slect.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +15,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider<EntryProvider>(
           create: (context) => EntryProvider(),
-        ), ChangeNotifierProvider<AuthProvider>(
+        ),
+        ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(),
         ),
       ],
@@ -33,9 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      
-       home: RoleSelect()
+      home: const SplashSessionCheck(),
     );
   }
 }
