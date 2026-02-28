@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CircularIcon extends StatelessWidget {
+  final VoidCallback ontap;
   final IconData icon;
-  const CircularIcon({super.key, required this.icon});
+  const CircularIcon({super.key, required this.icon, required this.ontap});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class CircularIcon extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          onPressed: () {},
+          onPressed: ontap,
           icon: Icon(icon, color: Colors.white),
         ),
       ),

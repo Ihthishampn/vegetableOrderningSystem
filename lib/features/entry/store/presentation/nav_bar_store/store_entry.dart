@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../provider/entry_provider.dart';
 
-class Entry extends StatelessWidget {
-  const Entry({super.key});
+class StoreEntry extends StatelessWidget {
+  const StoreEntry({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +16,13 @@ class Entry extends StatelessWidget {
         children: provider.widgetStack,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: provider.selectedIndex,
         selectedItemColor: Colors.black,
+        selectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
         onTap: provider.changeIndex,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),

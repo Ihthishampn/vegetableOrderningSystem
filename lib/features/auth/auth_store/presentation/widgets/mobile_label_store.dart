@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class MobileLabel extends StatelessWidget {
-  const MobileLabel({super.key});
+  final Color color;
+  const MobileLabel({super.key, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return  Padding(
       padding: EdgeInsets.only(left: 12),
       child: Text(
         "Mobile Number",
-        style: TextStyle(color: Colors.white70, fontSize: 11),
+        style: TextStyle(color:color, fontSize: 11),
       ),
     );
   }

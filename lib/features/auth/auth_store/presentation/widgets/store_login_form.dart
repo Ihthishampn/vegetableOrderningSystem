@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'login_title_store.dart';
@@ -28,14 +27,16 @@ class LoginFormStore extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          LoginTitleStore(),
+        children:  [
+          LoginTitleStore(blueOrgreen: Colors.green,whiteOrblack: Colors.white,),
           SizedBox(height: 24),
-          MobileLabel(),
+          MobileLabel(color: Colors.white70,),
           SizedBox(height: 8),
           MobileInput(),
           SizedBox(height: 20),
-          SendOtpButton(),
+          SendOtpButton(isStore: true,ontap: () {
+            
+          },),
           SizedBox(height: 24),
         ],
       ),

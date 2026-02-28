@@ -1,7 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/screens/editVegitableScreen.dart';
 
 class VegetableItemCard extends StatelessWidget {
   const VegetableItemCard({super.key});
+
+  // Function to show the Delete Confirmation Dialog
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text("Delete Vegetable"),
+          content: const Text(
+            "Are you sure you want to delete this tomato? This action cannot be undone.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: Implement actual delete logic here
+                Navigator.pop(context);
+              },
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +76,52 @@ class VegetableItemCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              // DELETE BUTTON
+              SizedBox(
+                height: 36,
+                child: OutlinedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => CustomConfirmationDialog(
+                        title: "Delete Vegetable",
+                        message:
+                            "Are you sure you want to delete this vegetable?",
+                        primaryColor: Colors.red,
+                        onConfirm: () {
+                          print("Item Deleted");
+                          // Add your delete logic here
+                        },
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    side: BorderSide(color: Colors.red.shade200),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red.shade400,
+                    size: 18,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // EDIT BUTTON
               SizedBox(
                 height: 36,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EditVegetablePage(),
+                      ),
+                    );
+                  },
                   icon: const Icon(
                     Icons.edit_note,
                     color: Colors.black87,
@@ -65,6 +140,8 @@ class VegetableItemCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+
+              // STATUS SWITCH
               Container(
                 height: 36,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -85,7 +162,7 @@ class VegetableItemCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Transform.scale(
-                      scale: 0.7, // shrink the switch to 70%
+                      scale: 0.7,
                       child: Switch(
                         value: true,
                         onChanged: (val) {},

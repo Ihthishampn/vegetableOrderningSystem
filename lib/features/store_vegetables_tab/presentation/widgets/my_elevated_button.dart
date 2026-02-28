@@ -15,8 +15,8 @@ class MyElevatedButton extends StatelessWidget {
         style: ButtonStyle(
           padding: WidgetStatePropertyAll(
             EdgeInsets.only(
-              right: size.width * 0.25,
-              left: size.width * 0.25,
+              right: size.width * 0.20,
+              left: size.width * 0.20,
               top: size.height * 0.02,
               bottom: size.height * 0.02,
             ),
@@ -34,7 +34,10 @@ class MyElevatedButton extends StatelessWidget {
             builder: (_) => Material(child: AddVegetableForm()),
           );
         },
-        child: Text("+ Add New kk", style: TextStyle(color: Colors.white)),
+        child: Text(
+          "+ Add New Vegetable",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

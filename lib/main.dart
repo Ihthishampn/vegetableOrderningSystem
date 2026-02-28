@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar/entry.dart';
+import 'package:vegetable_ordering_system/app/role_slect.dart';
+import 'package:vegetable_ordering_system/features/auth/auth_shop/presentation/screens/login_screen_shop.dart';
+import 'package:vegetable_ordering_system/features/entry/store/presentation/nav_bar_store/store_entry.dart';
 import 'package:vegetable_ordering_system/features/entry/store/presentation/provider/entry_provider.dart';
-
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider<EntryProvider>(create: (context) => EntryProvider())],
+      providers: [
+        ChangeNotifierProvider<EntryProvider>(
+          create: (context) => EntryProvider(),
+        ),
+      ],
 
       child: const MyApp(),
     ),
@@ -19,6 +24,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Entry());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
+      // home: RoleSelect()
+      home: LoginScreenShop(),
+    );
   }
 }

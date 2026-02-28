@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/home_screen_store.dart/menu_screen.dart';
+import 'package:vegetable_ordering_system/features/home_store/store/presentation/screens/home_screen_store.dart/profile_screen.dart';
 
-import '../../widgets/circular_icon_widget.dart';
-import '../../widgets/home_order_items_store.dart';
-import '../../widgets/orders_header_store.dart';
-import '../../widgets/status_card_row.dart';
-import '../../widgets/top_home_appbar_content_store.dart';
+import '../../../widgets/circular_icon_widget.dart';
+import '../../../widgets/home_order_items_store.dart';
+import '../../../widgets/orders_header_store.dart';
+import '../../../widgets/status_card_row.dart';
+import '../../../widgets/top_home_appbar_content_store.dart';
 
 class StoreHomeScreen extends StatelessWidget {
   const StoreHomeScreen({super.key});
@@ -19,11 +21,25 @@ class StoreHomeScreen extends StatelessWidget {
         slivers: [
           // Curved AppBar with title, subtitle, and icons
           SliverAppBar(
-            expandedHeight: size.height * 0.11,
+            expandedHeight: size.height * 0.12,
             backgroundColor: Colors.transparent,
-            actions: const [
-              CircularIcon(icon: Icons.menu),
-              CircularIcon(icon: Icons.person_outline),
+            actions: [
+              CircularIcon(
+                icon: Icons.menu,
+                ontap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => MenuPage()));
+                },
+              ),
+              CircularIcon(
+                icon: Icons.person_outline,
+                ontap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
+              ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: TopAppBarContent(size: size),
@@ -31,10 +47,10 @@ class StoreHomeScreen extends StatelessWidget {
           ),
 
           // Pinned Cards
-          const SliverAppBar(
+          SliverAppBar(
             pinned: true,
             backgroundColor: Colors.white,
-            toolbarHeight: 90,
+            toolbarHeight: size.height * 0.11,
             flexibleSpace: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: StatusCardsRow(),
@@ -59,5 +75,3 @@ class StoreHomeScreen extends StatelessWidget {
     );
   }
 }
-
-

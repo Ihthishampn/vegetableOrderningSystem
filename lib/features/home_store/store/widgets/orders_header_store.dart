@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/screens/store_orders_screen.dart';
 
 class OrdersHeader extends StatelessWidget {
   const OrdersHeader({super.key});
@@ -15,7 +16,11 @@ class OrdersHeader extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => StoreOrdersScreen()),
+              );
+            },
             child: Text(
               "View All",
               style: TextStyle(color: Colors.blue, fontSize: 14),
