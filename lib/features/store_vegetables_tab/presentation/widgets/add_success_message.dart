@@ -33,7 +33,6 @@ class _AddSuccessDialogState extends State<AddSuccessDialog>
       curve: Curves.easeOutBack,
     );
 
-    // Simulate a short loading process before showing the checkmark
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (!mounted) return;
       setState(() => _done = true);
@@ -97,7 +96,6 @@ class _AddSuccessDialogState extends State<AddSuccessDialog>
             ),
             const SizedBox(height: 25),
 
-            // Title
             Text(
               widget.title,
               style: const TextStyle(
@@ -108,7 +106,7 @@ class _AddSuccessDialogState extends State<AddSuccessDialog>
             ),
             const SizedBox(height: 10),
 
-            // Subtitle
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Text(

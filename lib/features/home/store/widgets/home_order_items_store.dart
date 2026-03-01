@@ -24,7 +24,7 @@ class OrderItemCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white, // container is white
+          color: Colors.white, 
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
@@ -42,7 +42,6 @@ class OrderItemCard extends StatelessWidget {
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            // render each item in the order
             ...items.asMap().entries.map((entry) {
               final idx = entry.key + 1;
               final item = entry.value;

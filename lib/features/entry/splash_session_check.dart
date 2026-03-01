@@ -27,10 +27,8 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
 
     if (!mounted) return;
 
-    // Read auth provider before async calls
     final authProvider = context.read<AuthViewModel>();
 
-    // Restore auth state if logged in
     if (isLoggedIn && role != null) {
       await authProvider.restoreAuthState();
     }

@@ -23,7 +23,6 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
   String? _selectedImageUrl;
   String _selectedUnit = 'Kg';
   String? _imageError;
-  // no longer tracking unit errors; default is Kg and selection is optional
   bool _canSubmit = false;
 
   @override
@@ -45,20 +44,16 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
     final sortText = _sortNumberController.text.trim();
     final sortValid =
         int.tryParse(sortText) != null && (int.parse(sortText) > 0);
-    // unit is always non-empty (default kg), so no validation needed
-    // image is no longer required
+
     final newCan = hasName && sortValid;
     if (newCan != _canSubmit) setState(() => _canSubmit = newCan);
   }
 
   Future<void> _submitForm() async {
-    // Clear image error (image is optional)
     setState(() => _imageError = null);
 
-    // Run all TextFormField validators.
     final formValid = _formKey.currentState!.validate();
 
-    // Stop if form validation failed.
     if (!formValid) {
       _updateCanSubmit();
       return;
@@ -128,7 +123,6 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
               const FormHeader(),
               const SizedBox(height: 20),
 
-              // Image picker
               ImagePickerBox(
                 onImageSelected: (imageUrl) {
                   setState(() {
@@ -137,7 +131,6 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
                   });
                 },
               ),
-              // Image validation error
               if (_imageError != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -147,7 +140,6 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
               ],
               const SizedBox(height: 20),
 
-              // Sort Number — digits only, must be a positive integer
               LabelAndField(
                 label: "Sort Number *",
                 hint: "Enter sort number",
@@ -168,7 +160,6 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
               ),
               const SizedBox(height: 15),
 
-              // Vegetable Name — required, min 2 chars
               LabelAndField(
                 label: "Vegetable Name *",
                 hint: "e.g., Tomato",

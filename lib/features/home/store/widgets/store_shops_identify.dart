@@ -34,7 +34,6 @@ class ShopIdentityCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // dynamic store information: name from auth provider first, fallback to profile
                 Consumer2<AuthViewModel, StoreProfileProvider>(
                   builder: (context, auth, profProv, _) {
                     final authName = auth.storeName ?? '';

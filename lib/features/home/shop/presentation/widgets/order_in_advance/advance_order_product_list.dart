@@ -23,7 +23,6 @@ class AdvanceOrderProductList extends StatelessWidget {
               ? productProvider.allProducts
               : productProvider.availableProducts;
 
-          // apply search filter
           var filteredProducts = List.from(products);
           if (searchTerm.isNotEmpty) {
             filteredProducts = filteredProducts

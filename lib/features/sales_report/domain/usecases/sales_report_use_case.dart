@@ -32,7 +32,6 @@ class SalesReportUseCase {
     );
   }
 
-  /// New: fetch reports by shopId
   Future<List<SalesReport>> getSalesReportByShopId(
     String storeId,
     String shopId, {

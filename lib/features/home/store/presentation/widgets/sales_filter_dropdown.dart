@@ -5,7 +5,7 @@ class SalesFilterDropdown extends StatelessWidget {
   final List<String> shops;
   final ValueChanged<String?> onChanged;
 
-  const SalesFilterDropdown({
+  const SalesFilterDropdown({super.key, 
     required this.value,
     required this.shops,
     required this.onChanged,

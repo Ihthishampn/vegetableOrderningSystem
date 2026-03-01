@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatefulWidget {
-  /// Controller for the search input. The parent widget should provide one
-  /// so it can read/clear the current value.
   final TextEditingController controller;
 
-  /// Called whenever the text changes. Provides the current value.
   final ValueChanged<String>? onChanged;
 
-  /// Optional callback when the clear button is tapped.
   final VoidCallback? onClear;
 
   const SearchBarWidget({
@@ -23,12 +19,26 @@ class SearchBarWidget extends StatefulWidget {
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(0),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5), // Light grey background
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ValueListenableBuilder<TextEditingValue>(
@@ -36,6 +46,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         builder: (context, value, _) {
           return TextField(
             controller: widget.controller,
+            focusNode: _focusNode,
             onChanged: widget.onChanged,
             decoration: InputDecoration(
               hintText: "Search...",
@@ -45,6 +56,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   ? GestureDetector(
                       onTap: () {
                         widget.controller.clear();
+                        _focusNode.unfocus();
                         if (widget.onClear != null) widget.onClear!();
                         if (widget.onChanged != null) widget.onChanged!('');
                       },

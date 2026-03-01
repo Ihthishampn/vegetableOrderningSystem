@@ -14,7 +14,7 @@ class CompletedSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F6FF), // Soft blue theme from screenshot
+        color: const Color(0xFFF3F6FF),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.blue.shade100),
       ),

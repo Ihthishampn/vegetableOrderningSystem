@@ -68,7 +68,6 @@ class FormActions extends StatelessWidget {
   }
 }
 
-/// FormActions with custom submit callback for Firebase integration
 class FormActionsWithCallback extends StatelessWidget {
   final VoidCallback onSubmit;
   final bool enabled;

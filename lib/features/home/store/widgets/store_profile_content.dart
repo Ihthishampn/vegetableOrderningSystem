@@ -8,10 +8,13 @@ class StoreProfileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+     
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 100),
         const StoreAccountInfoSection(),
-        const Spacer(),
+      
+        const SizedBox(height: 24),
         const StoreLogoutButton(),
         const SizedBox(height: 50),
       ],

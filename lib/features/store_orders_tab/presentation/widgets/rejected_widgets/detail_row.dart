@@ -4,7 +4,7 @@ class DetailRow extends StatelessWidget {
   final String label, value;
   final IconData? icon;
   final Color? valueColor;
-  const DetailRow({required this.label, required this.value, this.icon, this.valueColor});
+  const DetailRow({super.key, required this.label, required this.value, this.icon, this.valueColor});
   @override
   Widget build(BuildContext context) {
     return Padding(

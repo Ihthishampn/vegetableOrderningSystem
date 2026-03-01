@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'detail_row.dart';
 
-// helper to capitalize the first letter of a string
 String _capitalize(String s) =>
     s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 

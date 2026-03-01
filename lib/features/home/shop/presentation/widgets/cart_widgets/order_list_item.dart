@@ -6,7 +6,6 @@ import 'status_badge.dart';
 class OrderListItem extends StatelessWidget {
   final Order order;
 
-  /// optional tap handler; if provided the whole tile becomes tappable
   final VoidCallback? onTap;
 
   const OrderListItem({super.key, required this.order, this.onTap});
@@ -17,15 +16,9 @@ class OrderListItem extends StatelessWidget {
     final status = order.status.toString().split('.').last;
     final itemCount = order.items.length;
     final createdAt = order.createdAt;
-    final scheduled = order.scheduledDate;
 
     String dateText() {
       return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
-    }
-
-    String? deliveryDate;
-    if (scheduled != null) {
-      deliveryDate = '${scheduled.day}/${scheduled.month}/${scheduled.year}';
     }
 
     Widget child = Container(
@@ -60,30 +53,16 @@ class OrderListItem extends StatelessWidget {
             style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
           const SizedBox(height: 8),
-          if (deliveryDate != null) ...[
-            Text(
-              "Ordered Date: ${dateText()}",
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-            Text(
-              "Delivery Date: $deliveryDate",
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-          ] else
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  dateText(),
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dateText(),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            ],
+          ),
         ],
       ),
     );

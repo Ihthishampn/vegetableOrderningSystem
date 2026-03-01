@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import '../../domain/entities/order.dart';
 import '../../domain/repositories/order_repository.dart';
 
-/// Concrete Firebase implementation of OrderRepository
 class OrderRepositoryImpl implements OrderRepository {
   final FirebaseFirestore _firestore;
   static const String _ordersCollection = 'orders';
@@ -22,12 +21,7 @@ class OrderRepositoryImpl implements OrderRepository {
           .map((doc) => Order.fromFirestore(doc.data(), doc.id))
           .toList();
     } catch (e) {
-      // Firestore may require a composite index for this query. When running
-      // the app you might see a runtime warning with a link that allows you
-      // to create the needed index in the Firebase console. If the index is
-      // missing the call will fail with FAILED_PRECONDITION. We capture the
-      // error and rethrow a more descriptive message to make the issue easier
-      // to diagnose during development.
+      
       if (e is FirebaseException && e.code == 'failed-precondition') {
         throw Exception(
           'Failed to fetch orders due to missing index. Create a composite '
@@ -136,10 +130,7 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<void> deleteOrder(String storeId, String orderId) async {
-    // Instead of physically deleting the document we now mark the order as
-    // cancelled.  This keeps the record in the database so it can be shown
-    // in the "Cancelled" screens.  The previous behaviour was causing
-    // cancelled orders to disappear entirely which confused users.
+   
     try {
       await _firestore.collection(_ordersCollection).doc(orderId).update({
         'status': 'cancelled',

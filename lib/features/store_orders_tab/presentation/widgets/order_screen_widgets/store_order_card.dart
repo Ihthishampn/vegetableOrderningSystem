@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 
-/// A card representing a single order on the store orders list.
-///
-/// Displays the customer/store name, a chevron indicating tappability, a
-/// row for each item showing quantity and unit, and the order date at the
-/// bottom right. Falls back to a simple item count if no item list is
-/// available.
+
 class StoreOrderCard extends StatelessWidget {
   final int storeNumber;
   final String storeName;
@@ -35,8 +30,7 @@ class StoreOrderCard extends StatelessWidget {
         ? '${createdAt!.day}/${createdAt!.month}/${createdAt!.year}, ${createdAt!.hour}:${createdAt!.minute.toString().padLeft(2, '0')}${createdAt!.hour >= 12 ? 'pm' : 'am'}'
         : 'N/A';
 
-    // statusColor currently unused but may be handy later
-    // final statusColor = _getStatusColor(orderStatus);
+  
 
     return Card(
       color: Colors.white,
@@ -63,7 +57,6 @@ class StoreOrderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            // list each item if available, otherwise show count
             if (items != null && items!.isNotEmpty) ...[
               ...items!.asMap().entries.map((entry) {
                 final idx = entry.key + 1;
@@ -109,20 +102,4 @@ class StoreOrderCard extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'pending':
-        return Colors.orange;
-      case 'approved':
-        return Colors.blue;
-      case 'completed':
-        return Colors.green;
-      case 'rejected':
-        return Colors.red;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
 }

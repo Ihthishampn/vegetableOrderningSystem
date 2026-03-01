@@ -116,9 +116,7 @@ class _LoginFormStoreState extends State<LoginFormStore> {
                                 builder: (sheetContext) => OtpVerificationSheet(
                                   role: widget.role,
                                   onSuccess: () {
-                                    // Pop the bottom sheet using its own context
                                     Navigator.pop(sheetContext);
-                                    // Then navigate to home screen
                                     navigator.pushAndRemoveUntil(
                                       MaterialPageRoute(
                                         builder: (_) => widget.successScreen,

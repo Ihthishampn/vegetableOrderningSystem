@@ -16,7 +16,6 @@ class StoreDropdownMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // use provided list of stores (already includes 'All' at index 0)
     final List<String> storesList = stores;
     return Material(
       elevation: 8,

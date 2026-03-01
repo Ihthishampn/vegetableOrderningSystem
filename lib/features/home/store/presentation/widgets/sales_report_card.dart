@@ -5,7 +5,7 @@ class SalesReportCard extends StatelessWidget {
   final SalesReport report;
   final int index;
 
-  const SalesReportCard({required this.report, required this.index});
+  const SalesReportCard({super.key, required this.report, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,6 @@ class SalesReportCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...report.items.map<Widget>((item) {
-            // Format quantity without decimals if it's a whole number
             final quantityDisplay = item.quantity % 1 == 0
                 ? "${item.quantity.toInt()} ${item.unit}"
                 : "${item.quantity.toStringAsFixed(2)} ${item.unit}";

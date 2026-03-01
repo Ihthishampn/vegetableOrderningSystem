@@ -90,7 +90,6 @@ class ShopHeader extends StatelessWidget {
             size: 24,
           ),
         ),
-        // Use provider for real cart count and position the badge closer to the icon
         Positioned(
           right: 0,
           top: 0,

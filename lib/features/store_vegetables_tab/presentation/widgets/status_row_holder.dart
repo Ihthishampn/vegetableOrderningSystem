@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/product_provider.dart';
 
-/// Header widget that contains the store status row AND the Available /
-/// Unavailable [TabBar]. Requires a [TabController] from the parent so the
-/// tab bar is in sync with the [TabBarView] rendered below it.
+
 class StatusRowHolder extends StatelessWidget {
   final TabController tabController;
 
@@ -22,11 +20,7 @@ class StatusRowHolder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Status row (keep whatever you already had here) ──────────────
-          // If your original StatusRowHolder had extra widgets above the
-          // TabBar (e.g. a store-open toggle), place them here.
 
-          // ── Tab bar ──────────────────────────────────────────────────────
           Consumer<ProductProvider>(
             builder: (context, provider, _) {
               final availableCount = provider.availableProducts.length;

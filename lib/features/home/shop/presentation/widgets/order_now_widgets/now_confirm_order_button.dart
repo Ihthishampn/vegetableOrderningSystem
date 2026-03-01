@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
+
+import '../../../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class ConfirmOrderButton extends StatelessWidget {
   const ConfirmOrderButton({super.key});
@@ -19,7 +20,6 @@ class ConfirmOrderButton extends StatelessWidget {
         height: 55,
         child: ElevatedButton(
           onPressed: () async {
-            // Gather necessary information and place order
             final cart = Provider.of<CartProvider>(context, listen: false);
             if (cart.cartItems.isEmpty) return;
 
@@ -33,20 +33,16 @@ class ConfirmOrderButton extends StatelessWidget {
               listen: false,
             );
 
-            // ensure order provider initialized with supplier id
             if (orderProv.storeId == null && auth.storeId != null) {
               await orderProv.initialize(auth.storeId!);
             }
 
-            // simple customer info; try to use store name from auth first (from shops collection)
-            // then fall back to store profile if available.
-            // always send a non-empty name so the store side can display it.
+           
             String customerName = auth.storeName?.trim() ?? '';
             if (customerName.isEmpty) {
               customerName = profileProv.storeProfile?.storeName.trim() ?? '';
             }
             if (customerName.isEmpty) {
-              // fallback to auth storeId or generic label
               customerName = auth.storeId ?? 'Shop';
             }
             String deliveryAddress = profileProv.storeProfile?.address ?? '';
@@ -71,7 +67,6 @@ class ConfirmOrderButton extends StatelessWidget {
                     ),
                   )
                   .toList(),
-              totalPrice: 0.0,
             );
 
             if (success) {
@@ -96,7 +91,6 @@ class ConfirmOrderButton extends StatelessWidget {
               Future.delayed(const Duration(seconds: 2), () {
                 if (!context.mounted) return;
                 Navigator.of(context, rootNavigator: true).pop();
-                // navigate back to the root of the stack (home screen)
                 Navigator.of(context).popUntil((route) => route.isFirst);
               });
             } else {
@@ -108,7 +102,7 @@ class ConfirmOrderButton extends StatelessWidget {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5B7FFF), // Primary Blue
+            backgroundColor: const Color(0xFF5B7FFF), 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

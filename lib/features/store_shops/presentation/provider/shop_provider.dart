@@ -12,7 +12,6 @@ class ShopProvider with ChangeNotifier {
   String? _error;
   String? _storeId;
 
-  // For fetching single shop by ID
   Shop? _currentShop;
   bool _isLoadingSingleShop = false;
   String? _errorSingleShop;
@@ -48,7 +47,6 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Fetch a single shop by ID (used for shop profile)
   Future<void> fetchShopById(String storeId, String shopId) async {
     _isLoadingSingleShop = true;
     _errorSingleShop = null;
@@ -69,7 +67,6 @@ class ShopProvider with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    // Defensive validation: ensure required fields are present
     if (shop.shopName.trim().isEmpty ||
         shop.address.trim().isEmpty ||
         shop.city.trim().isEmpty ||

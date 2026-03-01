@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../../store_orders_tab/domain/entities/order.dart';
 
 import 'edit_item_card.dart';
 import 'save_action_footer.dart';
 
+
 class EditOrderScreen extends StatelessWidget {
-  const EditOrderScreen({super.key});
+  const EditOrderScreen({super.key, required this.items});
+
+  final List<OrderItem> items;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8), // Light background for cards
+      backgroundColor: const Color(0xFFF8F8F8),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
@@ -25,33 +29,13 @@ class EditOrderScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: 5, // Based on your shared image
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final items = [
-            {
-              'name': 'carrot',
-              'img': 'https://cdn-icons-png.flaticon.com/512/2316/2316652.png',
-            },
-            {
-              'name': 'green chili',
-              'img': 'https://cdn-icons-png.flaticon.com/512/4054/4054632.png',
-            },
-            {
-              'name': 'tomato',
-              'img': 'https://cdn-icons-png.flaticon.com/512/1202/1202125.png',
-            },
-            {
-              'name': 'okra',
-              'img': 'https://cdn-icons-png.flaticon.com/512/6129/6129038.png',
-            },
-            {
-              'name': 'bean',
-              'img': 'https://cdn-icons-png.flaticon.com/512/4021/4021810.png',
-            },
-          ];
+          final item = items[index];
           return EditItemCard(
-            name: items[index]['name']!,
-            imageUrl: items[index]['img']!,
+            name: item.productName,
+      
+            imageUrl: item.productId, 
           );
         },
       ),

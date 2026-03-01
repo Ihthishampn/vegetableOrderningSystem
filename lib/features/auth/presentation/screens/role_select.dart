@@ -5,10 +5,7 @@ import 'package:vegetable_ordering_system/features/auth/presentation/widgets/rol
 import 'package:vegetable_ordering_system/features/auth/auth_shop/presentation/screens/login_screen_shop.dart';
 import 'package:vegetable_ordering_system/features/auth/auth_store/presentation/screens/store_login_screen.dart';
 
-/// Screen where the user decides whether they want to continue as a
-/// store or a shop.  Selection state is kept in [RoleProvider] so that the
-/// widget tree is rebuilt using Provider rather than manually calling
-/// `setState`.
+
 class RoleSelect extends StatelessWidget {
   const RoleSelect({super.key});
 
@@ -27,7 +24,6 @@ class _RoleSelectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RoleProvider>();
-    // final size = MediaQuery.of(context).size; // unused
     final selectedRole = provider.selectedRole;
 
     return Scaffold(

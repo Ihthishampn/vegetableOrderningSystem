@@ -9,9 +9,7 @@ import 'pending_over_view_screen.dart';
 import 'approved_over_view_screen.dart';
 import 'completed_over_view.dart';
 import 'rejected_over_view.dart';
-import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/shop_home_widget/shop_search_widget.dart';
 
-/// Screen displaying all orders for the store with filtering by status
 class StoreOrdersScreen extends StatefulWidget {
   const StoreOrdersScreen({super.key});
 
@@ -21,12 +19,9 @@ class StoreOrdersScreen extends StatefulWidget {
 
 class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
   OrderStatus _selectedStatus = OrderStatus.pending;
-  final TextEditingController _searchController = TextEditingController();
-  String _searchTerm = '';
   @override
   void initState() {
     super.initState();
-    // Initialize OrderProvider with current store ID
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = context.read<AuthViewModel>();
       final orderProvider = context.read<OrderProvider>();
@@ -40,7 +35,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -56,14 +50,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SearchBarWidget(
-              controller: _searchController,
-              onChanged: (val) => setState(() => _searchTerm = val.trim()),
-              onClear: () => setState(() => _searchTerm = ''),
-            ),
-          ),
           Expanded(
             child: Consumer<OrderProvider>(
               builder: (context, provider, _) {
@@ -91,7 +77,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                   );
                 }
 
-                // if there are no orders in the system at all, show generic message
                 if (provider.allOrders.isEmpty) {
                   return Center(
                     child: Column(
@@ -115,17 +100,7 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                 var filtered = provider.allOrders
                     .where((o) => o.status == _selectedStatus)
                     .toList();
-                if (_searchTerm.isNotEmpty) {
-                  final term = _searchTerm.toLowerCase();
-                  filtered = filtered.where((o) {
-                    final name = o.customerName.toLowerCase();
-                    return o.id.toLowerCase().contains(term) ||
-                        name.contains(term);
-                  }).toList();
-                }
 
-                // if we have orders overall but none for the selected status, show
-                // a status-specific empty message instead of an empty list
                 if (filtered.isEmpty) {
                   String label = '';
                   switch (_selectedStatus) {
@@ -167,8 +142,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                   );
                 }
 
-                // overview counts removed (no overview chips)
-
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: filtered.length,
@@ -184,7 +157,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                         storeName: name,
                         orderId: order.id,
                         orderStatus: order.status.toString().split('.').last,
-                        totalPrice: order.totalPrice,
                         itemCount: order.items.length,
                         items: order.items,
                         createdAt: order.createdAt,
@@ -199,10 +171,8 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
       ),
     );
   }
-  // Overview chips removed per user request
 
   void _openOrderOverview(Order order) {
-    // Navigate to appropriate overview screen based on order.status
     final status = order.status;
     if (status == OrderStatus.pending) {
       Navigator.of(context).push(

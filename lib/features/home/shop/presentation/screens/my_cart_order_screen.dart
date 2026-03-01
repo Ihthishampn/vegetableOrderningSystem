@@ -184,13 +184,11 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
             ),
           ),
 
-          // search bar for orders
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SearchBarWidget(
               controller: _orderSearchController,
               onClear: () {
-                // nothing else needed, listener clears _orderSearch
               },
             ),
           ),
@@ -205,13 +203,11 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
             child: Consumer<OrderProvider>(
               builder: (context, orderProv, _) {
                 final auth = Provider.of<AuthViewModel>(context, listen: false);
-                // only show orders for this customer
                 final customerOrders = orderProv.allOrders
                     .where((o) => o.customerId == auth.uid)
                     .cast<Order>()
                     .toList();
 
-                // apply search filter (order id or customer name)
                 if (_orderSearch.isNotEmpty) {
                   final term = _orderSearch.toLowerCase();
                   customerOrders.retainWhere((o) {
@@ -220,7 +216,6 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
                   });
                 }
 
-                // apply status filter if not 'All'
                 List<Order> filtered = customerOrders;
                 if (selectedStatus != 'All') {
                   filtered = filtered

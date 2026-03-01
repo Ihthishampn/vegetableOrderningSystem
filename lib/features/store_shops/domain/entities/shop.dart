@@ -23,7 +23,6 @@ class Shop {
     this.isActive = true,
   });
 
-  /// Convert Shop to Firestore document format
   Map<String, dynamic> toFirestore() {
     return {
       'shopId': id,
@@ -39,7 +38,6 @@ class Shop {
     };
   }
 
-  /// Create Shop from Firestore document
   factory Shop.fromFirestore(Map<String, dynamic> data, String id) {
     return Shop(
       id: id,
@@ -55,7 +53,6 @@ class Shop {
     );
   }
 
-  /// Create a copy of Shop with modified fields
   Shop copyWith({
     String? id,
     String? storeId,

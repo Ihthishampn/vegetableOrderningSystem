@@ -4,7 +4,6 @@ import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entit
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 
-// static footer that does nothing (kept for reference)
 class ApprovedActionFooter extends StatelessWidget {
   const ApprovedActionFooter({super.key});
 
@@ -15,7 +14,7 @@ class ApprovedActionFooter extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: () {}, // placeholder
+          onPressed: () {}, 
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2D2926),
             padding: const EdgeInsets.symmetric(vertical: 18),
@@ -33,7 +32,6 @@ class ApprovedActionFooter extends StatelessWidget {
   }
 }
 
-/// Footer that performs provider callback to mark order complete
 class ApprovedActionFooterWithCallback extends StatelessWidget {
   final Order order;
   const ApprovedActionFooterWithCallback({super.key, required this.order});

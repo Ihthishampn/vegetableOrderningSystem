@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A card used on the role selection screen.  The parent provides
-/// [isSelected] and an [onTap] callback so the widget itself remains
-/// stateless.
+
 class RoleCard extends StatelessWidget {
   final String role;
   final String title;

@@ -17,8 +17,7 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
   @override
   void initState() {
     super.initState();
-    // defer loading until after the first frame to avoid calling
-    // provider methods during build
+   
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadStoreProfile());
   }
 

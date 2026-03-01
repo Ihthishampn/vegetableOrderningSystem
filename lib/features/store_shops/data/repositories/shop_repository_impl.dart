@@ -44,7 +44,7 @@ class ShopRepositoryImpl implements ShopRepository {
     }
   }
 
-  /// Get a shop by phone number (for shop login verification).
+  @override
   Future<Shop?> getShopByPhone(String phone) async {
     try {
       final snapshot = await _firestore
@@ -65,8 +65,7 @@ class ShopRepositoryImpl implements ShopRepository {
   @override
   Future<String> addShop(Shop shop) async {
     try {
-      // Create a new document with deterministic id and include that id as
-      // the shopId field inside the document for stable identification.
+      
       final docRef = _firestore.collection(_shopsCollection).doc();
       final shopWithId = shop.copyWith(id: docRef.id);
       await docRef.set(shopWithId.toFirestore());
@@ -80,7 +79,6 @@ class ShopRepositoryImpl implements ShopRepository {
   Future<void> updateShop(Shop shop) async {
     try {
       final data = shop.toFirestore();
-      // Ensure shopId is present on update
       data['shopId'] = shop.id;
       await _firestore.collection(_shopsCollection).doc(shop.id).update(data);
     } catch (e) {

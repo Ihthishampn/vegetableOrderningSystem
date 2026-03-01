@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
 import '../../domain/entities/product.dart';
 
-/// Card widget displaying a single vegetable/product.
-/// Accepts a Product object and callbacks for edit, delete, and toggle operations.
+
 class VegetableItemCard extends StatelessWidget {
   final Product product;
   final VoidCallback onEdit;
@@ -75,7 +74,6 @@ class VegetableItemCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // DELETE BUTTON
               SizedBox(
                 height: 36,
                 child: OutlinedButton(

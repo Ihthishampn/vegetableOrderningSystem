@@ -93,7 +93,7 @@ class AdvanceOrderActions extends StatelessWidget {
                 String customerName = authLocal.storeName?.trim() ?? '';
                 if (customerName.isEmpty) {
                   customerName =
-                      profileProvLocal.storeProfile?.storeName?.trim() ?? '';
+                      profileProvLocal.storeProfile?.storeName.trim() ?? '';
                 }
                 if (customerName.isEmpty) customerName = storeId;
 
@@ -126,7 +126,6 @@ class AdvanceOrderActions extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                    totalPrice: 0.0,
                     scheduledDate: scheduledDate,
                   );
                 } catch (e) {

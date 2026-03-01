@@ -46,7 +46,6 @@ class CustomConfirmationDialog extends StatelessWidget {
             const SizedBox(height: 30),
             Row(
               children: [
-                // Cancel Button
                 Expanded(
                   child: SizedBox(
                     height: 40,
@@ -70,7 +69,6 @@ class CustomConfirmationDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 15),
-                // Confirm Button
                 Expanded(
                   child: SizedBox(
                     height: 40,

@@ -11,12 +11,12 @@ class PrintActionFooter extends StatelessWidget {
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: () {
-            // Logic for printing would go here
+            //  fr printing 
           },
           icon: const Icon(Icons.print_outlined, color: Colors.white),
           label: const Text("Print", style: TextStyle(color: Colors.white, fontSize: 16)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2D2926), // Dark charcoal color
+            backgroundColor: const Color(0xFF2D2926), 
             padding: const EdgeInsets.symmetric(vertical: 18),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),

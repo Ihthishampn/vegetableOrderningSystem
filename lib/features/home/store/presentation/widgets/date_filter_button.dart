@@ -4,7 +4,7 @@ class DateFilterButton extends StatelessWidget {
   final DateTime? selectedDate;
   final VoidCallback onTap;
 
-  const DateFilterButton({required this.selectedDate, required this.onTap});
+  const DateFilterButton({super.key, required this.selectedDate, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

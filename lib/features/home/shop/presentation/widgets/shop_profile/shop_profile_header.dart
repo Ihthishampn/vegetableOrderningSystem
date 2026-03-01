@@ -35,8 +35,7 @@ class ProfileHeaderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                // store name from auth/profile could be inserted by parent widget
-                // if needed; keep placeholder text but make it configurable.
+          
                 Text(
                   "Veg Graam",
                   style: TextStyle(

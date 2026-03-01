@@ -17,7 +17,6 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
   @override
   void initState() {
     super.initState();
-    // wait until after first frame to access providers
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = Provider.of<AuthViewModel>(context, listen: false);
       final reportProvider = Provider.of<SalesReportProvider>(

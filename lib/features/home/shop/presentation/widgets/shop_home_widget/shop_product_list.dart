@@ -41,7 +41,6 @@ class ShopProductList extends StatelessWidget {
           );
         }
 
-        // apply search filter if provided
         var products = List<Product>.from(productProvider.allProducts);
         if (searchTerm.isNotEmpty) {
           products = products

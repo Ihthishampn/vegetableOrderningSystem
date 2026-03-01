@@ -27,7 +27,6 @@ class StoreProfile {
     required this.updatedAt,
   });
 
-  /// Convert StoreProfile to Firestore document format
   Map<String, dynamic> toFirestore() {
     return {
       'storeName': storeName,
@@ -44,7 +43,6 @@ class StoreProfile {
     };
   }
 
-  /// Create StoreProfile from Firestore document
   factory StoreProfile.fromFirestore(Map<String, dynamic> data, String id) {
     return StoreProfile(
       id: id,
@@ -62,7 +60,6 @@ class StoreProfile {
     );
   }
 
-  /// Create a copy of StoreProfile with modified fields
   StoreProfile copyWith({
     String? id,
     String? storeName,

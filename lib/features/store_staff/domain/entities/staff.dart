@@ -27,7 +27,6 @@ class Staff {
     required this.updatedAt,
   });
 
-  /// Convert Staff to Firestore document format
   Map<String, dynamic> toFirestore() {
     return {
       'storeId': storeId,
@@ -44,7 +43,6 @@ class Staff {
     };
   }
 
-  /// Create Staff from Firestore document
   factory Staff.fromFirestore(Map<String, dynamic> data, String id) {
     return Staff(
       id: id,
@@ -63,7 +61,6 @@ class Staff {
     );
   }
 
-  /// Create a copy of Staff with modified fields
   Staff copyWith({
     String? id,
     String? storeId,

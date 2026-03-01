@@ -13,7 +13,6 @@ abstract class SalesReportRepository {
     DateTime? endDate,
   });
 
-  /// New: fetch reports filtered by shopId (preferred stable identifier)
   Future<List<SalesReport>> getSalesReportByShopId(
     String storeId,
     String shopId, {

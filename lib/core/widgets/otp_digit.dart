@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A single circle representing one digit in the OTP entry UI.
-///
-/// When [digit] is `null` or empty the circle is outlined; when it contains
-/// a character the circle is filled and displays that character.
+
 class OtpDigit extends StatelessWidget {
   final String? digit;
   final VoidCallback onTap;

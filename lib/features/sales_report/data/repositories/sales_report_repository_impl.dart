@@ -204,7 +204,6 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
     }
   }
 
-  /// Helper to parse date from Timestamp or ISO 8601 string
   DateTime _parseDate(dynamic dateValue) {
     if (dateValue == null) return DateTime.now();
     if (dateValue is String) {

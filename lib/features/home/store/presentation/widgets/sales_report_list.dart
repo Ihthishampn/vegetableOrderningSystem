@@ -5,7 +5,7 @@ import 'sales_report_card.dart';
 class SalesReportList extends StatelessWidget {
   final List<SalesReport> reports;
 
-  const SalesReportList({required this.reports});
+  const SalesReportList({super.key, required this.reports});
 
   @override
   Widget build(BuildContext context) {

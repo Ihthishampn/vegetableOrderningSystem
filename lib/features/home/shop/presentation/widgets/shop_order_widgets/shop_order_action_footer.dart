@@ -5,7 +5,6 @@ import 'package:vegetable_ordering_system/features/store_orders_tab/presentation
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/widgets/pendings_widgets/pending_outln_widget.dart';
 
-/// Footer for shop-side order overview with a single "Cancel Order" action.
 class ShopOrderActionFooter extends StatelessWidget {
   final Order order;
   const ShopOrderActionFooter({super.key, required this.order});

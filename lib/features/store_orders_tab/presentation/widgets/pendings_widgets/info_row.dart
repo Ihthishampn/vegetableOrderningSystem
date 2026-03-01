@@ -22,8 +22,7 @@ class InfoRow extends StatelessWidget {
           const SizedBox(width: 8),
           Text(label, style: const TextStyle(color: Colors.grey)),
           const Spacer(),
-          // make the value flexible so that long text can wrap/ellipsize and
-          // avoid overflowing the row
+        
           Flexible(
             child: Text(
               value,

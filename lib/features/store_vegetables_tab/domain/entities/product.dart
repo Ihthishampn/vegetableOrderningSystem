@@ -19,7 +19,6 @@ class Product {
     required this.updatedAt,
   });
 
-  /// Returns a copy with modified fields.
   Product copyWith({
     String? id,
     String? storeId,
@@ -42,7 +41,6 @@ class Product {
     );
   }
 
-  /// Convert to Firestore map.
   Map<String, dynamic> toFirestore() {
     return {
       'id': id,
@@ -56,7 +54,6 @@ class Product {
     };
   }
 
-  /// Create from Firestore map.
   factory Product.fromFirestore(Map<String, dynamic> data) {
     return Product(
       id: data['id'] as String? ?? '',

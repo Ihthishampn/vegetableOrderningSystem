@@ -19,7 +19,7 @@ class OrderSummaryHeader extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF3FF), // Light blue background from screenshot
+        color: const Color(0xFFEFF3FF), 
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFD0D9FF)),
       ),

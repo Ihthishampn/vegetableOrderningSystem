@@ -28,7 +28,6 @@ class _LabelAndFieldState extends State<LabelAndField> {
   void _validate() {
     final text = widget.controller?.text ?? '';
 
-    // Built-in validation
     String? error;
     if (widget.isRequired && text.isEmpty) {
       error = '${widget.label} is required';

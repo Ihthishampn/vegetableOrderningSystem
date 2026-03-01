@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
 import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import 'store_info_tile.dart';
@@ -26,7 +25,6 @@ class StoreAccountInfoSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          // Try fetching name/phone from AuthViewModel (which reads 'users' doc)
           Consumer<AuthViewModel>(
             builder: (context, auth, _) {
               final name = auth.storeName?.isNotEmpty == true

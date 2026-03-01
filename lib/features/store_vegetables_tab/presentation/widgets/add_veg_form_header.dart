@@ -1,4 +1,3 @@
-// Header with back button and title
 import 'package:flutter/material.dart';
 
 class FormHeader extends StatelessWidget {

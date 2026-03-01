@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 class OrderActionButtons extends StatelessWidget {
-  /// Called when user taps "Edit Order" (may be used to navigate to cart)
   final VoidCallback? onEdit;
 
-  /// Called when user taps "Confirm Order" (should repeat order)
   final VoidCallback? onConfirm;
 
   const OrderActionButtons({super.key, this.onEdit, this.onConfirm});

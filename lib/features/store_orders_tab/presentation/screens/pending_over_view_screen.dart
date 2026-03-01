@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
-import '../widgets/pendings_widgets/pending_action_footer.dart';
+import '../widgets/pendings_widgets/pending_action_button_with_call_back.dart';
 import '../widgets/pendings_widgets/pending_order_info_card.dart';
 import '../widgets/pendings_widgets/pending_order_item_list.dart';
 
@@ -16,7 +16,6 @@ class PendingOrderOverview extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () {
-            //  navigation logic
             Navigator.of(context).pop();
           },
         ),
@@ -45,7 +44,6 @@ class PendingOrderOverview extends StatelessWidget {
           ],
         ),
       ),
-      // Use callback footer to allow store actions to update order status via provider
       bottomNavigationBar: PendingActionFooterWithCallback(order: order),
     );
   }

@@ -8,7 +8,7 @@ class DefaultUnitSelector extends StatefulWidget {
   const DefaultUnitSelector({
     super.key,
     this.onUnitSelected,
-    this.initialUnit, // remove default 'Kg'
+    this.initialUnit, 
   });
 
   @override
@@ -16,13 +16,12 @@ class DefaultUnitSelector extends StatefulWidget {
 }
 
 class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
-  String? _selectedUnit; // nullable now
+  String? _selectedUnit; 
   final List<String> _units = ['Kg', 'Box', 'Bag', 'Packet'];
 
   @override
   void initState() {
     super.initState();
-    // Default to 'Kg' if no initial unit provided
     _selectedUnit = widget.initialUnit ?? 'Kg';
   }
 
@@ -53,7 +52,7 @@ class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
               onTap: () => _selectUnit(unit),
               child: UnitChip(
                 label: unit,
-                isSelected: _selectedUnit == unit, // only selected if tapped
+                isSelected: _selectedUnit == unit,
               ),
             );
           }).toList(),

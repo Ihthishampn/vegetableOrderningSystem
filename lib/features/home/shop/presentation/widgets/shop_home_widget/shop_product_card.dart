@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/product_card_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/domain/entities/product.dart';
 
-class ProductCard extends StatefulWidget {
+class ProductCard extends StatelessWidget {
   final Product? product;
   final String name;
   final String image;
@@ -22,169 +23,102 @@ class ProductCard extends StatefulWidget {
   });
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  int _quantity = 1;
-  String? _selectedUnit;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedUnit = widget.units?.isNotEmpty == true
-        ? widget.units!.first
-        : null;
-  }
-
-  void _addToCart() {
-    final cart = Provider.of<CartProvider>(context, listen: false);
-    if (widget.product != null) {
-      if (widget.isOutOfStock) {
-        // out of stock items should not be added; inform the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${widget.name} is out of stock. Unable to add to cart.',
-            ),
-          ),
-        );
-        return;
-      }
-      // Ensure a unit is selected; fallback to first available unit or empty
-      final unitToUse = _selectedUnit != null && _selectedUnit!.isNotEmpty
-          ? _selectedUnit!
-          : (widget.units != null && widget.units!.isNotEmpty
-                ? widget.units!.first
-                : '');
-      try {
-        cart.addToCart(widget.product!, _quantity, unitToUse);
-        widget.onAddToCart?.call();
-      } catch (e) {
-        // Report unexpected errors to console only (no Scaffold message)
-        // UI will reflect the change via Provider listeners if add succeeds.
-        // Use debugPrint to avoid showing messages to users.
-        debugPrint('Failed to add ${widget.name} to cart: $e');
-      }
-    } else {
-      widget.onAddToCart?.call();
-    }
-  }
-
-  void _increment() {
-    final cart = Provider.of<CartProvider>(context, listen: false);
-    setState(() => _quantity += 1);
-    if (widget.product != null) {
-      cart.updateQuantity(widget.product!.id, _quantity);
-    }
-  }
-
-  void _decrement() {
-    final cart = Provider.of<CartProvider>(context, listen: false);
-    if (_quantity > 1) {
-      setState(() => _quantity -= 1);
-      if (widget.product != null) {
-        cart.updateQuantity(widget.product!.id, _quantity);
-      }
-    } else {
-      // remove from cart when quantity reaches 0
-      if (widget.product != null) {
-        cart.removeFromCart(widget.product!.id);
-      }
-      setState(() => _quantity = 1);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Consumer<CartProvider>(
-      builder: (context, cart, _) {
-        // Check if this product is already in the cart to determine button state
-        final isInCart =
-            widget.product != null &&
-            cart.cartItems.any((item) => item.product.id == widget.product!.id);
+    return ChangeNotifierProvider<ProductCardProvider>(
+      create: (_) => ProductCardProvider(
+        cart: Provider.of<CartProvider>(context, listen: false),
+        product: product,
+        units: units,
+        isOutOfStock: isOutOfStock,
+      ),
+      child: Consumer2<CartProvider, ProductCardProvider>(
+        builder: (context, cart, model, _) {
+          final isInCart =
+              product != null &&
+              cart.cartItems.any((item) => item.product.id == product!.id);
 
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: _buildImage(),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      overflow: TextOverflow.ellipsis,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: _buildImage(),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 1),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: !widget.isOutOfStock && widget.units != null
-                        ? SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: widget.units!
-                                  .map((u) => _buildUnitChip(u))
-                                  .toList(),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-
-                  widget.isOutOfStock
-                      ? _buildStockButton(
-                          "Out of Stock",
-                          Colors.grey,
-                          null,
-                          isInCart,
-                        )
-                      : _buildStockButton(
-                          "Add",
-                          const Color(0xFF5C79FF),
-                          null,
-                          isInCart,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 1),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: !isOutOfStock && units != null
+                          ? SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: units!
+                                    .map((u) => _buildUnitChip(u))
+                                    .toList(),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    isOutOfStock
+                        ? _buildStockButton(
+                            context,
+                            'Out of Stock',
+                            Colors.grey,
+                            null,
+                            isInCart,
+                          )
+                        : _buildStockButton(
+                            context,
+                            'Add',
+                            const Color(0xFF5C79FF),
+                            null,
+                            isInCart,
+                          ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -203,50 +137,46 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 
-  /// Build image widget (handles both asset and network URLs)
   Widget _buildImage() {
-    final image = widget.image;
-    if (image.startsWith('http')) {
-      // Network image
+    final url = image;
+    if (url.startsWith('http')) {
       return Image.network(
-        image,
+        url,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) =>
             const Icon(Icons.eco, color: Colors.green),
       );
-    } else if (image.startsWith('assets/')) {
-      // Asset image
+    } else if (url.startsWith('assets/')) {
       return Image.asset(
-        image,
+        url,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) =>
             const Icon(Icons.eco, color: Colors.green),
       );
     } else {
-      // Fallback
       return const Icon(Icons.eco, color: Colors.green);
     }
   }
 
   Widget _buildStockButton(
+    BuildContext context,
     String label,
     Color color,
     VoidCallback? onPressed,
     bool isInCart,
   ) {
+    final model = Provider.of<ProductCardProvider>(context, listen: false);
     if (!isInCart) {
       return ElevatedButton(
-        onPressed: widget.isOutOfStock
+        onPressed: isOutOfStock
             ? () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      '${widget.name} is out of stock. Cannot order now.',
-                    ),
+                    content: Text('$name is out of stock. Cannot order now.'),
                   ),
                 );
               }
-            : _addToCart,
+            : () => model.addToCart(context, onAdd: onAddToCart),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: color,
@@ -262,7 +192,6 @@ class _ProductCardState extends State<ProductCard> {
       );
     }
 
-    // Quantity selector UI with +/- icons and a small cancel (remove) icon
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -277,7 +206,7 @@ class _ProductCardState extends State<ProductCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: _decrement,
+                onTap: model.decrement,
                 child: Container(
                   width: 28,
                   height: 28,
@@ -294,13 +223,13 @@ class _ProductCardState extends State<ProductCard> {
                   border: Border.all(color: Colors.grey.shade300),
                 ),
                 child: Text(
-                  _quantity.toString().padLeft(2, '0'),
+                  model.quantity.toString().padLeft(2, '0'),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(width: 6),
               GestureDetector(
-                onTap: _increment,
+                onTap: model.increment,
                 child: Container(
                   width: 28,
                   height: 28,
@@ -311,18 +240,16 @@ class _ProductCardState extends State<ProductCard> {
             ],
           ),
         ),
-        // small cancel/remove icon positioned at top-right of the selector
         Positioned(
           right: -12,
           top: -12,
           child: GestureDetector(
             onTap: () {
-              // remove from cart
               final cart = Provider.of<CartProvider>(context, listen: false);
-              if (widget.product != null) {
-                cart.removeFromCart(widget.product!.id);
+              if (product != null) {
+                cart.removeFromCart(product!.id);
               }
-              setState(() => _quantity = 1);
+              model.decrement();
             },
             child: Container(
               width: 26,

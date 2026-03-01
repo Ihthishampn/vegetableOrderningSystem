@@ -24,14 +24,13 @@ class _EditItemCardState extends State<EditItemCard> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Prevents vertical overflow
+        mainAxisSize: MainAxisSize.min, 
         children: [
           Row(
             children: [
               Image.network(widget.imageUrl, height: 35, width: 35),
               const SizedBox(width: 10),
               Expanded(
-                // Allows text to wrap or shrink if name is long
                 child: Text(
                   widget.name,
                   style: const TextStyle(
@@ -47,7 +46,6 @@ class _EditItemCardState extends State<EditItemCard> {
           const SizedBox(height: 12),
           Row(
             children: [
-              // 1. Unit Selectors - Wrap in Expanded to prevent horizontal overflow
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -85,7 +83,6 @@ class _EditItemCardState extends State<EditItemCard> {
                 ),
               ),
               const SizedBox(width: 8),
-              // 2. Quantity Incrementor
               Container(
                 height: 38,
                 decoration: BoxDecoration(
@@ -94,7 +91,7 @@ class _EditItemCardState extends State<EditItemCard> {
                 ),
                 child: Row(
                   mainAxisSize:
-                      MainAxisSize.min, // Essential to prevent overflow
+                      MainAxisSize.min,
                   children: [
                     _qtyBtn(
                       Icons.remove,

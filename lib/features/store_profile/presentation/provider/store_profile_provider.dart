@@ -18,10 +18,7 @@ class StoreProfileProvider with ChangeNotifier {
   Future<void> fetchStoreProfile(String userId) async {
     _isLoading = true;
     _error = null;
-    // avoid notifying listeners synchronously during widget build
-    // this can cause "setState during build" errors if called from
-    // initState of a widget. Schedule the notification for the next
-    // frame so that the widget tree has finished building.
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });

@@ -2,15 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// This class serves as the view model for authentication-related UI.
-///
-/// It currently contains the same logic that used to live in
-/// `features/auth/provider/auth_provider.dart`.  The plan is to keep this
-/// class lean and move Firestore/HTTP calls into the data layer (e.g. a
-/// repository or remote datasource) once the feature is further refactored.
-///
-/// The UI widgets should never import or depend on Firestore directly; they
-/// should interact only with the methods and properties provided here.
+
 class AuthViewModel extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -19,22 +11,20 @@ class AuthViewModel extends ChangeNotifier {
   String? _userRole;
   String? _userId;
   String? _storeId;
-  String? _storeName; // name pulled from users collection during store login
+  String? _storeName;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get userRole => _userRole;
   String? get userId => _userId;
-  String? get uid => _userId; // alias for convenience
+  String? get uid => _userId; 
   String? get storeId => _storeId;
   String? get storeName => _storeName;
   String? _phoneNumber;
   String? get phoneNumber => _phoneNumber;
 
-  /// Checks whether a user with the given phone number exists and matches the
-  /// selected role ("store" or "shop").  This is the same logic that used to
-  /// exist in [auth_provider].  In a future refactor it should be pushed down
-  /// to a repository.
+
+  
   Future<bool> checkUserRole({
     required String phone,
     required String selectedRole,
@@ -62,7 +52,6 @@ class AuthViewModel extends ChangeNotifier {
         final data = shopQuery.docs.first.data();
         final shopId = shopQuery.docs.first.id;
 
-        // Check if the shop is active
         final isActive = data['isActive'] ?? true;
         if (!isActive) {
           _error =

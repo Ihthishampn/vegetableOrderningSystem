@@ -15,7 +15,6 @@ class OrderTypeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // compute counts for current customer from OrderProvider
     final orderProvider = Provider.of<OrderProvider>(context);
     final auth = Provider.of<AuthViewModel>(context, listen: false);
     final now = DateTime.now();

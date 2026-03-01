@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/usecases/product_use_case.dart';
 
-/// Manages product state for the store vegetables tab.
 class ProductProvider extends ChangeNotifier {
   final ProductUseCase useCase;
 
@@ -63,8 +62,7 @@ class ProductProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      // Use empty id — repository generates the real Firestore ID and writes
-      // it back into the document. fetchProducts() reloads with correct IDs.
+  
       final product = Product(
         id: '',
         storeId: _storeId!,
@@ -154,13 +152,9 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
-  /// Toggle availability.
-  /// FIX: compute newAvailability once and use it for BOTH the optimistic
-  /// local update and the backend call — the old code double-flipped.
   Future<bool> toggleAvailability(Product product) async {
     final newAvailability = !product.isAvailable;
 
-    // Optimistic local update.
     final updated = product.copyWith(isAvailable: newAvailability);
     final idx = _allProducts.indexWhere((p) => p.id == product.id);
     if (idx != -1) _allProducts[idx] = updated;
@@ -177,7 +171,6 @@ class ProductProvider extends ChangeNotifier {
       refresh: false,
     );
 
-    // Revert if backend failed.
     if (!success) {
       final revertIdx = _allProducts.indexWhere((p) => p.id == product.id);
       if (revertIdx != -1) _allProducts[revertIdx] = product;

@@ -4,6 +4,8 @@ import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.d
 import 'package:vegetable_ordering_system/features/auth/presentation/screens/role_select.dart';
 import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
 
+import '../../../../../auth/presentation/viewmodels/auth_viewmodel.dart';
+
 class ShopProfileLogOutButton extends StatelessWidget {
   const ShopProfileLogOutButton({super.key});
 
@@ -27,7 +29,6 @@ class ShopProfileLogOutButton extends StatelessWidget {
 
                   if (!context.mounted) return;
 
-                  // Navigate back to RoleSelect and remove all previous screens from stack
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const RoleSelect()),
                     (route) => false,

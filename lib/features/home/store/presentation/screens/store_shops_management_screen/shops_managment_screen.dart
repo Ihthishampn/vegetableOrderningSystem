@@ -32,45 +32,86 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Shops Management',
-          style: TextStyle(color: Colors.black),
+          'Shops',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AddShopPage()),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
-      body: Consumer<ShopProvider>(
-        builder: (context, shopProv, _) {
-          if (shopProv.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Stack(
+        children: [
+          Consumer<ShopProvider>(
+            builder: (context, shopProv, _) {
+              if (shopProv.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final shops = shopProv.shopList;
-          if (shops.isEmpty) {
-            return const Center(child: Text('No shops yet.'));
-          }
+              final shops = shopProv.shopList;
+              if (shops.isEmpty) {
+                return const Center(child: Text('No shops yet.'));
+              }
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView.separated(
-              itemCount: shops.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final Shop shop = shops[index];
-                return ShopCard(shop: shop);
-              },
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView.separated(
+                  itemCount: shops.length,
+                  
+                  separatorBuilder: (_, unused) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final Shop shop = shops[index];
+                    return ShopCard(shop: shop);
+                  },
+                ),
+              );
+            },
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AddShopPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2D2926),
+                  minimumSize: const Size(double.infinity, 55),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  "+ Add New Shop",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

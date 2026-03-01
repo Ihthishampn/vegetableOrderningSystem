@@ -135,7 +135,6 @@ class RepeatOrderActions extends StatelessWidget {
               customerPhone: customerPhone,
               deliveryAddress: deliveryAddress,
               items: last.items,
-              totalPrice: last.totalPrice,
               scheduledDate: last.scheduledDate,
             );
             if (success) {

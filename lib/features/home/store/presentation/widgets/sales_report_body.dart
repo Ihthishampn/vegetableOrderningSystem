@@ -6,13 +6,13 @@ import 'sales_report_list.dart';
 import 'sales_filter_dropdown.dart';
 import 'date_filter_button.dart';
 import 'summary_card.dart';
-// imported above only once
+
 
 class SalesReportBody extends StatelessWidget {
   final DateTime? selectedDate;
   final VoidCallback onDateTap;
 
-  const SalesReportBody({required this.selectedDate, required this.onDateTap});
+  const SalesReportBody({super.key, required this.selectedDate, required this.onDateTap});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,6 @@ class SalesReportBody extends StatelessWidget {
 
         return Column(
           children: [
-            // 1. Filter Section (Dropdown and Calendar)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -53,7 +52,6 @@ class SalesReportBody extends StatelessWidget {
               ),
             ),
 
-            // 2. Summary Cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -79,7 +77,6 @@ class SalesReportBody extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // 3. Scrollable Report List
             Expanded(
               child: SalesReportList(
                 reports: salesReportProvider.filteredReports,
