@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../../store_vegetables_tab/presentation/widgets/add_success_message.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/store_shops/presentation/provider/shop_provider.dart';
 import 'package:vegetable_ordering_system/features/store_shops/domain/entities/shop.dart';
 
@@ -19,7 +19,7 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final auth = Provider.of<AuthViewModel>(context, listen: false);
       final shopProv = Provider.of<ShopProvider>(context, listen: false);
       if (auth.uid != null) {
         shopProv.initialize(auth.uid!);
@@ -49,7 +49,8 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
         centerTitle: true,
       ),
       body: Stack(
-        children: [          Consumer<ShopProvider>(
+        children: [
+          Consumer<ShopProvider>(
             builder: (context, shopProv, _) {
               if (shopProv.isLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -180,7 +181,6 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                         ),
                       );
                     }
-                    
                   },
                   icon: const Icon(
                     Icons.edit_outlined,
@@ -202,13 +202,9 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
               ),
               const SizedBox(width: 10),
 
-            
               Container(
-                height: 32, 
-                padding: const EdgeInsets.only(
-                  left: 10,
-                  right: 2,
-                ), 
+                height: 32,
+                padding: const EdgeInsets.only(left: 10, right: 2),
                 decoration: BoxDecoration(
                   color: active
                       ? Colors.green.withOpacity(0.1)
@@ -233,7 +229,7 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                     ),
                     const SizedBox(width: 2),
                     Transform.scale(
-                      scale: 0.65, 
+                      scale: 0.65,
                       child: Switch(
                         value: active,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -363,7 +359,7 @@ class _AddShopPageState extends State<AddShopPage> {
 
   Future<void> _submit() async {
     final provider = Provider.of<ShopProvider>(context, listen: false);
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = Provider.of<AuthViewModel>(context, listen: false);
     if (auth.uid == null) return;
     if (!_formKey.currentState!.validate()) {
       return;
@@ -442,8 +438,8 @@ class _AddShopPageState extends State<AddShopPage> {
         );
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) {
-            Navigator.pop(context); 
-            Navigator.pop(context); 
+            Navigator.pop(context);
+            Navigator.pop(context);
           }
         });
       }
@@ -492,8 +488,9 @@ class _AddShopPageState extends State<AddShopPage> {
                       controller: _nameController,
                       decoration: _inputDecoration("Enter shop name"),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty)
-                       {   return 'Shop name is required';}
+                        if (v == null || v.trim().isEmpty) {
+                          return 'Shop name is required';
+                        }
                         return null;
                       },
                     ),
@@ -633,5 +630,4 @@ class _AddShopPageState extends State<AddShopPage> {
       ),
     );
   }
-
 }

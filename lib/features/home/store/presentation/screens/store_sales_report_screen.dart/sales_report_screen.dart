@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/sales_report/presentation/provider/sales_report_provider.dart';
+import 'package:vegetable_ordering_system/features/sales_report/domain/entities/sales_report.dart';
 
 class SalesReportScreen extends StatefulWidget {
   const SalesReportScreen({super.key});
@@ -19,7 +20,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     super.initState();
     // wait until after first frame to access providers
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final auth = Provider.of<AuthViewModel>(context, listen: false);
       final reportProvider = Provider.of<SalesReportProvider>(
         context,
         listen: false,
@@ -60,27 +61,8 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
             return Center(child: Text('Error: ${salesReportProvider.error}'));
           }
 
-          final shops = salesReportProvider.getUniqueShops();
-
-          Widget listSection;
-          if (salesReportProvider.filteredReports.isEmpty) {
-            listSection = const Center(
-              child: Text(
-                'No sales reports found',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            );
-          } else {
-            listSection = ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: salesReportProvider.filteredReports.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final report = salesReportProvider.filteredReports[index];
-                return _buildReportCard(report, index + 1);
-              },
-            );
-          }
+          // Use all shops from shops collection, not just shops with sales data
+          final shops = salesReportProvider.getAllShopNames();
 
           return Column(
             children: [
@@ -90,23 +72,18 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: _buildDropdownFilter(
+                      child: _SalesFilterDropdown(
                         value: salesReportProvider.selectedShop,
-                        hint: "Filter by Shop",
-                        icon: Icons.filter_list,
-                        items: shops,
+                        shops: shops,
                         onChanged: (val) =>
                             salesReportProvider.setSelectedShop(val!),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildFilterButton(
-                        selectedDate == null
-                            ? "Filter by Date"
-                            : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                        Icons.calendar_today,
-                        _showCalendar,
+                      child: _DateFilterButton(
+                        selectedDate: selectedDate,
+                        onTap: _showCalendar,
                       ),
                     ),
                   ],
@@ -120,18 +97,18 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                   children: [
                     Consumer<OrderProvider>(
                       builder: (context, orderProvider, _) {
-                        return _buildSummaryCard(
-                          "Total Orders",
-                          "${orderProvider.allOrders.length}",
-                          const Color(0xFFCDEBFF),
+                        return _SummarCard(
+                          title: "Total Orders",
+                          count: "${orderProvider.allOrders.length}",
+                          color: const Color(0xFFCDEBFF),
                         );
                       },
                     ),
                     const SizedBox(width: 12),
-                    _buildSummaryCard(
-                      "Completed Orders",
-                      "${salesReportProvider.allReports.length}",
-                      const Color(0xFFCFFFE2),
+                    _SummarCard(
+                      title: "Completed Orders",
+                      count: "${salesReportProvider.allReports.length}",
+                      color: const Color(0xFFCFFFE2),
                     ),
                   ],
                 ),
@@ -140,86 +117,33 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
               const SizedBox(height: 16),
 
               // 3. Scrollable Report List
-              Expanded(child: listSection),
+              Expanded(
+                child: _SalesReportList(
+                  reports: salesReportProvider.filteredReports,
+                ),
+              ),
             ],
           );
         },
       ),
     );
   }
+}
 
-  // Helper: Detailed Report Card with SalesReport data
-  Widget _buildReportCard(dynamic report, int index) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$index. ${report.shopName}",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          const SizedBox(height: 12),
-          ...report.items.map<Widget>((item) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      item.productName,
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    "${item.quantity.toStringAsFixed(2)} ${item.unit}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox.shrink(),
-              Text(
-                "${report.date.day}/${report.date.month}/${report.date.year}",
-                style: const TextStyle(color: Colors.grey, fontSize: 11),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+/// Filter dropdown for selecting shop
+class _SalesFilterDropdown extends StatelessWidget {
+  final String value;
+  final List<String> shops;
+  final ValueChanged<String?> onChanged;
 
-  // Helper: Dropdown style filter
-  Widget _buildDropdownFilter({
-    required String value,
-    required String hint,
-    required IconData icon,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
+  const _SalesFilterDropdown({
+    required this.value,
+    required this.shops,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -232,11 +156,11 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
           value: value == "All" ? null : value,
           hint: Row(
             children: [
-              Icon(icon, size: 18, color: Colors.black54),
+              Icon(Icons.filter_list, size: 18, color: Colors.black54),
               const SizedBox(width: 8),
-              Text(
-                hint,
-                style: const TextStyle(fontSize: 12, color: Colors.black87),
+              const Text(
+                "Filter by Shop",
+                style: TextStyle(fontSize: 12, color: Colors.black87),
               ),
             ],
           ),
@@ -247,7 +171,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
           ),
           isExpanded: true,
           style: const TextStyle(fontSize: 13, color: Colors.black87),
-          items: items.map((String item) {
+          items: shops.map((String item) {
             return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
           onChanged: onChanged,
@@ -255,9 +179,21 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
       ),
     );
   }
+}
 
-  // Helper: Generic Filter Button (used for Date)
-  Widget _buildFilterButton(String label, IconData icon, VoidCallback onTap) {
+/// Filter button for selecting date
+class _DateFilterButton extends StatelessWidget {
+  final DateTime? selectedDate;
+  final VoidCallback onTap;
+
+  const _DateFilterButton({required this.selectedDate, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = selectedDate == null
+        ? "Filter by Date"
+        : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -273,7 +209,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
             Flexible(
               child: Row(
                 children: [
-                  Icon(icon, size: 18, color: Colors.black54),
+                  Icon(Icons.calendar_today, size: 18, color: Colors.black54),
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
@@ -298,9 +234,22 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
       ),
     );
   }
+}
 
-  // Helper: Summary Card Widget
-  Widget _buildSummaryCard(String title, String count, Color color) {
+/// Summary card widget
+class _SummarCard extends StatelessWidget {
+  final String title;
+  final String count;
+  final Color color;
+
+  const _SummarCard({
+    required this.title,
+    required this.count,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -320,6 +269,112 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// List of sales reports
+class _SalesReportList extends StatelessWidget {
+  final List<SalesReport> reports;
+
+  const _SalesReportList({required this.reports});
+
+  @override
+  Widget build(BuildContext context) {
+    if (reports.isEmpty) {
+      return const Center(
+        child: Text(
+          'No sales reports found',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: reports.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final report = reports[index];
+        return _SalesReportCard(report: report, index: index + 1);
+      },
+    );
+  }
+}
+
+/// Individual sales report card
+class _SalesReportCard extends StatelessWidget {
+  final SalesReport report;
+  final int index;
+
+  const _SalesReportCard({required this.report, required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$index. ${report.shopName}",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const SizedBox(height: 12),
+          ...report.items.map<Widget>((item) {
+            // Format quantity without decimals if it's a whole number
+            final quantityDisplay = item.quantity % 1 == 0
+                ? "${item.quantity.toInt()} ${item.unit}"
+                : "${item.quantity.toStringAsFixed(2)} ${item.unit}";
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.productName,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    quantityDisplay,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox.shrink(),
+              Text(
+                "${report.date.day}/${report.date.month}/${report.date.year}",
+                style: const TextStyle(color: Colors.grey, fontSize: 11),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

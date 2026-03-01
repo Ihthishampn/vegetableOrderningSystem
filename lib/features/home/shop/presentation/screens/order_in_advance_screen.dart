@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/provider/product_provider.dart';
@@ -10,7 +10,7 @@ import 'package:vegetable_ordering_system/features/store_profile/presentation/pr
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 
 import '../widgets/order_in_advance/advance_date_icker.dart';
-import '../widgets/order_in_advance/advance_seaerch_bar.dart';
+import '../widgets/shop_home_widget/shop_search_widget.dart';
 
 class OrderInAdvanceScreen extends StatefulWidget {
   const OrderInAdvanceScreen({super.key});
@@ -20,16 +20,19 @@ class OrderInAdvanceScreen extends StatefulWidget {
 }
 
 class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
-
   DateTime _pickedDate = DateTime.now().add(const Duration(days: 2));
+  late TextEditingController _searchController;
+  String _searchTerm = '';
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -55,7 +58,7 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = Provider.of<AuthViewModel>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
 
     if (orderProv.storeId == null && auth.storeId != null) {
@@ -86,9 +89,21 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
             child: DatePickerField(initialDate: _dateText, onTap: _selectDate),
           ),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ProductSearchBar(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SearchBarWidget(
+              controller: _searchController,
+              onChanged: (val) {
+                setState(() {
+                  _searchTerm = val.trim();
+                });
+              },
+              onClear: () {
+                setState(() {
+                  _searchTerm = '';
+                });
+              },
+            ),
           ),
 
           Expanded(
@@ -109,7 +124,20 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                 final products = productProvider.availableProducts.isEmpty
                     ? productProvider.allProducts
                     : productProvider.availableProducts;
-                if (products.isEmpty) {
+
+                // apply search filter
+                var filteredProducts = List.from(products);
+                if (_searchTerm.isNotEmpty) {
+                  filteredProducts = filteredProducts
+                      .where(
+                        (p) => p.name.toLowerCase().contains(
+                          _searchTerm.toLowerCase(),
+                        ),
+                      )
+                      .toList();
+                }
+
+                if (filteredProducts.isEmpty) {
                   return const Center(child: Text('No products available'));
                 }
                 return ListView(
@@ -117,7 +145,7 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                     horizontal: 16,
                     vertical: 8,
                   ),
-                  children: products
+                  children: filteredProducts
                       .map(
                         (product) => ProductCard(
                           product: product,
@@ -128,7 +156,6 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                           onAddToCart: !product.isAvailable
                               ? null
                               : () {
-                               
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('${product.name} added'),
@@ -189,7 +216,7 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                         return;
                       }
 
-                      final authLocal = Provider.of<AuthProvider>(
+                      final authLocal = Provider.of<AuthViewModel>(
                         context,
                         listen: false,
                       );
@@ -308,7 +335,9 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                         Future.delayed(const Duration(seconds: 2), () {
                           if (!context.mounted) return;
                           Navigator.of(context, rootNavigator: true).pop();
-                          if (context.mounted) Navigator.of(context).pop();
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

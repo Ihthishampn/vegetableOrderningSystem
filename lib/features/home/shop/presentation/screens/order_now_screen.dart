@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
 
 import '../widgets/order_now_widgets/now_confirm_order_button.dart';
@@ -78,7 +78,10 @@ class OrderNowScreen extends StatelessWidget {
               OrderSummaryCard(
                 orderId: "ORD${DateTime.now().millisecondsSinceEpoch}",
                 storeName:
-                    Provider.of<AuthProvider>(context, listen: false).storeId ??
+                    Provider.of<AuthViewModel>(
+                      context,
+                      listen: false,
+                    ).storeId ??
                     "Your Store",
                 itemCount: cart.itemCount,
               ),

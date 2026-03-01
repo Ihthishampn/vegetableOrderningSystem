@@ -3,12 +3,13 @@ import 'package:provider/provider.dart';
 import '../provider/order_provider.dart';
 import '../widgets/order_screen_widgets/status_filter_bar.dart';
 import '../widgets/order_screen_widgets/store_order_card.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'pending_over_view_screen.dart';
 import 'approved_over_view_screen.dart';
 import 'completed_over_view.dart';
 import 'rejected_over_view.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/shop_home_widget/shop_search_widget.dart';
 
 /// Screen displaying all orders for the store with filtering by status
 class StoreOrdersScreen extends StatefulWidget {
@@ -20,12 +21,14 @@ class StoreOrdersScreen extends StatefulWidget {
 
 class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
   OrderStatus _selectedStatus = OrderStatus.pending;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchTerm = '';
   @override
   void initState() {
     super.initState();
     // Initialize OrderProvider with current store ID
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
+      final authProvider = context.read<AuthViewModel>();
       final orderProvider = context.read<OrderProvider>();
       final storeId = authProvider.uid;
 
@@ -33,6 +36,12 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
         orderProvider.initialize(storeId);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,94 +54,122 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
           onStatusSelected: (s) => setState(() => _selectedStatus = s),
         ),
       ),
-      body: Consumer<OrderProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SearchBarWidget(
+              controller: _searchController,
+              onChanged: (val) => setState(() => _searchTerm = val.trim()),
+              onClear: () => setState(() => _searchTerm = ''),
+            ),
+          ),
+          Expanded(
+            child: Consumer<OrderProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${provider.error}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: provider.fetchOrders,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
+                if (provider.error != null) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Error: ${provider.error}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: provider.fetchOrders,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-          // if there are no orders in the system at all, show generic message
-          if (provider.allOrders.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No orders yet',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            );
-          }
+                // if there are no orders in the system at all, show generic message
+                if (provider.allOrders.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No orders yet',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-          final filtered = provider.allOrders
-              .where((o) => o.status == _selectedStatus)
-              .toList();
+                var filtered = provider.allOrders
+                    .where((o) => o.status == _selectedStatus)
+                    .toList();
+                if (_searchTerm.isNotEmpty) {
+                  final term = _searchTerm.toLowerCase();
+                  filtered = filtered.where((o) {
+                    final name = o.customerName.toLowerCase();
+                    return o.id.toLowerCase().contains(term) ||
+                        name.contains(term);
+                  }).toList();
+                }
 
-          // if we have orders overall but none for the selected status, show
-          // a status-specific empty message instead of an empty list
-          if (filtered.isEmpty) {
-            String label = '';
-            switch (_selectedStatus) {
-              case OrderStatus.pending:
-                label = 'pending';
-                break;
-              case OrderStatus.approved:
-                label = 'approved';
-                break;
-              case OrderStatus.completed:
-                label = 'completed';
-                break;
-              case OrderStatus.rejected:
-                label = 'rejected';
-                break;
-              case OrderStatus.cancelled:
-                label = 'cancelled';
-                break;
-            }
-            final message = label.isNotEmpty ? 'No $label yet' : 'No orders';
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(message, style: TextStyle(color: Colors.grey[600])),
-                ],
-              ),
-            );
-          }
+                // if we have orders overall but none for the selected status, show
+                // a status-specific empty message instead of an empty list
+                if (filtered.isEmpty) {
+                  String label = '';
+                  switch (_selectedStatus) {
+                    case OrderStatus.pending:
+                      label = 'pending';
+                      break;
+                    case OrderStatus.approved:
+                      label = 'approved';
+                      break;
+                    case OrderStatus.completed:
+                      label = 'completed';
+                      break;
+                    case OrderStatus.rejected:
+                      label = 'rejected';
+                      break;
+                    case OrderStatus.cancelled:
+                      label = 'cancelled';
+                      break;
+                  }
+                  final message = label.isNotEmpty
+                      ? 'No $label yet'
+                      : 'No orders';
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          message,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-          // overview counts removed (no overview chips)
+                // overview counts removed (no overview chips)
 
-          return Column(
-            children: [
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView.builder(
+                return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
@@ -154,15 +191,14 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                       ),
                     );
                   },
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-
   // Overview chips removed per user request
 
   void _openOrderOverview(Order order) {
@@ -185,7 +221,7 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
         MaterialPageRoute(builder: (_) => RejectedOrderOverview(order: order)),
       );
     } else {
-      // default
+      // defaultkeep old ui for that cards
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => PendingOrderOverview(order: order)),
       );

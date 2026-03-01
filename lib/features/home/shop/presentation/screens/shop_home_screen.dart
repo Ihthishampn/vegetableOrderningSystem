@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_in_advance_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_now_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/repeat_last_order_screen.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/provider/product_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/domain/entities/product.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
@@ -24,6 +24,8 @@ class ShopHomeScreen extends StatefulWidget {
 class _ShopHomeScreenState extends State<ShopHomeScreen> {
   late CartProvider _localCartProvider;
   String _storeNameFromFirebase = '';
+  final TextEditingController _searchController = TextEditingController();
+  String _searchTerm = '';
 
   @override
   void initState() {
@@ -34,7 +36,7 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
 
   Future<void> _loadStoreNameFromFirebase() async {
     try {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final auth = Provider.of<AuthViewModel>(context, listen: false);
       if (auth.storeId != null) {
         final doc = await FirebaseFirestore.instance
             .collection('users')
@@ -59,6 +61,7 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
   @override
   void dispose() {
     _localCartProvider.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -120,7 +123,19 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    const SearchBarWidget(),
+                    SearchBarWidget(
+                      controller: _searchController,
+                      onChanged: (val) {
+                        setState(() {
+                          _searchTerm = val.trim();
+                        });
+                      },
+                      onClear: () {
+                        setState(() {
+                          _searchTerm = '';
+                        });
+                      },
+                    ),
                     const SizedBox(height: 7),
                     _buildProductList(),
                     const SizedBox(height: 10),
@@ -136,7 +151,6 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
   }
 
   Widget _buildAddressRow(BuildContext context) {
-  
     final profile = Provider.of<StoreProfileProvider>(context, listen: false);
     final storeName = _storeNameFromFirebase.isNotEmpty
         ? _storeNameFromFirebase
@@ -177,7 +191,7 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
   Widget _buildProductList() {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, _) {
-        final auth = Provider.of<AuthProvider>(context, listen: false);
+        final auth = Provider.of<AuthViewModel>(context, listen: false);
         final orderProvider = Provider.of<OrderProvider>(
           context,
           listen: false,
@@ -203,8 +217,15 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
           );
         }
 
-      
-        final products = List<Product>.from(productProvider.allProducts);
+        // apply search filter if provided
+        var products = List<Product>.from(productProvider.allProducts);
+        if (_searchTerm.isNotEmpty) {
+          products = products
+              .where(
+                (p) => p.name.toLowerCase().contains(_searchTerm.toLowerCase()),
+              )
+              .toList();
+        }
         products.sort((a, b) {
           final avA = a.isAvailable ? 0 : 1;
           final avB = b.isAvailable ? 0 : 1;

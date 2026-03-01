@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/sales_report.dart';
 import '../../domain/usecases/sales_report_use_case.dart';
+import '../../../store_shops/domain/entities/shop.dart';
 
 class SalesReportProvider with ChangeNotifier {
   final SalesReportUseCase _useCase;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   SalesReportProvider(this._useCase);
 
   List<SalesReport> _allReports = [];
   List<SalesReport> _filteredReports = [];
+  List<Shop> _allShops = [];
   double _totalSales = 0;
   bool _isLoading = false;
   String? _error;
@@ -17,6 +21,7 @@ class SalesReportProvider with ChangeNotifier {
 
   List<SalesReport> get allReports => _allReports;
   List<SalesReport> get filteredReports => _filteredReports;
+  List<Shop> get allShops => _allShops;
   double get totalSales => _totalSales;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -24,7 +29,36 @@ class SalesReportProvider with ChangeNotifier {
 
   Future<void> initialize(String storeId) async {
     _storeId = storeId;
-    await fetchSalesReports();
+    await Future.wait([_fetchAllShops(), fetchSalesReports()]);
+  }
+
+  /// Fetch all shops from the shops collection for this store
+  Future<void> _fetchAllShops() async {
+    if (_storeId == null) return;
+
+    try {
+      final snapshot = await _firestore
+          .collection('shops')
+          .where('storeId', isEqualTo: _storeId!)
+          .orderBy('shopname')
+          .get();
+
+      debugPrint(
+        'Fetched ${snapshot.docs.length} shops for storeId: $_storeId',
+      );
+
+      _allShops = snapshot.docs.map((doc) {
+        final shop = Shop.fromFirestore(doc.data(), doc.id);
+        debugPrint('Shop loaded: ${shop.shopName}');
+        return shop;
+      }).toList();
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching shops: $e');
+      _allShops = [];
+      notifyListeners();
+    }
   }
 
   Future<void> fetchSalesReports({
@@ -101,8 +135,27 @@ class SalesReportProvider with ChangeNotifier {
     }
   }
 
+  /// Get all shops including those with and without sales data
+  List<String> getAllShopNames() {
+    // If we have shops loaded, use them
+    if (_allShops.isNotEmpty) {
+      final shopNames = _allShops.map((shop) => shop.shopName).toList();
+      return ['All', ...shopNames];
+    }
+
+    // Fallback: if no shops loaded, try to get shops from sales reports
+    final shopNames = _allReports
+        .map((report) => report.shopName)
+        .toSet()
+        .toList();
+    shopNames.sort();
+    return ['All', ...shopNames];
+  }
+
+  /// Get unique shops from sales reports
   List<String> getUniqueShops() {
     final shops = _allReports.map((report) => report.shopName).toSet().toList();
+    shops.sort();
     return ['All', ...shops];
   }
 }

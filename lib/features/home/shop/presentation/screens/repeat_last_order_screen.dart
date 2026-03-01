@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_now_screen.dart';
@@ -19,7 +19,7 @@ class RepeatLastOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = Provider.of<AuthViewModel>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
     if (orderProv.storeId == null && auth.storeId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -45,7 +45,7 @@ class RepeatLastOrder extends StatelessWidget {
         children: [
           Consumer<OrderProvider>(
             builder: (context, orderProv, _) {
-              final auth = Provider.of<AuthProvider>(context, listen: false);
+              final auth = Provider.of<AuthViewModel>(context, listen: false);
               final customerOrders = orderProv.allOrders
                   .where((o) => o.customerId == auth.uid)
                   .toList();
@@ -81,7 +81,7 @@ class RepeatLastOrder extends StatelessWidget {
                   Expanded(
                     child: Consumer<OrderProvider>(
                       builder: (context, orderProv, _) {
-                        final auth = Provider.of<AuthProvider>(
+                        final auth = Provider.of<AuthViewModel>(
                           context,
                           listen: false,
                         );
@@ -117,7 +117,7 @@ class RepeatLastOrder extends StatelessWidget {
           const TotalItemsFooter(total: "05"),
           Consumer<OrderProvider>(
             builder: (context, orderProv, _) {
-              final auth = Provider.of<AuthProvider>(context, listen: false);
+              final auth = Provider.of<AuthViewModel>(context, listen: false);
               final cart = Provider.of<CartProvider>(context, listen: false);
 
               final customerOrders = orderProv.allOrders
@@ -262,9 +262,7 @@ class RepeatLastOrder extends StatelessWidget {
                     Future.delayed(const Duration(seconds: 2), () {
                       if (!context.mounted) return;
                       Navigator.of(context, rootNavigator: true).pop();
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                      }
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                     });
                   }
                 },

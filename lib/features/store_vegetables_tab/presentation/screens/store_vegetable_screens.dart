@@ -3,11 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/provider/product_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/screens/editVegitableScreen.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/my_elevated_button.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import '../widgets/status_row_holder.dart';
 import '../widgets/vege_item_card.dart';
-
 
 class StoreVegetableScreens extends StatefulWidget {
   const StoreVegetableScreens({super.key});
@@ -26,7 +25,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
     _tabController = TabController(length: 2, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = context.read<AuthProvider>();
+      final authProvider = context.read<AuthViewModel>();
       final productProvider = context.read<ProductProvider>();
       final storeId = authProvider.uid;
 
@@ -53,7 +52,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
         child: Column(
           children: [
             const SizedBox(height: 6),
-            
+
             StatusRowHolder(tabController: _tabController),
             Expanded(
               child: Consumer<ProductProvider>(
@@ -126,7 +125,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
         return VegetableItemCard(
           product: product,
           onEdit: () => _showEditSheet(context, product),
-     
+
           onDelete: () =>
               context.read<ProductProvider>().deleteProduct(product.id),
           onToggleAvailability: () => _toggleAvailability(context, product),
@@ -134,7 +133,6 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
       },
     );
   }
-
 
   void _showEditSheet(BuildContext context, product) {
     showModalBottomSheet(
@@ -147,8 +145,6 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
       builder: (_) => EditVegetablePage(product: product),
     );
   }
-
-
 
   void _toggleAvailability(BuildContext context, product) {
     context.read<ProductProvider>().toggleAvailability(product);

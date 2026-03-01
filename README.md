@@ -1,127 +1,151 @@
-# Vegetable Ordering System
+# 🚀 Quick Access & Test Credentials
 
-This repository contains a Flutter application for a store-side Vegetable Ordering System. It uses Provider for state management and Firebase (Firestore) for backend data.
+> **Application Modules:**
+> 1. Store Module (Admin Panel)
+> 2. Shop Module (User Panel)
+>
+> **Authentication Details:**
+>
+> **Firebase Configuration:**
+> Phone authentication is configured using Firebase Test Mode.
+> Test OTP for all test numbers: **123456**
+>
+> **Store Login Credentials (Admin Panel):**
+> - Phone Number: **9999999991**
+> - OTP: **123456**
+>
+> **Shop Login Credentials (Shop Panel):**
+> - Phone Number: **9999999992**
+> - OTP: **123456**
+>
+> **Adding a New Shop:**
+> One shop account is already created (credentials above).
+> A new shop can be added from:
+> **Store Panel → Menu → Shop Management**
 
-**Quick summary**: the app includes store and shop flows, order management, product management, and sales reporting.
+# Project Name: Vegetable Ordering Management System
 
-**Requirements**
-- Flutter SDK (>= 3.x)
-- Dart SDK matching your Flutter
-- Android Studio / Xcode for platform builds (or device/emulator)
-- Firebase project with Firestore
+## Project Overview
 
-**Setup**
+This Flutter application supports a two‑module ordering ecosystem:
+an **Admin/Store panel** for managing shops, products and orders and a
+**Shop/User panel** for placing and tracking orders. The backend
+is powered by Firebase Authentication and Cloud Firestore, and the
+frontend follows a clean, feature‑based architecture with Provider
+for state management.
 
-- Clone the repo:
+## Features
 
-  ```bash
-  git clone <repo-url>
-  cd vegetable_ordering_system
-  ```
-- Install Dart/Flutter and verify:
+### Store (Admin Panel)
+* Manage shops and shop staff
+* Add/edit/delete vegetable products
+* View and process incoming orders
+* Generate sales reports
+* Authentication with phone number
 
-  ```bash
-  flutter --version
-  flutter doctor
-  ```
-- Get dependencies:
+### Shop (User Panel)
+* Browse available products from assigned store
+* Place immediate or advance orders
+* View past orders and repeat them
+* cart workflow with order types toggle
+* Authentication with phone number
 
-  ```bash
-  flutter pub get
-  ```
-- Generate platform Firebase options (recommended) with FlutterFire CLI (optional but recommended):
+## Tech Stack
 
-  1. Install FlutterFire CLI if you don't have it:
+* **Flutter** (latest stable)
+* **Firebase Authentication** (phone auth, test mode)
+* **Cloud Firestore**
+* **Provider** for state management
+* **SharedPreferences** for local session persistence
+* **Clean Architecture** (feature-based MVVM-style structure)
 
-     ```bash
-     dart pub global activate flutterfire_cli
-     ```
+## Architecture Explanation
 
-  2. Configure your Firebase project for this app:
+Each feature lives under `lib/features/<feature_name>` and is divided
+into:
 
-     ```bash
-     flutterfire configure
-     ```
 
-     This will generate the `lib/firebase_options.dart` used by the app. If you prefer to add config files manually, follow the Android / iOS steps below.
+ViewModels expose state and actions to UI widgets via Provider. All
+Firebase or external calls are abstracted into the data layer, keeping
+UI code clean and testable.
 
-**Firebase configuration (manual steps)**
+## Firebase Configuration Steps
 
-1. Create a Firebase project at https://console.firebase.google.com
-2. Enable Firestore Database (in Native mode) and create required collections used by the app: `orders`, `products`, `shops` (see repository code for exact fields).
-3. Register Android app in Firebase console and download `google-services.json`.
-   - Place `google-services.json` into `android/app/`.
-4. Register iOS app and download `GoogleService-Info.plist`.
-   - Add `GoogleService-Info.plist` to `ios/Runner` (Xcode: Runner target).
-5. (Optional) For web configure the Firebase web app in the console and copy the config into `web/index.html` or use `flutterfire configure` which writes `lib/firebase_options.dart`.
+1. Create a Firebase project at https://console.firebase.google.com.
+2. Enable **Authentication → Phone** and switch to **test mode**.
+3. Add an Android and/or iOS app and download configuration files:
+   * `google-services.json` → place in `android/app/`
+   * `GoogleService-Info.plist` → add to `ios/Runner`
+4. Enable Cloud Firestore (Native mode).
+5. (Optional) Run `flutterfire configure` to generate
+   `lib/firebase_options.dart`.
 
-Notes about Firestore usage in this project:
-- Orders are stored in the `orders` collection. Sales reports query orders with `status == 'completed'` and `deliveredAt` for date filtering.
-- The code accepts `deliveredAt` either as a Firestore `Timestamp` or an ISO-8601 string; prefer using Firestore `Timestamp` when creating/updating documents to avoid parsing issues.
+No additional API keys are required since auth is in test mode.
 
-**Environment / Local config**
-- `android/local.properties` should contain the Android SDK path (created automatically by Android Studio).
-- If you use CI or environment-specific keys, store them securely (this repo does not include API secrets).
-
-**Run the app**
+## Setup & Installation Instructions
 
 ```bash
-# for Android emulator
-flutter run -d emulator-5554
+git clone <repo-url>
+cd vegetable_ordering_system
+flutter pub get
+```
 
-# for debug on default device
+Ensure Flutter and Dart SDKs are installed (`flutter --version`).
+Run `flutter doctor` to verify tooling.
+
+Platform-specific prerequisites:
+* **Android:** Android SDK and emulator/device available.
+* **iOS:** Xcode and valid development team if building to a device.
+
+## Running the Project
+
+```bash
+# run on default connected device
 flutter run
 
-# run analyzer
+# specify emulator
+flutter run -d emulator-5554
+
+# analyze project
 flutter analyze
-``` 
+```
 
-**Folder Structure (high level)**
+## Folder Structure Explanation
 
-- `android/`, `ios/`, `web/`, `linux/`, `macos/`, `windows/` — platform folders generated by Flutter.
-- `lib/` — application source code
-  - `lib/main.dart` — app entrypoint
-  - `lib/firebase_options.dart` — (generated) Firebase configuration
-  - `lib/app/` — app-level widgets and routes
-  - `lib/features/` — feature modules (domain-driven structure)
-    - `features/home/` — home screens for shop/store flows
-    - `features/store_orders_tab/` — store order management (providers, widgets, screens)
-    - `features/sales_report/` — sales reporting (providers, use-cases, repository)
-    - `features/store_vegetables_tab/` — product/vegetable management
-    - `features/auth/` — authentication flows and providers
-    - `...` (other features split similarly)
-- `assets/` — images and static assets
-- `test/` — unit/widget tests
+```
+android/  ios/  web/  linux/ macos/ windows/  # Flutter platforms
+lib/
+  main.dart                    # entrypoint
+  firebase_options.dart        # generated by flutterfire
+  app/                         # app-level widgets/routes
+  features/
+    auth/                     # login/role selection  
+    home/                     # shop & store home screens
+    store_orders_tab/         # order management
+    store_vegetables_tab/     # product catalog
+    ...                       # other feature modules
+assets/                       # images, fonts, etc.
+test/                         # unit/widget tests
+```
 
-Implementation notes
-- State management: Provider + ChangeNotifier objects live under `presentation/provider` folders for each feature.
-- Data layer: repositories in `data/repositories` use Firestore to load/save data. Use cases sit under `domain/usecases` and entities under `domain/entities`.
+Each feature subfolder follows the data/domain/presentation pattern
+described above.
 
-Common places to look when debugging counts or data issues
-- Orders: `lib/features/store_orders_tab/presentation/provider/order_provider.dart` and related `usecases` / `repositories`.
-- Sales reports: `lib/features/sales_report/presentation/provider/sales_report_provider.dart` and `lib/features/sales_report/data/repositories/sales_report_repository_impl.dart`.
+## APK Build Instructions
 
-If you change how dates are stored in Firestore (e.g., ISO strings vs Timestamps), update the `_parseDate` helper in `sales_report_repository_impl.dart`.
+1. Configure release signing (`android/app/build.gradle`).
+2. Run:
+   ```bash
+   flutter build apk --release
+   ```
+3. The generated APK will be located at
+   `build/app/outputs/flutter-apk/app-release.apk`.
 
-Contributing
-- Follow existing project structure. Run `flutter analyze` and any tests before creating PRs.
+For iOS, use `flutter build ios` and open the workspace in Xcode for
+archiving.
 
-Contact
-- For questions about this repo, check the top-level `README` or open an issue in the repository.
-# vegetable_ordering_system
+---
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# vegetableOrderningSystem
+*This README provides a concise introduction and setup guide for the
+Vegetable Ordering Management System. Refer to code comments or open an
+issue for further assistance.*

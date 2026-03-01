@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/order_type_toggle.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/status_filter_bar.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/cart_widgets/store_dropdowm_menu.dart';
+import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/shop_home_widget/shop_search_widget.dart';
 
 import '../widgets/cart_widgets/direct_order_list.dart';
 import '../widgets/cart_widgets/filter_drop_down.dart';
@@ -24,6 +25,8 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
   String selectedStatus = 'All';
   String selectedStore = 'All';
   DateTime? _selectedDate;
+  final TextEditingController _orderSearchController = TextEditingController();
+  String _orderSearch = '';
   String get _dateLabel {
     if (_selectedDate == null) return 'Filter by Date';
     return "${_selectedDate!.day.toString().padLeft(2, '0')}-"
@@ -55,7 +58,8 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
       final names = <String>[];
       for (final d in snapshot.docs) {
         final data = d.data();
-        final name = ((data['storename'] ?? data['storeName']) as String?)?.trim();
+        final name = ((data['storename'] ?? data['storeName']) as String?)
+            ?.trim();
         final displayName = (name != null && name.isNotEmpty) ? name : d.id;
         names.add(displayName);
         _storeIdByName[displayName] = d.id;
@@ -64,7 +68,7 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
         _stores = ['All', ...names];
       });
     } catch (e) {
-      // 
+      //
     }
   }
 
@@ -76,6 +80,11 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
   @override
   void initState() {
     super.initState();
+    _orderSearchController.addListener(() {
+      setState(() {
+        _orderSearch = _orderSearchController.text.trim();
+      });
+    });
     _loadStores();
   }
 
@@ -106,7 +115,7 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProv = Provider.of<AuthProvider>(context, listen: false);
+    final authProv = Provider.of<AuthViewModel>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
     if (orderProv.storeId == null && authProv.storeId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -175,6 +184,17 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
             ),
           ),
 
+          // search bar for orders
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SearchBarWidget(
+              controller: _orderSearchController,
+              onClear: () {
+                // nothing else needed, listener clears _orderSearch
+              },
+            ),
+          ),
+
           StatusFilterBarCart(
             selectedStatus: selectedStatus,
             onStatusSelected: (status) =>
@@ -184,12 +204,21 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
           Expanded(
             child: Consumer<OrderProvider>(
               builder: (context, orderProv, _) {
-                final auth = Provider.of<AuthProvider>(context, listen: false);
+                final auth = Provider.of<AuthViewModel>(context, listen: false);
                 // only show orders for this customer
                 final customerOrders = orderProv.allOrders
                     .where((o) => o.customerId == auth.uid)
                     .cast<Order>()
                     .toList();
+
+                // apply search filter (order id or customer name)
+                if (_orderSearch.isNotEmpty) {
+                  final term = _orderSearch.toLowerCase();
+                  customerOrders.retainWhere((o) {
+                    return o.id.toLowerCase().contains(term) ||
+                        o.customerName.toLowerCase().contains(term);
+                  });
+                }
 
                 // apply status filter if not 'All'
                 List<Order> filtered = customerOrders;

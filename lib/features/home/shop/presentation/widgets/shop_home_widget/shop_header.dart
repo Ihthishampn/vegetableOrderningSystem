@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/my_cart_order_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import '../../../../store/widgets/top_curve_clipper.dart' show TopCurveClipper;
 import '../../screens/shop_profile_screen.dart';
@@ -23,7 +23,7 @@ class ShopHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Consumer<AuthProvider>(
+            Consumer<AuthViewModel>(
               builder: (context, auth, _) {
                 final shopName = auth.storeName?.isNotEmpty == true
                     ? auth.storeName!

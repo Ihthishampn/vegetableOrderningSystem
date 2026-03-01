@@ -18,7 +18,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final auth = Provider.of<AuthViewModel>(context, listen: false);
       final staffProv = Provider.of<StaffProvider>(context, listen: false);
       if (auth.uid != null) {
         staffProv.initialize(auth.uid!);
@@ -339,7 +339,7 @@ class _AddStaffPageState extends State<AddStaffPage> {
 
   Future<void> _submit() async {
     final provider = Provider.of<StaffProvider>(context, listen: false);
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = Provider.of<AuthViewModel>(context, listen: false);
     if (auth.uid == null) return;
     final now = DateTime.now();
     final staff = Staff(

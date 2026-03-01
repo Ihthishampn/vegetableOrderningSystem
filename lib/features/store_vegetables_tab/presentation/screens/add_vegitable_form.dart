@@ -7,7 +7,7 @@ import '../widgets/add_veg_form_header.dart';
 import '../widgets/image_pick_area.dart';
 import '../widgets/label_and_field.dart';
 import '../widgets/add_success_message.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class AddVegetableForm extends StatefulWidget {
   const AddVegetableForm({super.key});
@@ -65,7 +65,7 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
     }
 
     final productProvider = context.read<ProductProvider>();
-    final authProvider = context.read<AuthProvider>();
+    final authProvider = context.read<AuthViewModel>();
     final storeId = authProvider.uid;
 
     if (storeId == null || storeId.isEmpty) {

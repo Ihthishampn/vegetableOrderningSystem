@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
 
 import '../../../widgets/store_account_info_seccion.dart';
@@ -24,7 +24,7 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
   }
 
   void _loadStoreProfile() {
-    final authProvider = context.read<AuthProvider>();
+    final authProvider = context.read<AuthViewModel>();
     final storeProfileProvider = context.read<StoreProfileProvider>();
 
     if (authProvider.userId != null) {

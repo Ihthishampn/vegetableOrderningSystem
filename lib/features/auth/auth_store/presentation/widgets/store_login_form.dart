@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/core/widgets/otp_verification_sheet.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import 'login_title_store.dart';
 import 'mobile_input_store.dart';
@@ -44,9 +44,9 @@ class _LoginFormStoreState extends State<LoginFormStore> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.read<AuthProvider>();
+    final auth = context.read<AuthViewModel>();
 
-    return Consumer<AuthProvider>(
+    return Consumer<AuthViewModel>(
       builder: (context, authProvider, _) {
         return Container(
           width: double.infinity,

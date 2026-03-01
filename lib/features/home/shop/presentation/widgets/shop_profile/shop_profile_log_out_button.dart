@@ -22,7 +22,7 @@ class ShopProfileLogOutButton extends StatelessWidget {
                 cancelText: "Cancel",
                 primaryColor: Colors.red,
                 onConfirm: () async {
-                  final auth = context.read<AuthProvider>();
+                  final auth = context.read<AuthViewModel>();
                   await auth.logout();
 
                   if (!context.mounted) return;

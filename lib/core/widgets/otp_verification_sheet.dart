@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../features/auth/provider/auth_provider.dart';
+import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../features/auth/presentation/providers/otp_provider.dart';
 
 class OtpVerificationSheet extends StatefulWidget {
@@ -31,7 +31,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
+    final authProvider = context.watch<AuthViewModel>();
     final otpProvider = context.watch<OtpProvider>();
 
     // Role-based styling
@@ -194,6 +194,11 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                           if (!mounted) return;
 
                           if (success) {
+                            // clear any entered digits so the sheet is blank next
+                            // time it's shown.  We clear both the hidden
+                            // controller and the visual provider state.
+                            otpController.clear();
+                            otpProvider.clear();
                             widget.onSuccess?.call();
                           } else {
                             _formKey.currentState?.validate();

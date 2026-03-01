@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class OrderTypeToggle extends StatelessWidget {
   final int selectedIndex;
@@ -17,7 +17,7 @@ class OrderTypeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     // compute counts for current customer from OrderProvider
     final orderProvider = Provider.of<OrderProvider>(context);
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = Provider.of<AuthViewModel>(context, listen: false);
     final now = DateTime.now();
 
     final customerOrders = orderProvider.allOrders

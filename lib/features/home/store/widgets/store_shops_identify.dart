@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class ShopIdentityCard extends StatelessWidget {
   const ShopIdentityCard({super.key});
@@ -35,7 +35,7 @@ class ShopIdentityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // dynamic store information: name from auth provider first, fallback to profile
-                Consumer2<AuthProvider, StoreProfileProvider>(
+                Consumer2<AuthViewModel, StoreProfileProvider>(
                   builder: (context, auth, profProv, _) {
                     final authName = auth.storeName ?? '';
                     final profile = profProv.storeProfile;

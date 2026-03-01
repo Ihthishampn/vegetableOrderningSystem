@@ -9,7 +9,7 @@ import '../../../widgets/orders_header_store.dart';
 import '../../../widgets/status_card_row.dart';
 import '../../../widgets/top_home_appbar_content_store.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
-import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class StoreHomeScreen extends StatefulWidget {
   const StoreHomeScreen({super.key});
@@ -23,7 +23,7 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = context.read<AuthProvider>();
+      final auth = context.read<AuthViewModel>();
       final storeId = auth.uid;
       if (storeId != null && storeId.isNotEmpty) {
         final orderProvider = context.read<OrderProvider>();

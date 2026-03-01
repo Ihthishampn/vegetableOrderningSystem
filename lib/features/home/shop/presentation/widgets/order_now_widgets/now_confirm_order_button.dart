@@ -5,7 +5,6 @@ import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.d
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
-import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_products_overview_screen.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 
 class ConfirmOrderButton extends StatelessWidget {
@@ -24,7 +23,7 @@ class ConfirmOrderButton extends StatelessWidget {
             final cart = Provider.of<CartProvider>(context, listen: false);
             if (cart.cartItems.isEmpty) return;
 
-            final auth = Provider.of<AuthProvider>(context, listen: false);
+            final auth = Provider.of<AuthViewModel>(context, listen: false);
             final orderProv = Provider.of<OrderProvider>(
               context,
               listen: false,
@@ -96,27 +95,9 @@ class ConfirmOrderButton extends StatelessWidget {
               );
               Future.delayed(const Duration(seconds: 2), () {
                 if (!context.mounted) return;
-                // close the dialog
                 Navigator.of(context, rootNavigator: true).pop();
-
-                // after order placement, navigate to overview screen so shop
-                // user can see details and cancel if desired.
-                // pick the most recent order belonging to this customer
-                final all = orderProv.allOrders
-                    .where((o) => o.customerId == auth.uid)
-                    .toList();
-                if (all.isNotEmpty) {
-                  all.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-                  final latest = all.first;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ShopOrderOverview(order: latest),
-                    ),
-                  );
-                } else {
-                  // fallback: just pop the summary screen
-                  if (context.mounted) Navigator.of(context).pop();
-                }
+                // navigate back to the root of the stack (home screen)
+                Navigator.of(context).popUntil((route) => route.isFirst);
               });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
