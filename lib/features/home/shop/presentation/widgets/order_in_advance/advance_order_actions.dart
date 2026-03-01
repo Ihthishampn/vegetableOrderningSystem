@@ -10,10 +10,7 @@ import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entit
 class AdvanceOrderActions extends StatelessWidget {
   final DateTime scheduledDate;
 
-  const AdvanceOrderActions({
-    super.key,
-    required this.scheduledDate,
-  });
+  const AdvanceOrderActions({super.key, required this.scheduledDate});
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +21,7 @@ class AdvanceOrderActions extends StatelessWidget {
           Expanded(
             child: OutlinedButton(
               onPressed: () {
-                final cart =
-                    Provider.of<CartProvider>(context, listen: false);
+                final cart = Provider.of<CartProvider>(context, listen: false);
                 cart.clearCart();
                 Navigator.of(context).pop();
               },
@@ -45,8 +41,7 @@ class AdvanceOrderActions extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () async {
-                final cart =
-                    Provider.of<CartProvider>(context, listen: false);
+                final cart = Provider.of<CartProvider>(context, listen: false);
                 if (cart.cartItems.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -58,27 +53,30 @@ class AdvanceOrderActions extends StatelessWidget {
                   return;
                 }
 
-                final authLocal =
-                    Provider.of<AuthViewModel>(context, listen: false);
-                final orderProvLocal =
-                    Provider.of<OrderProvider>(context, listen: false);
-                final profileProvLocal =
-                    Provider.of<StoreProfileProvider>(context, listen: false);
+                final authLocal = Provider.of<AuthViewModel>(
+                  context,
+                  listen: false,
+                );
+                final orderProvLocal = Provider.of<OrderProvider>(
+                  context,
+                  listen: false,
+                );
+                final profileProvLocal = Provider.of<StoreProfileProvider>(
+                  context,
+                  listen: false,
+                );
 
                 if (orderProvLocal.storeId == null &&
                     authLocal.storeId != null) {
                   await orderProvLocal.initialize(authLocal.storeId!);
                 }
 
-                final storeId =
-                    orderProvLocal.storeId ?? authLocal.storeId;
+                final storeId = orderProvLocal.storeId ?? authLocal.storeId;
                 final customerId = authLocal.uid;
                 if (storeId == null || storeId.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Store ID missing. Cannot place order.',
-                      ),
+                      content: Text('Store ID missing. Cannot place order.'),
                     ),
                   );
                   return;
@@ -86,16 +84,13 @@ class AdvanceOrderActions extends StatelessWidget {
                 if (customerId == null || customerId.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'User not authenticated. Please log in.',
-                      ),
+                      content: Text('User not authenticated. Please log in.'),
                     ),
                   );
                   return;
                 }
 
-                String customerName =
-                    authLocal.storeName?.trim() ?? '';
+                String customerName = authLocal.storeName?.trim() ?? '';
                 if (customerName.isEmpty) {
                   customerName =
                       profileProvLocal.storeProfile?.storeName?.trim() ?? '';
@@ -104,15 +99,12 @@ class AdvanceOrderActions extends StatelessWidget {
 
                 String deliveryAddress =
                     profileProvLocal.storeProfile?.address ?? '';
-                String customerPhone =
-                    authLocal.userRole == 'store'
-                        ? authLocal.phoneNumber ?? ''
-                        : '';
+                String customerPhone = authLocal.userRole == 'store'
+                    ? authLocal.phoneNumber ?? ''
+                    : '';
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Placing scheduled order...'),
-                  ),
+                  const SnackBar(content: Text('Placing scheduled order...')),
                 );
 
                 bool success = false;
@@ -159,20 +151,18 @@ class AdvanceOrderActions extends StatelessWidget {
                       title: "Scheduled",
                       message: "Your scheduled order has been placed.",
                     ),
-                    transitionBuilder: (_, anim, __, child) =>
-                        ScaleTransition(
-                          scale: CurvedAnimation(
-                            parent: anim,
-                            curve: Curves.easeOutBack,
-                          ),
-                          child: child,
-                        ),
+                    transitionBuilder: (_, anim, __, child) => ScaleTransition(
+                      scale: CurvedAnimation(
+                        parent: anim,
+                        curve: Curves.easeOutBack,
+                      ),
+                      child: child,
+                    ),
                   );
                   Future.delayed(const Duration(seconds: 2), () {
                     if (!context.mounted) return;
                     Navigator.of(context, rootNavigator: true).pop();
-                    Navigator.of(context)
-                        .popUntil((route) => route.isFirst);
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -191,10 +181,7 @@ class AdvanceOrderActions extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                "Order",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Order", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

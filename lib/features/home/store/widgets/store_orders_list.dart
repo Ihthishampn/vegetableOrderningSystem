@@ -6,10 +6,7 @@ import 'home_order_items_store.dart';
 class StoreOrdersList extends StatelessWidget {
   final String Function(DateTime) formatDate;
 
-  const StoreOrdersList({
-    super.key,
-    required this.formatDate,
-  });
+  const StoreOrdersList({super.key, required this.formatDate});
 
   @override
   Widget build(BuildContext context) {

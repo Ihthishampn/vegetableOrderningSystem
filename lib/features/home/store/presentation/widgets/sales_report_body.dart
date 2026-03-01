@@ -12,10 +12,7 @@ class SalesReportBody extends StatelessWidget {
   final DateTime? selectedDate;
   final VoidCallback onDateTap;
 
-  const SalesReportBody({
-    required this.selectedDate,
-    required this.onDateTap,
-  });
+  const SalesReportBody({required this.selectedDate, required this.onDateTap});
 
   @override
   Widget build(BuildContext context) {

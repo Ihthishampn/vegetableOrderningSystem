@@ -12,19 +12,14 @@ class RepeatOrderItemsList extends StatelessWidget {
     return Expanded(
       child: Consumer<OrderProvider>(
         builder: (context, orderProv, _) {
-          final auth = Provider.of<AuthViewModel>(
-            context,
-            listen: false,
-          );
+          final auth = Provider.of<AuthViewModel>(context, listen: false);
           final customerOrders = orderProv.allOrders
               .where((o) => o.customerId == auth.uid)
               .toList();
           if (customerOrders.isEmpty) {
             return const Center(child: Text('No items'));
           }
-          customerOrders.sort(
-            (a, b) => b.createdAt.compareTo(a.createdAt),
-          );
+          customerOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           final last = customerOrders.first;
           return ListView.builder(
             itemCount: last.items.length,

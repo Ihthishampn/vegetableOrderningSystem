@@ -10,19 +10,13 @@ import 'now_confirm_order_button.dart';
 class OrderContentView extends StatelessWidget {
   final CartProvider cartProvider;
 
-  const OrderContentView({
-    super.key,
-    required this.cartProvider,
-  });
+  const OrderContentView({super.key, required this.cartProvider});
 
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        final authView = Provider.of<AuthViewModel>(
-          context,
-          listen: false,
-        );
+        final authView = Provider.of<AuthViewModel>(context, listen: false);
         final displayName = authView.storeName?.trim().isNotEmpty == true
             ? authView.storeName!
             : authView.storeId ?? "Your Store";

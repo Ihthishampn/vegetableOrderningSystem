@@ -7,10 +7,7 @@ import '../presentation/screens/home_screen_store.dart/store_profile_screen.dart
 class StoreHomeAppBar extends StatelessWidget {
   final double expandedHeight;
 
-  const StoreHomeAppBar({
-    super.key,
-    required this.expandedHeight,
-  });
+  const StoreHomeAppBar({super.key, required this.expandedHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +18,17 @@ class StoreHomeAppBar extends StatelessWidget {
         CircularIcon(
           icon: Icons.menu,
           ontap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MenuPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => MenuPage()));
           },
         ),
         CircularIcon(
           icon: Icons.person_outline,
           ontap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => StoreProfilePage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => StoreProfilePage()));
           },
         ),
       ],

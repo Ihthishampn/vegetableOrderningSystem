@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class EmptyCartView extends StatelessWidget {
   final VoidCallback onContinueShopping;
 
-  const EmptyCartView({
-    super.key,
-    required this.onContinueShopping,
-  });
+  const EmptyCartView({super.key, required this.onContinueShopping});
 
   @override
   Widget build(BuildContext context) {

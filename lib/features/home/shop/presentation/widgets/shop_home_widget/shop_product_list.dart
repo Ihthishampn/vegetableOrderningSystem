@@ -9,10 +9,7 @@ import '../shop_home_widget/shop_product_card.dart';
 class ShopProductList extends StatelessWidget {
   final String searchTerm;
 
-  const ShopProductList({
-    super.key,
-    required this.searchTerm,
-  });
+  const ShopProductList({super.key, required this.searchTerm});
 
   @override
   Widget build(BuildContext context) {

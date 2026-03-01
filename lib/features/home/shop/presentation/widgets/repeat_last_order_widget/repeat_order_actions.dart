@@ -122,14 +122,12 @@ class RepeatOrderActions extends StatelessWidget {
             );
             String customerName = auth.storeName?.trim() ?? '';
             if (customerName.isEmpty) {
-              customerName =
-                  profileProv.storeProfile?.storeName.trim() ?? '';
+              customerName = profileProv.storeProfile?.storeName.trim() ?? '';
             }
             if (customerName.isEmpty) {
               customerName = auth.storeId ?? 'Shop';
             }
-            String deliveryAddress =
-                profileProv.storeProfile?.address ?? '';
+            String deliveryAddress = profileProv.storeProfile?.address ?? '';
             String customerPhone = auth.phoneNumber ?? '';
             final success = await orderProv.addOrder(
               customerId: auth.uid ?? '',
@@ -150,14 +148,13 @@ class RepeatOrderActions extends StatelessWidget {
                   title: "Order Repeated",
                   message: "Your previous order has been repeated.",
                 ),
-                transitionBuilder: (_, anim, __, child) =>
-                    ScaleTransition(
-                      scale: CurvedAnimation(
-                        parent: anim,
-                        curve: Curves.easeOutBack,
-                      ),
-                      child: child,
-                    ),
+                transitionBuilder: (_, anim, __, child) => ScaleTransition(
+                  scale: CurvedAnimation(
+                    parent: anim,
+                    curve: Curves.easeOutBack,
+                  ),
+                  child: child,
+                ),
               );
               Future.delayed(const Duration(seconds: 2), () {
                 if (!context.mounted) return;

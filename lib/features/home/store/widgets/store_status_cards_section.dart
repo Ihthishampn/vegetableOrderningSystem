@@ -4,10 +4,7 @@ import 'status_card_row.dart';
 class StoreStatusCardsSection extends StatelessWidget {
   final double toolbarHeight;
 
-  const StoreStatusCardsSection({
-    super.key,
-    required this.toolbarHeight,
-  });
+  const StoreStatusCardsSection({super.key, required this.toolbarHeight});
 
   @override
   Widget build(BuildContext context) {

@@ -5,10 +5,7 @@ import 'package:vegetable_ordering_system/features/store_profile/presentation/pr
 class ShopAddressRow extends StatelessWidget {
   final String storeNameFromFirebase;
 
-  const ShopAddressRow({
-    super.key,
-    required this.storeNameFromFirebase,
-  });
+  const ShopAddressRow({super.key, required this.storeNameFromFirebase});
 
   @override
   Widget build(BuildContext context) {

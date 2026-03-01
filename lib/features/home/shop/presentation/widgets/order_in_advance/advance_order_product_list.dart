@@ -6,10 +6,7 @@ import 'package:vegetable_ordering_system/features/home/shop/presentation/widget
 class AdvanceOrderProductList extends StatelessWidget {
   final String searchTerm;
 
-  const AdvanceOrderProductList({
-    super.key,
-    required this.searchTerm,
-  });
+  const AdvanceOrderProductList({super.key, required this.searchTerm});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +28,8 @@ class AdvanceOrderProductList extends StatelessWidget {
           if (searchTerm.isNotEmpty) {
             filteredProducts = filteredProducts
                 .where(
-                  (p) => p.name.toLowerCase().contains(
-                    searchTerm.toLowerCase(),
-                  ),
+                  (p) =>
+                      p.name.toLowerCase().contains(searchTerm.toLowerCase()),
                 )
                 .toList();
           }
@@ -42,10 +38,7 @@ class AdvanceOrderProductList extends StatelessWidget {
             return const Center(child: Text('No products available'));
           }
           return ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             children: filteredProducts
                 .map(
                   (product) => ProductCard(

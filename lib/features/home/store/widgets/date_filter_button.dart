@@ -28,10 +28,7 @@ class DateFilterButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              dateText,
-              style: const TextStyle(fontSize: 14),
-            ),
+            Text(dateText, style: const TextStyle(fontSize: 14)),
             const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
           ],
         ),

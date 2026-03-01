@@ -44,9 +44,7 @@ class OrderNowScreen extends StatelessWidget {
             );
           }
 
-          return OrderContentView(
-            cartProvider: cart,
-          );
+          return OrderContentView(cartProvider: cart);
         },
       ),
     );

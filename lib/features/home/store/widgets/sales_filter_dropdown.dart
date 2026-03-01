@@ -26,10 +26,7 @@ class SalesFilterDropdown extends StatelessWidget {
         underline: const SizedBox.shrink(),
         value: value,
         items: shops.map((shop) {
-          return DropdownMenuItem<String>(
-            value: shop,
-            child: Text(shop),
-          );
+          return DropdownMenuItem<String>(value: shop, child: Text(shop));
         }).toList(),
         onChanged: onChanged,
       ),

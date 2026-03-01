@@ -5,10 +5,7 @@ import 'package:vegetable_ordering_system/features/home/shop/presentation/provid
 class ShopBottomOrderButton extends StatelessWidget {
   final CartProvider cartProvider;
 
-  const ShopBottomOrderButton({
-    super.key,
-    required this.cartProvider,
-  });
+  const ShopBottomOrderButton({super.key, required this.cartProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +16,7 @@ class ShopBottomOrderButton extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) =>
-                  OrderNowScreen(cartProvider: cartProvider),
+              builder: (context) => OrderNowScreen(cartProvider: cartProvider),
             ),
           );
         },

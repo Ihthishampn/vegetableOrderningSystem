@@ -26,8 +26,8 @@ class RepeatOrderHeader extends StatelessWidget {
         final displayName = auth.storeName?.trim().isNotEmpty == true
             ? auth.storeName!
             : last.shopId?.trim().isNotEmpty == true
-                ? last.shopId!
-                : last.storeId;
+            ? last.shopId!
+            : last.storeId;
         return OrderSummaryHeader(
           orderId: last.id,
           storeName: displayName,
