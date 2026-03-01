@@ -32,6 +32,21 @@ class SalesReportUseCase {
     );
   }
 
+  /// New: fetch reports by shopId
+  Future<List<SalesReport>> getSalesReportByShopId(
+    String storeId,
+    String shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    return repository.getSalesReportByShopId(
+      storeId,
+      shopId,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
   Future<double> getTotalSalesByStore(
     String storeId, {
     DateTime? startDate,

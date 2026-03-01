@@ -53,7 +53,12 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
         reports.add(
           SalesReport(
             orderId: doc.id,
-            shopName: data['shopName'] ?? 'Green Valley Shop',
+            shopId: data['shopId'] ?? data['shopID'] ?? data['shop_id'] ?? '',
+            shopName:
+                data['shopName'] ??
+                data['shopname'] ??
+                data['customerName'] ??
+                'Unknown Shop',
             date: _parseDate(data['deliveredAt']),
             items: items,
             totalAmount: (data['totalPrice'] ?? 0).toDouble(),
@@ -114,7 +119,12 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
         reports.add(
           SalesReport(
             orderId: doc.id,
-            shopName: data['shopName'] ?? 'Green Valley Shop',
+            shopId: data['shopId'] ?? data['shopID'] ?? data['shop_id'] ?? '',
+            shopName:
+                data['shopName'] ??
+                data['shopname'] ??
+                data['customerName'] ??
+                'Unknown Shop',
             date: _parseDate(data['deliveredAt']),
             items: items,
             totalAmount: (data['totalPrice'] ?? 0).toDouble(),
@@ -125,6 +135,72 @@ class SalesReportRepositoryImpl implements SalesReportRepository {
       return reports;
     } catch (e) {
       throw Exception('Failed to fetch sales reports by shop: $e');
+    }
+  }
+
+  @override
+  Future<List<SalesReport>> getSalesReportByShopId(
+    String storeId,
+    String shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      var query = _firestore
+          .collection(_ordersCollection)
+          .where('storeId', isEqualTo: storeId)
+          .where('shopId', isEqualTo: shopId)
+          .where('status', isEqualTo: 'completed')
+          .orderBy('deliveredAt', descending: true);
+
+      if (startDate != null) {
+        query = query.where('deliveredAt', isGreaterThanOrEqualTo: startDate);
+      }
+      if (endDate != null) {
+        query = query.where('deliveredAt', isLessThanOrEqualTo: endDate);
+      }
+
+      final snapshot = await query.get();
+      final reports = <SalesReport>[];
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final items = <SalesItem>[];
+
+        if (data['items'] != null) {
+          for (final item in data['items']) {
+            items.add(
+              SalesItem(
+                productName: item['productName'] ?? '',
+                quantity: (item['quantity'] ?? 0).toDouble(),
+                unit: item['unit'] ?? '',
+                pricePerUnit: (item['price'] ?? 0).toDouble(),
+                totalPrice: ((item['quantity'] ?? 0) * (item['price'] ?? 0))
+                    .toDouble(),
+              ),
+            );
+          }
+        }
+
+        reports.add(
+          SalesReport(
+            orderId: doc.id,
+            shopId: data['shopId'] ?? data['shopID'] ?? data['shop_id'] ?? '',
+            shopName:
+                data['shopName'] ??
+                data['shopname'] ??
+                data['customerName'] ??
+                'Unknown Shop',
+            date: _parseDate(data['deliveredAt']),
+            items: items,
+            totalAmount: (data['totalPrice'] ?? 0).toDouble(),
+          ),
+        );
+      }
+
+      return reports;
+    } catch (e) {
+      throw Exception('Failed to fetch sales reports by shopId: $e');
     }
   }
 

@@ -77,7 +77,7 @@ UI code clean and testable.
    * `google-services.json` → place in `android/app/`
    * `GoogleService-Info.plist` → add to `ios/Runner`
 4. Enable Cloud Firestore (Native mode).
-5. (Optional) Run `flutterfire configure` to generate
+5. Run `flutterfire configure` to generate
    `lib/firebase_options.dart`.
 
 No additional API keys are required since auth is in test mode.
@@ -90,12 +90,8 @@ cd vegetable_ordering_system
 flutter pub get
 ```
 
-Ensure Flutter and Dart SDKs are installed (`flutter --version`).
-Run `flutter doctor` to verify tooling.
+Ensure Flutter and Dart SDKs are installed (`flutter --3.38.9 `).
 
-Platform-specific prerequisites:
-* **Android:** Android SDK and emulator/device available.
-* **iOS:** Xcode and valid development team if building to a device.
 
 ## Running the Project
 
@@ -124,8 +120,7 @@ lib/
     store_orders_tab/         # order management
     store_vegetables_tab/     # product catalog
     ...                       # other feature modules
-assets/                       # images, fonts, etc.
-test/                         # unit/widget tests
+assets/                       # images.
 ```
 
 Each feature subfolder follows the data/domain/presentation pattern
@@ -141,11 +136,5 @@ described above.
 3. The generated APK will be located at
    `build/app/outputs/flutter-apk/app-release.apk`.
 
-For iOS, use `flutter build ios` and open the workspace in Xcode for
-archiving.
-
 ---
 
-*This README provides a concise introduction and setup guide for the
-Vegetable Ordering Management System. Refer to code comments or open an
-issue for further assistance.*

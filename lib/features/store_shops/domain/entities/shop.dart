@@ -26,6 +26,7 @@ class Shop {
   /// Convert Shop to Firestore document format
   Map<String, dynamic> toFirestore() {
     return {
+      'shopId': id,
       'storeId': storeId,
       'shopName': shopName,
       'address': address,

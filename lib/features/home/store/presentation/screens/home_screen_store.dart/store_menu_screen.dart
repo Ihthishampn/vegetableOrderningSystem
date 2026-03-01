@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_shops_management_screen/shops_managment_screen.dart';
-// use updated staff management UI with Firebase integration
 import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_staff_management_screen/staff_managment_screen.dart';
-
-import '../store_sales_report_screen.dart/sales_report_screen.dart';
+import 'package:vegetable_ordering_system/features/home/store/presentation/screens/store_sales_report_screen.dart/sales_report_screen.dart';
+import '../../../widgets/menu_tile.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -29,8 +28,7 @@ class MenuPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           children: [
-            _buildMenuTile(
-              context,
+            MenuTile(
               icon: Icons.people_outline,
               title: "Staff Management",
               subtitle: "Add, view, and manage staffs",
@@ -43,9 +41,7 @@ class MenuPage extends StatelessWidget {
               },
             ),
             const SizedBox(height: 16),
-
-            _buildMenuTile(
-              context,
+            MenuTile(
               icon: Icons.storefront_outlined,
               title: "Shops",
               subtitle: "Add, view, and manage shops",
@@ -58,9 +54,7 @@ class MenuPage extends StatelessWidget {
               },
             ),
             const SizedBox(height: 16),
-
-            _buildMenuTile(
-              context,
+            MenuTile(
               icon: Icons.description_outlined,
               title: "Sales Reports",
               subtitle: "View sales report",
@@ -69,66 +63,6 @@ class MenuPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => SalesReportScreen()),
                 );
               },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FA),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.black87, size: 24),
-            ),
-            const SizedBox(width: 16),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.black54,
-              size: 16,
             ),
           ],
         ),

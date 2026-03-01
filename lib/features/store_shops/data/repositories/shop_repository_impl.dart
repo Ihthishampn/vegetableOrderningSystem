@@ -65,9 +65,11 @@ class ShopRepositoryImpl implements ShopRepository {
   @override
   Future<String> addShop(Shop shop) async {
     try {
-      final docRef = await _firestore
-          .collection(_shopsCollection)
-          .add(shop.toFirestore());
+      // Create a new document with deterministic id and include that id as
+      // the shopId field inside the document for stable identification.
+      final docRef = _firestore.collection(_shopsCollection).doc();
+      final shopWithId = shop.copyWith(id: docRef.id);
+      await docRef.set(shopWithId.toFirestore());
       return docRef.id;
     } catch (e) {
       throw Exception('Failed to add shop: $e');
@@ -77,10 +79,10 @@ class ShopRepositoryImpl implements ShopRepository {
   @override
   Future<void> updateShop(Shop shop) async {
     try {
-      await _firestore
-          .collection(_shopsCollection)
-          .doc(shop.id)
-          .update(shop.toFirestore());
+      final data = shop.toFirestore();
+      // Ensure shopId is present on update
+      data['shopId'] = shop.id;
+      await _firestore.collection(_shopsCollection).doc(shop.id).update(data);
     } catch (e) {
       throw Exception('Failed to update shop: $e');
     }

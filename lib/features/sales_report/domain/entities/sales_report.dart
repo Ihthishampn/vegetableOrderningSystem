@@ -1,5 +1,6 @@
 class SalesReport {
   final String orderId;
+  final String shopId;
   final String shopName;
   final DateTime date;
   final List<SalesItem> items;
@@ -7,6 +8,7 @@ class SalesReport {
 
   SalesReport({
     required this.orderId,
+    required this.shopId,
     required this.shopName,
     required this.date,
     required this.items,

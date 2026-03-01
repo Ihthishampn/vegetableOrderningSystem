@@ -2,6 +2,7 @@
 class Order {
   final String id;
   final String storeId;
+  final String? shopId;
   final String customerId;
   final String customerName;
   final String customerPhone;
@@ -20,6 +21,7 @@ class Order {
   Order({
     required this.id,
     required this.storeId,
+    this.shopId,
     required this.customerId,
     required this.customerName,
     required this.customerPhone,
@@ -39,6 +41,7 @@ class Order {
     return {
       'id': id,
       'storeId': storeId,
+      'shopId': shopId,
       'customerId': customerId,
       'customerName': customerName,
       'customerPhone': customerPhone,
@@ -59,6 +62,7 @@ class Order {
     return Order(
       id: documentId,
       storeId: data['storeId'] ?? '',
+      shopId: data['shopId'] ?? data['shopID'] ?? data['shop_id'],
       customerId: data['customerId'] ?? '',
       customerName: data['customerName'] ?? '',
       customerPhone: data['customerPhone'] ?? '',
@@ -90,6 +94,7 @@ class Order {
   Order copyWith({
     String? id,
     String? storeId,
+    String? shopId,
     String? customerId,
     String? customerName,
     String? customerPhone,
@@ -105,6 +110,7 @@ class Order {
     return Order(
       id: id ?? this.id,
       storeId: storeId ?? this.storeId,
+      shopId: shopId ?? this.shopId,
       customerId: customerId ?? this.customerId,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,

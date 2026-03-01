@@ -12,6 +12,14 @@ abstract class SalesReportRepository {
     DateTime? startDate,
     DateTime? endDate,
   });
+
+  /// New: fetch reports filtered by shopId (preferred stable identifier)
+  Future<List<SalesReport>> getSalesReportByShopId(
+    String storeId,
+    String shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  });
   Future<double> getTotalSalesByStore(
     String storeId, {
     DateTime? startDate,

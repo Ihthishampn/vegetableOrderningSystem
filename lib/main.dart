@@ -49,6 +49,7 @@ void main() async {
         ChangeNotifierProvider<OrderProvider>(
           create: (context) => OrderProvider(
             OrderUseCase(OrderRepositoryImpl(FirebaseFirestore.instance)),
+            ShopUseCase(ShopRepositoryImpl(FirebaseFirestore.instance)),
           ),
         ),
         ChangeNotifierProvider<StoreProfileProvider>(

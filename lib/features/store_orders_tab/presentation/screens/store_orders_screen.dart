@@ -221,7 +221,6 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
         MaterialPageRoute(builder: (_) => RejectedOrderOverview(order: order)),
       );
     } else {
-      // defaultkeep old ui for that cards
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => PendingOrderOverview(order: order)),
       );

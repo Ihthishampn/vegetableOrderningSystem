@@ -1,13 +1,15 @@
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/usecases/order_use_case.dart';
+import '../../../store_shops/domain/usecases/shop_use_case.dart';
 
 /// Manages order state for the store orders tab.
 /// Handles loading, errors, and provides CRUD operations for orders.
 class OrderProvider extends ChangeNotifier {
   final OrderUseCase useCase;
+  final ShopUseCase _shopUseCase;
 
-  OrderProvider(this.useCase);
+  OrderProvider(this.useCase, this._shopUseCase);
 
   // State variables
   List<Order> _allOrders = [];
@@ -67,6 +69,7 @@ class OrderProvider extends ChangeNotifier {
     required double totalPrice,
     String? notes,
     DateTime? scheduledDate,
+    String? shopId,
   }) async {
     // ensure we always store something in customerName so store panel can
     // display a value. fall back to a generic label if the caller passed
@@ -81,9 +84,22 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Determine shopId if not supplied: if the customerId references a shop
+      // (shop panel login passes shop's uid as customerId), resolve it here
+      String? resolvedShopId = shopId;
+      if (resolvedShopId == null && customerId.isNotEmpty && _storeId != null) {
+        try {
+          final shop = await _shopUseCase.getShopById(_storeId!, customerId);
+          if (shop != null) resolvedShopId = shop.id;
+        } catch (_) {
+          // ignore resolution errors and continue without shopId
+        }
+      }
+
       final order = Order(
         id: '',
         storeId: _storeId!,
+        shopId: resolvedShopId,
         customerId: customerId,
         customerName: customerName,
         customerPhone: customerPhone,
