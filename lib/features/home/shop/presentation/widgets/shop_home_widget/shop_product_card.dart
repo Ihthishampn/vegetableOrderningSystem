@@ -26,7 +26,6 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  bool _added = false;
   int _quantity = 1;
   String? _selectedUnit;
 
@@ -41,10 +40,35 @@ class _ProductCardState extends State<ProductCard> {
   void _addToCart() {
     final cart = Provider.of<CartProvider>(context, listen: false);
     if (widget.product != null) {
-      cart.addToCart(widget.product!, _quantity, _selectedUnit ?? '');
+      if (widget.isOutOfStock) {
+        // out of stock items should not be added; inform the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${widget.name} is out of stock. Unable to add to cart.',
+            ),
+          ),
+        );
+        return;
+      }
+      // Ensure a unit is selected; fallback to first available unit or empty
+      final unitToUse = _selectedUnit != null && _selectedUnit!.isNotEmpty
+          ? _selectedUnit!
+          : (widget.units != null && widget.units!.isNotEmpty
+                ? widget.units!.first
+                : '');
+      try {
+        cart.addToCart(widget.product!, _quantity, unitToUse);
+        widget.onAddToCart?.call();
+      } catch (e) {
+        // Report unexpected errors to console only (no Scaffold message)
+        // UI will reflect the change via Provider listeners if add succeeds.
+        // Use debugPrint to avoid showing messages to users.
+        debugPrint('Failed to add ${widget.name} to cart: $e');
+      }
+    } else {
+      widget.onAddToCart?.call();
     }
-    setState(() => _added = true);
-    widget.onAddToCart?.call();
   }
 
   void _increment() {
@@ -63,92 +87,104 @@ class _ProductCardState extends State<ProductCard> {
         cart.updateQuantity(widget.product!.id, _quantity);
       }
     } else {
-      // remove from cart
+      // remove from cart when quantity reaches 0
       if (widget.product != null) {
         cart.removeFromCart(widget.product!.id);
       }
-      setState(() {
-        _quantity = 1;
-        _added = false;
-      });
+      setState(() => _quantity = 1);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: _buildImage(),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  widget.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+    return Consumer<CartProvider>(
+      builder: (context, cart, _) {
+        // Check if this product is already in the cart to determine button state
+        final isInCart =
+            widget.product != null &&
+            cart.cartItems.any((item) => item.product.id == widget.product!.id);
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-
-          const SizedBox(height: 1), // Space between the two sections
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              Expanded(
-                child: !widget.isOutOfStock && widget.units != null
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: widget.units!
-                              .map((u) => _buildUnitChip(u))
-                              .toList(),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-
-              widget.isOutOfStock
-                  ? _buildStockButton("Out of Stock", Colors.grey, null)
-                  : _buildStockButton(
-                      "Add",
-                      const Color(0xFF5C79FF),
-                      widget.onAddToCart,
+              Row(
+                children: [
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: _buildImage(),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 1),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: !widget.isOutOfStock && widget.units != null
+                        ? SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: widget.units!
+                                  .map((u) => _buildUnitChip(u))
+                                  .toList(),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+
+                  widget.isOutOfStock
+                      ? _buildStockButton(
+                          "Out of Stock",
+                          Colors.grey,
+                          null,
+                          isInCart,
+                        )
+                      : _buildStockButton(
+                          "Add",
+                          const Color(0xFF5C79FF),
+                          null,
+                          isInCart,
+                        ),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -192,10 +228,25 @@ class _ProductCardState extends State<ProductCard> {
     }
   }
 
-  Widget _buildStockButton(String label, Color color, VoidCallback? onPressed) {
-    if (!_added) {
+  Widget _buildStockButton(
+    String label,
+    Color color,
+    VoidCallback? onPressed,
+    bool isInCart,
+  ) {
+    if (!isInCart) {
       return ElevatedButton(
-        onPressed: onPressed ?? _addToCart,
+        onPressed: widget.isOutOfStock
+            ? () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${widget.name} is out of stock. Cannot order now.',
+                    ),
+                  ),
+                );
+              }
+            : _addToCart,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: color,
@@ -262,28 +313,25 @@ class _ProductCardState extends State<ProductCard> {
         ),
         // small cancel/remove icon positioned at top-right of the selector
         Positioned(
-          right: -8,
-          top: -8,
+          right: -12,
+          top: -12,
           child: GestureDetector(
             onTap: () {
-              // remove from cart and reset UI
+              // remove from cart
               final cart = Provider.of<CartProvider>(context, listen: false);
               if (widget.product != null) {
                 cart.removeFromCart(widget.product!.id);
               }
-              setState(() {
-                _added = false;
-                _quantity = 1;
-              });
+              setState(() => _quantity = 1);
             },
             child: Container(
-              width: 20,
-              height: 20,
+              width: 26,
+              height: 26,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.close, size: 12, color: Colors.white),
+              child: const Icon(Icons.close, size: 14, color: Colors.white),
             ),
           ),
         ),

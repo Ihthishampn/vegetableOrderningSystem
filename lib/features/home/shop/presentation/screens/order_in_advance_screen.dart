@@ -7,6 +7,7 @@ import 'package:vegetable_ordering_system/features/store_vegetables_tab/presenta
 import 'package:vegetable_ordering_system/features/home/shop/presentation/widgets/shop_home_widget/shop_product_card.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 
 import '../widgets/order_in_advance/advance_date_icker.dart';
 import '../widgets/order_in_advance/advance_seaerch_bar.dart';
@@ -19,7 +20,18 @@ class OrderInAdvanceScreen extends StatefulWidget {
 }
 
 class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
-  DateTime _pickedDate = DateTime.now();
+
+  DateTime _pickedDate = DateTime.now().add(const Duration(days: 2));
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   String get _dateText {
     return "${_pickedDate.day.toString().padLeft(2, '0')}-"
@@ -45,9 +57,7 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
-    final cart = Provider.of<CartProvider>(context, listen: false);
 
-    // ensure order provider initialized with the supplier id
     if (orderProv.storeId == null && auth.storeId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         orderProv.initialize(auth.storeId!);
@@ -71,19 +81,16 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
       ),
       body: Column(
         children: [
-          // date picker
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: DatePickerField(initialDate: _dateText, onTap: _selectDate),
           ),
 
-          // search bar (optional)
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ProductSearchBar(),
           ),
 
-          // product list very similar to shop_home
           Expanded(
             child: Consumer<ProductProvider>(
               builder: (context, productProvider, _) {
@@ -121,11 +128,11 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                           onAddToCart: !product.isAvailable
                               ? null
                               : () {
-                                  cart.addToCart(product, 1, product.unit);
+                               
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('${product.name} added'),
-                                      duration: const Duration(seconds: 2),
+                                      duration: const Duration(seconds: 1),
                                     ),
                                   );
                                 },
@@ -137,7 +144,6 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
             ),
           ),
 
-          // bottom action
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -145,6 +151,10 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
+                      final cart = Provider.of<CartProvider>(
+                        context,
+                        listen: false,
+                      );
                       cart.clearCart();
                       Navigator.of(context).pop();
                     },
@@ -164,47 +174,150 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (cart.cartItems.isEmpty) return;
-                      // reuse confirm logic from ConfirmOrderButton
-                      final profileProv = Provider.of<StoreProfileProvider>(
+                      final cart = Provider.of<CartProvider>(
                         context,
                         listen: false,
                       );
-                      String customerName = '';
-                      String deliveryAddress = '';
-                      String customerPhone = auth.phoneNumber ?? '';
-                      if (profileProv.storeProfile != null) {
-                        customerName = profileProv.storeProfile!.storeName;
-                        deliveryAddress = profileProv.storeProfile!.address;
-                      }
-                      final success = await orderProv.addOrder(
-                        customerId: auth.uid ?? '',
-                        customerName: customerName,
-                        customerPhone: customerPhone,
-                        deliveryAddress: deliveryAddress,
-                        items: cart.cartItems
-                            .map(
-                              (c) => OrderItem(
-                                productId: c.product.id,
-                                productName: c.product.name,
-                                price: 0.0,
-                                quantity: c.quantity,
-                                unit: c.selectedUnit,
-                                subtotal: 0.0,
-                              ),
-                            )
-                            .toList(),
-                        totalPrice: 0.0,
-                        scheduledDate: _pickedDate,
-                      );
-                      if (success) {
-                        cart.clearCart();
+                      if (cart.cartItems.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Scheduled order placed'),
+                            content: Text(
+                              'Your cart is empty. Add items before placing a scheduled order.',
+                            ),
                           ),
                         );
-                        Navigator.of(context).pop();
+                        return;
+                      }
+
+                      final authLocal = Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      );
+                      final orderProvLocal = Provider.of<OrderProvider>(
+                        context,
+                        listen: false,
+                      );
+                      final profileProvLocal =
+                          Provider.of<StoreProfileProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                      if (orderProvLocal.storeId == null &&
+                          authLocal.storeId != null) {
+                        await orderProvLocal.initialize(authLocal.storeId!);
+                      }
+
+                      final storeId =
+                          orderProvLocal.storeId ?? authLocal.storeId;
+                      final customerId = authLocal.uid;
+                      if (storeId == null || storeId.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Store ID missing. Cannot place order.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      if (customerId == null || customerId.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'User not authenticated. Please log in.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      String customerName = authLocal.storeName?.trim() ?? '';
+                      if (customerName.isEmpty) {
+                        customerName =
+                            profileProvLocal.storeProfile?.storeName?.trim() ??
+                            '';
+                      }
+                      if (customerName.isEmpty) customerName = storeId;
+
+                      String deliveryAddress =
+                          profileProvLocal.storeProfile?.address ?? '';
+                      String customerPhone = authLocal.userRole == 'store'
+                          ? authLocal.phoneNumber ?? ''
+                          : '';
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Placing scheduled order...'),
+                        ),
+                      );
+
+                      bool success = false;
+                      try {
+                        success = await orderProvLocal.addOrder(
+                          customerId: customerId,
+                          customerName: customerName,
+                          customerPhone: customerPhone,
+                          deliveryAddress: deliveryAddress,
+                          items: cart.cartItems
+                              .map(
+                                (c) => OrderItem(
+                                  productId: c.product.id,
+                                  productName: c.product.name,
+                                  price: 0.0,
+                                  quantity: c.quantity,
+                                  unit: c.selectedUnit,
+                                  subtotal: 0.0,
+                                ),
+                              )
+                              .toList(),
+                          totalPrice: 0.0,
+                          scheduledDate: _pickedDate,
+                        );
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error placing order: $e')),
+                          );
+                        }
+                        success = false;
+                      }
+
+                      if (!context.mounted) return;
+
+                      if (success) {
+                        cart.clearCart();
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          barrierColor: Colors.black54,
+                          transitionDuration: const Duration(milliseconds: 400),
+                          pageBuilder: (_, __, ___) => const AddSuccessDialog(
+                            title: "Scheduled",
+                            message: "Your scheduled order has been placed.",
+                          ),
+                          transitionBuilder: (_, anim, __, child) =>
+                              ScaleTransition(
+                                scale: CurvedAnimation(
+                                  parent: anim,
+                                  curve: Curves.easeOutBack,
+                                ),
+                                child: child,
+                              ),
+                        );
+                        Future.delayed(const Duration(seconds: 2), () {
+                          if (!context.mounted) return;
+                          Navigator.of(context, rootNavigator: true).pop();
+                          if (context.mounted) Navigator.of(context).pop();
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Failed to place order: ${orderProvLocal.error}',
+                            ),
+                          ),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(

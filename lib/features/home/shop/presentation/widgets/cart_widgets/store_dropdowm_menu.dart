@@ -1,28 +1,23 @@
-
 import 'package:flutter/material.dart';
 
 class StoreDropdownMenu extends StatelessWidget {
   final String selectedStore;
+  final List<String> stores;
   final Function(String) onStoreSelected;
   final VoidCallback onClose;
 
   const StoreDropdownMenu({
     super.key,
     required this.selectedStore,
+    required this.stores,
     required this.onStoreSelected,
     required this.onClose,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<String> stores = [
-      'All',
-      'Veg Graam',
-      'Green Haven',
-      'Veggie Delight',
-      'Harvest Basket',
-      "Nature's Bounty",
-    ];
+    // use provided list of stores (already includes 'All' at index 0)
+    final List<String> storesList = stores;
     return Material(
       elevation: 8,
       borderRadius: BorderRadius.circular(12),
@@ -57,10 +52,10 @@ class StoreDropdownMenu extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.zero,
-                itemCount: stores.length,
+                itemCount: storesList.length,
                 separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (context, index) {
-                  final store = stores[index];
+                  final store = storesList[index];
                   final isSelected = store == selectedStore;
                   return InkWell(
                     onTap: () => onStoreSelected(store),

@@ -6,7 +6,10 @@ import 'status_badge.dart';
 class OrderListItem extends StatelessWidget {
   final Order order;
 
-  const OrderListItem({super.key, required this.order});
+  /// optional tap handler; if provided the whole tile becomes tappable
+  final VoidCallback? onTap;
+
+  const OrderListItem({super.key, required this.order, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class OrderListItem extends StatelessWidget {
       deliveryDate = '${scheduled.day}/${scheduled.month}/${scheduled.year}';
     }
 
-    return Container(
+    Widget child = Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -84,5 +87,10 @@ class OrderListItem extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return InkWell(onTap: onTap, child: child);
+    }
+    return child;
   }
 }

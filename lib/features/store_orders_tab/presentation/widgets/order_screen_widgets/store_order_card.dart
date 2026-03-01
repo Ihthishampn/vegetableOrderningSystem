@@ -119,6 +119,8 @@ class StoreOrderCard extends StatelessWidget {
         return Colors.green;
       case 'rejected':
         return Colors.red;
+      case 'cancelled':
+        return Colors.red;
       default:
         return Colors.grey;
     }

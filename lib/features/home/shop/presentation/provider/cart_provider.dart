@@ -53,6 +53,10 @@ class CartProvider extends ChangeNotifier {
         CartItem(product: product, quantity: quantity, selectedUnit: unit),
       );
     }
+    // Debug log for developer visibility
+    debugPrint(
+      'CartProvider.addToCart -> product=${product.id} qty=$quantity unit=$unit items=${_cartItems.length}',
+    );
     notifyListeners();
   }
 
@@ -65,6 +69,9 @@ class CartProvider extends ChangeNotifier {
       } else {
         _cartItems[index] = _cartItems[index].copyWith(quantity: newQuantity);
       }
+      debugPrint(
+        'CartProvider.updateQuantity -> product=$productId newQuantity=$newQuantity items=${_cartItems.length}',
+      );
       notifyListeners();
     }
   }
@@ -72,12 +79,16 @@ class CartProvider extends ChangeNotifier {
   /// Remove an item from cart
   void removeFromCart(String productId) {
     _cartItems.removeWhere((item) => item.product.id == productId);
+    debugPrint(
+      'CartProvider.removeFromCart -> product=$productId items=${_cartItems.length}',
+    );
     notifyListeners();
   }
 
   /// Clear entire cart
   void clearCart() {
     _cartItems.clear();
+    debugPrint('CartProvider.clearCart -> items=${_cartItems.length}');
     notifyListeners();
   }
 

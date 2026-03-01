@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../../store_vegetables_tab/presentation/widgets/add_success_message.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
@@ -48,9 +49,7 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
         centerTitle: true,
       ),
       body: Stack(
-        children: [
-          // 1. Scrollable Shop List
-          Consumer<ShopProvider>(
+        children: [          Consumer<ShopProvider>(
             builder: (context, shopProv, _) {
               if (shopProv.isLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -59,6 +58,14 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                 return Center(child: Text('Error: ${shopProv.error}'));
               }
               final shops = shopProv.shopList;
+              if (shops.isEmpty) {
+                return const Center(
+                  child: Text(
+                    "No shops yet. Add one now.",
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                );
+              }
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
                 itemCount: shops.length,
@@ -71,7 +78,6 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
             },
           ),
 
-          // 2. Fixed "Add New Shop" Button
           Positioned(
             bottom: 0,
             left: 0,
@@ -162,9 +168,8 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Edit Button (Adjusted height to match toggle)
               SizedBox(
-                height: 32, // Controlled height
+                height: 32,
                 child: OutlinedButton.icon(
                   onPressed: () {
                     {
@@ -175,7 +180,7 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                         ),
                       );
                     }
-                    ;
+                    
                   },
                   icon: const Icon(
                     Icons.edit_outlined,
@@ -197,13 +202,13 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
               ),
               const SizedBox(width: 10),
 
-              // Slim Status Toggle Container
+            
               Container(
-                height: 32, // Matches Edit button height
+                height: 32, 
                 padding: const EdgeInsets.only(
                   left: 10,
                   right: 2,
-                ), // Tighter padding
+                ), 
                 decoration: BoxDecoration(
                   color: active
                       ? Colors.green.withOpacity(0.1)
@@ -223,15 +228,14 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
                       style: TextStyle(
                         color: active ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w500,
-                        fontSize: 12, // Slightly smaller font
+                        fontSize: 12,
                       ),
                     ),
                     const SizedBox(width: 2),
                     Transform.scale(
-                      scale: 0.65, // Scale down the switch
+                      scale: 0.65, 
                       child: Switch(
                         value: active,
-                        // This is key: it removes the extra padding around the switch
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         onChanged: (val) async {
                           final provider = Provider.of<ShopProvider>(
@@ -298,12 +302,20 @@ class _AddShopPageState extends State<AddShopPage> {
     _managerController = TextEditingController(
       text: widget.shop?.managerName ?? '',
     );
-    _phoneController = TextEditingController(text: widget.shop?.phone ?? '');
+    final existingPhone = widget.shop?.phone ?? '';
+    String initialPhone = '';
+    if (existingPhone.isNotEmpty) {
+      if (existingPhone.startsWith('91')) {
+        initialPhone = existingPhone.substring(2);
+      } else {
+        initialPhone = existingPhone;
+      }
+    }
+    _phoneController = TextEditingController(text: initialPhone);
     _addressController = TextEditingController(
       text: widget.shop?.address ?? '',
     );
     _cityController = TextEditingController(text: widget.shop?.city ?? '');
-    // For edit mode, initialize _canSubmit based on prefilled fields
     _canSubmit =
         widget.shop != null &&
         _nameController.text.trim().isNotEmpty &&
@@ -338,6 +350,14 @@ class _AddShopPageState extends State<AddShopPage> {
         borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: Color(0xFF2D2926)),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
     );
   }
 
@@ -345,10 +365,48 @@ class _AddShopPageState extends State<AddShopPage> {
     final provider = Provider.of<ShopProvider>(context, listen: false);
     final auth = Provider.of<AuthProvider>(context, listen: false);
     if (auth.uid == null) return;
-    // Use form validation to ensure all fields are provided
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    final entered = _phoneController.text.trim();
+    final phoneToCheck = '91' + entered;
+    if (!isEdit) {
+      final existingShop = await FirebaseFirestore.instance
+          .collection('shops')
+          .where('phone', isEqualTo: phoneToCheck)
+          .limit(1)
+          .get();
+      if (existingShop.docs.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('A shop with this phone number already exists'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        return;
+      }
+    } else if (widget.shop?.phone != phoneToCheck) {
+      final existingShop = await FirebaseFirestore.instance
+          .collection('shops')
+          .where('phone', isEqualTo: phoneToCheck)
+          .limit(1)
+          .get();
+      if (existingShop.docs.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('A shop with this phone number already exists'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
     final now = DateTime.now();
     final shop = Shop(
       id: widget.shop?.id ?? '',
@@ -356,7 +414,7 @@ class _AddShopPageState extends State<AddShopPage> {
       shopName: _nameController.text.trim(),
       address: _addressController.text.trim(),
       city: _cityController.text.trim(),
-      phone: _phoneController.text.trim(),
+      phone: phoneToCheck,
       managerName: _managerController.text.trim(),
       createdAt: widget.shop?.createdAt ?? now,
       updatedAt: now,
@@ -366,24 +424,29 @@ class _AddShopPageState extends State<AddShopPage> {
     final success = isEdit
         ? await provider.updateShop(shop)
         : await provider.addShop(shop);
+
+    if (!mounted) return;
+
     setState(() => _isLoading = false);
     if (success) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AddSuccessDialog(
-          title: isEdit ? "Shop Updated" : "Added New Shop",
-          message: isEdit
-              ? "The shop details have been successfully updated."
-              : "The shop has been successfully added.",
-        ),
-      );
-      Future.delayed(const Duration(seconds: 3), () {
-        if (context.mounted) {
-          Navigator.pop(context); // close dialog
-          Navigator.pop(context); // close page
-        }
-      });
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AddSuccessDialog(
+            title: isEdit ? "Shop Updated" : "Added New Shop",
+            message: isEdit
+                ? "The shop details have been successfully updated."
+                : "The shop has been successfully added.",
+          ),
+        );
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            Navigator.pop(context); 
+            Navigator.pop(context); 
+          }
+        });
+      }
     }
   }
 
@@ -430,7 +493,7 @@ class _AddShopPageState extends State<AddShopPage> {
                       decoration: _inputDecoration("Enter shop name"),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty)
-                          return 'Shop name is required';
+                       {   return 'Shop name is required';}
                         return null;
                       },
                     ),
@@ -441,8 +504,9 @@ class _AddShopPageState extends State<AddShopPage> {
                       controller: _managerController,
                       decoration: _inputDecoration("Enter contact person name"),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty)
+                        if (v == null || v.trim().isEmpty) {
                           return 'Contact person is required';
+                        }
                         return null;
                       },
                     ),
@@ -452,14 +516,22 @@ class _AddShopPageState extends State<AddShopPage> {
                     TextFormField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: _inputDecoration(
-                        "Enter 10-digit mobile number",
-                      ),
+                      decoration: _inputDecoration("10-digit mobile number")
+                          .copyWith(
+                            prefixText: '91 ',
+                            prefixStyle: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 14,
+                            ),
+                          ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty)
+                        if (v == null || v.trim().isEmpty) {
                           return 'Mobile number is required';
-                        if (v.trim().length < 7)
-                          return 'Enter a valid mobile number';
+                        }
+                        final cleanPhone = v.trim();
+                        if (cleanPhone.length != 10) {
+                          return 'Enter a valid 10-digit number';
+                        }
                         return null;
                       },
                     ),
@@ -492,32 +564,9 @@ class _AddShopPageState extends State<AddShopPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
 
-              _buildLabel("Contact Person Name *"),
-              TextField(
-                controller: _managerController,
-                decoration: _inputDecoration("Enter contact person name"),
-              ),
-              const SizedBox(height: 12),
-
-              _buildLabel("Mobile Number"),
-              TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: _inputDecoration("Enter 10-digit mobile number"),
-              ),
-              const SizedBox(height: 12),
-
-              _buildLabel("Location / Address"),
-              TextField(
-                controller: _addressController,
-                maxLines: 4,
-                decoration: _inputDecoration("Enter Location"),
-              ),
               const SizedBox(height: 120),
 
-              // Bottom Action Buttons
               Row(
                 children: [
                   Expanded(
@@ -585,5 +634,4 @@ class _AddShopPageState extends State<AddShopPage> {
     );
   }
 
-  // Removed _buildTextField - not used, using TextFormField with validators instead
 }

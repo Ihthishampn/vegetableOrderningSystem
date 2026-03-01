@@ -1,5 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 
 class ShopIdentityCard extends StatelessWidget {
   const ShopIdentityCard({super.key});
@@ -31,18 +33,42 @@ class ShopIdentityCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Veg Graam",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "12, Vegetable Market Street,\nChennai - 600002",
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+              children: [
+                // dynamic store information: name from auth provider first, fallback to profile
+                Consumer2<AuthProvider, StoreProfileProvider>(
+                  builder: (context, auth, profProv, _) {
+                    final authName = auth.storeName ?? '';
+                    final profile = profProv.storeProfile;
+                    final name = authName.isNotEmpty
+                        ? authName
+                        : (profile?.storeName.isNotEmpty == true
+                              ? profile!.storeName
+                              : 'Store Name');
+                    final address = profile?.address.isNotEmpty == true
+                        ? profile!.address
+                        : 'Address not set';
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          address,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

@@ -9,10 +9,22 @@ import '../widgets/order_now_widgets/now_summury_item_row.dart';
 import '../widgets/order_now_widgets/now_total_item_banner.dart';
 
 class OrderNowScreen extends StatelessWidget {
-  const OrderNowScreen({super.key});
+  final CartProvider? cartProvider;
+
+  const OrderNowScreen({super.key, this.cartProvider});
 
   @override
   Widget build(BuildContext context) {
+    if (cartProvider != null) {
+      return ChangeNotifierProvider.value(
+        value: cartProvider!,
+        child: _buildScaffold(context),
+      );
+    }
+    return _buildScaffold(context);
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -63,7 +75,6 @@ class OrderNowScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // Highlighted Summary Card
               OrderSummaryCard(
                 orderId: "ORD${DateTime.now().millisecondsSinceEpoch}",
                 storeName:
@@ -74,7 +85,6 @@ class OrderNowScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Ordered Items Section
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -106,12 +116,10 @@ class OrderNowScreen extends StatelessWidget {
                 ),
               ),
 
-              //  Total Items Calculation
               TotalItemsBanner(
                 total: cart.itemCount.toString().padLeft(2, '0'),
               ),
 
-              //  Final Confirmation Button
               const ConfirmOrderButton(),
               const SizedBox(height: 20),
             ],

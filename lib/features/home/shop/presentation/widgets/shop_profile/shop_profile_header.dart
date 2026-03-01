@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
@@ -11,7 +10,7 @@ class ProfileHeaderCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF5D78FF), Color(0xFF3B4FB0)], 
+          colors: [Color(0xFF5D78FF), Color(0xFF3B4FB0)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -36,6 +35,8 @@ class ProfileHeaderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
+                // store name from auth/profile could be inserted by parent widget
+                // if needed; keep placeholder text but make it configurable.
                 Text(
                   "Veg Graam",
                   style: TextStyle(

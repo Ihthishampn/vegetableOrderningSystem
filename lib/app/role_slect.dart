@@ -19,88 +19,92 @@ class _RoleSelectState extends State<RoleSelect> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
             children: [
-              const SizedBox(height: 60),
-
-              const Text(
-                "Welcome",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D2926),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "Please select how you would like to\ncontinue using the app",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 50),
-
-              _buildRoleCard(
-                role: 'store',
-                title: 'Continue as Store',
-                subtitle:
-                    'Manage inventory, staff, and distribute vegetables to shops.',
-                icon: Icons.storefront_rounded,
-                color: const Color(0xFF4C78FF),
-              ),
-              const SizedBox(height: 20),
-              _buildRoleCard(
-                role: 'shop',
-                title: 'Continue as Shop',
-                subtitle: 'Order fresh vegetables and manage retail sales.',
-                icon: Icons.shopping_bag_outlined,
-                color: const Color(0xFF00C566),
-              ),
-
-              const Spacer(),
-
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: selectedRole == null
-                      ? null
-                      : () {
-                          if (selectedRole == 'store') {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const StoreLoginScreen(),
-                              ),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreenShop(),
-                              ),
-                            );
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D2926),
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    "Continue",
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 60),
+              
+                  const Text(
+                    "Welcome",
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      color: Color(0xFF2D2926),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Please select how you would like to\ncontinue using the app",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 50),
+              
+                  _buildRoleCard(
+                    role: 'store',
+                    title: 'Continue as Store',
+                    subtitle:
+                        'Manage inventory, staff, and distribute vegetables to shops.',
+                    icon: Icons.storefront_rounded,
+                    color: const Color(0xFF4C78FF),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildRoleCard(
+                    role: 'shop',
+                    title: 'Continue as Shop',
+                    subtitle: 'Order fresh vegetables and manage retail sales.',
+                    icon: Icons.shopping_bag_outlined,
+                    color: const Color(0xFF00C566),
+                  ),
+              
+                  const Spacer(),
+              
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: selectedRole == null
+                          ? null
+                          : () {
+                              if (selectedRole == 'store') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const StoreLoginScreen(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreenShop(),
+                                  ),
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2D2926),
+                        disabledBackgroundColor: Colors.grey.shade300,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Continue",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
               ),
-              const SizedBox(height: 30),
             ],
           ),
         ),

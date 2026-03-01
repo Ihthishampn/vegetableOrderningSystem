@@ -37,6 +37,13 @@ class OrderUseCase {
   ) => repository.updateOrderStatus(storeId, orderId, newStatus);
 
   /// Delete order
+  /// Cancel order (formerly called delete).
+  ///
+  /// The underlying repository used to actually perform the operation now
+  /// updates the order's status to `cancelled` rather than removing it from
+  /// Firestore, allowing the record to be visible in cancelled lists.  We
+  /// keep the method name for backwards compatibility with the provider but
+  /// have updated the documentation accordingly.
   Future<void> deleteOrder(String storeId, String orderId) =>
       repository.deleteOrder(storeId, orderId);
 

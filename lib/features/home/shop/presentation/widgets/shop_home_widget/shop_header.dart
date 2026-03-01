@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/my_cart_order_screen.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/provider/cart_provider.dart';
+import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 
 import '../../../../store/widgets/top_curve_clipper.dart' show TopCurveClipper;
 import '../../screens/shop_profile_screen.dart';
@@ -22,23 +23,30 @@ class ShopHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Green Valley Grocery",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Fresh Vegetables Store",
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-              ],
+            Consumer<AuthProvider>(
+              builder: (context, auth, _) {
+                final shopName = auth.storeName?.isNotEmpty == true
+                    ? auth.storeName!
+                    : 'Store';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      shopName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Text(
+                      "Fresh Vegetables Store",
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                );
+              },
             ),
             Row(
               children: [

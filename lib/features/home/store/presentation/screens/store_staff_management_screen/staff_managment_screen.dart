@@ -58,6 +58,14 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 return Center(child: Text('Error: \\${staffProv.error}'));
               }
               final staffList = staffProv.staffList;
+              if (staffList.isEmpty) {
+                return const Center(
+                  child: Text(
+                    "No staff yet. Add one now.",
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                );
+              }
               return ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
                 itemCount: staffList.length,

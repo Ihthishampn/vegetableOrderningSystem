@@ -136,10 +136,17 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<void> deleteOrder(String storeId, String orderId) async {
+    // Instead of physically deleting the document we now mark the order as
+    // cancelled.  This keeps the record in the database so it can be shown
+    // in the "Cancelled" screens.  The previous behaviour was causing
+    // cancelled orders to disappear entirely which confused users.
     try {
-      await _firestore.collection(_ordersCollection).doc(orderId).delete();
+      await _firestore.collection(_ordersCollection).doc(orderId).update({
+        'status': 'cancelled',
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
     } catch (e) {
-      throw Exception('Error deleting order: $e');
+      throw Exception('Error cancelling order: $e');
     }
   }
 

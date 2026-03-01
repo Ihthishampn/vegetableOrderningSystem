@@ -23,7 +23,7 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
   String? _selectedImageUrl;
   String _selectedUnit = 'Kg';
   String? _imageError;
-  String? _unitError;
+  // no longer tracking unit errors; default is Kg and selection is optional
   bool _canSubmit = false;
 
   @override
@@ -45,26 +45,21 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
     final sortText = _sortNumberController.text.trim();
     final sortValid =
         int.tryParse(sortText) != null && (int.parse(sortText) > 0);
-    final hasImage = _selectedImageUrl != null && _selectedImageUrl!.isNotEmpty;
-    final hasUnit = _selectedUnit.isNotEmpty;
-
-    final newCan = hasName && sortValid && hasImage && hasUnit;
+    // unit is always non-empty (default kg), so no validation needed
+    // image is no longer required
+    final newCan = hasName && sortValid;
     if (newCan != _canSubmit) setState(() => _canSubmit = newCan);
   }
 
   Future<void> _submitForm() async {
-    // Validate image separately (not a TextFormField).
-    if (_selectedImageUrl == null || _selectedImageUrl!.isEmpty) {
-      setState(() => _imageError = 'Please select an image');
-    } else {
-      setState(() => _imageError = null);
-    }
+    // Clear image error (image is optional)
+    setState(() => _imageError = null);
 
     // Run all TextFormField validators.
     final formValid = _formKey.currentState!.validate();
 
-    // Stop if either failed.
-    if (!formValid || _selectedImageUrl == null || _selectedImageUrl!.isEmpty) {
+    // Stop if form validation failed.
+    if (!formValid) {
       _updateCanSubmit();
       return;
     }
@@ -157,6 +152,7 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
                 label: "Sort Number *",
                 hint: "Enter sort number",
                 controller: _sortNumberController,
+                inputType: TextInputType.number,
                 isRequired: true,
 
                 validator: (v) {
@@ -193,17 +189,9 @@ class _AddVegetableFormState extends State<AddVegetableForm> {
               DefaultUnitSelector(
                 onUnitSelected: (unit) => setState(() {
                   _selectedUnit = unit;
-                  _unitError = null;
                   _updateCanSubmit();
                 }),
               ),
-              if (_unitError != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  _unitError!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              ],
               const SizedBox(height: 30),
 
               FormActionsWithCallback(

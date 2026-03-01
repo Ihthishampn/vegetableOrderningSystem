@@ -31,10 +31,10 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
     final sortText = _sortNumberController.text.trim();
     final sortValid =
         int.tryParse(sortText) != null && (int.parse(sortText) > 0);
-    final hasImage = _selectedImageUrl != null && _selectedImageUrl!.isNotEmpty;
     final hasUnit = _selectedUnit.isNotEmpty;
 
-    final newCan = hasName && sortValid && hasImage && hasUnit;
+    // image is no longer required
+    final newCan = hasName && sortValid && hasUnit;
     if (newCan != _canSubmit) setState(() => _canSubmit = newCan);
   }
 
@@ -60,18 +60,14 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
   }
 
   Future<void> _submitForm() async {
-    // Validate image separately (not a TextFormField).
-    if (_selectedImageUrl == null || _selectedImageUrl!.isEmpty) {
-      setState(() => _imageError = 'Please select an image');
-    } else {
-      setState(() => _imageError = null);
-    }
+    // Clear image error (image is optional)
+    setState(() => _imageError = null);
 
     // Run all TextFormField validators.
     final formValid = _formKey.currentState!.validate();
 
-    // Stop if either failed.
-    if (!formValid || _selectedImageUrl == null || _selectedImageUrl!.isEmpty) {
+    // Stop if form validation failed.
+    if (!formValid) {
       return;
     }
 
@@ -183,6 +179,7 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
                 label: "Sort Number *",
                 hint: "Enter sort number",
                 controller: _sortNumberController,
+                inputType: TextInputType.number,
                 isRequired: true,
 
                 validator: (v) {

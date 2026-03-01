@@ -64,6 +64,8 @@ class VegetableItemCard extends StatelessWidget {
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
+            
+                   
                   ],
                 ),
               ),

@@ -84,7 +84,6 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
 
           const SliverToBoxAdapter(child: OrdersHeader()),
 
-          // Orders list driven by OrderProvider
           Consumer<OrderProvider>(
             builder: (context, orders, _) {
               if (orders.isLoading) {
@@ -126,7 +125,7 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
                   final order = list[index];
                   final storeName = order.customerName.isNotEmpty
                       ? order.customerName
-                      : 'Store Order';
+                      : 'Shop';
                   final date = _formatDate(order.createdAt);
                   return OrderItemCard(
                     storeName: storeName,

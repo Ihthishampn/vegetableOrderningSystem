@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 import 'pending_outln_widget.dart';
 
 class PendingActionFooter extends StatelessWidget {
@@ -69,8 +70,36 @@ class PendingActionFooterWithCallback extends StatelessWidget {
                   color: Colors.red,
                   onPressed: () async {
                     final orderProvider = context.read<OrderProvider>();
-                    await orderProvider.rejectOrder(order.id);
-                    if (context.mounted) Navigator.pop(context);
+                    final success = await orderProvider.rejectOrder(order.id);
+                    if (!context.mounted) return;
+                    if (success) {
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        barrierColor: Colors.black54,
+                        transitionDuration: const Duration(milliseconds: 400),
+                        pageBuilder: (_, __, ___) => const AddSuccessDialog(
+                          title: "Order Rejected",
+                          message: "The order has been rejected.",
+                        ),
+                        transitionBuilder: (_, anim, __, child) =>
+                            ScaleTransition(
+                              scale: CurvedAnimation(
+                                parent: anim,
+                                curve: Curves.easeOutBack,
+                              ),
+                              child: child,
+                            ),
+                      );
+
+                      Future.delayed(const Duration(seconds: 2), () {
+                        if (!context.mounted) return;
+                        Navigator.of(context, rootNavigator: true).pop();
+                        Navigator.of(context).pop();
+                      });
+                    } else {
+                      if (context.mounted) Navigator.pop(context);
+                    }
                   },
                 ),
               ),
@@ -81,8 +110,36 @@ class PendingActionFooterWithCallback extends StatelessWidget {
                   color: Colors.black,
                   onPressed: () async {
                     final orderProvider = context.read<OrderProvider>();
-                    await orderProvider.approveOrder(order.id);
-                    if (context.mounted) Navigator.pop(context);
+                    final success = await orderProvider.approveOrder(order.id);
+                    if (!context.mounted) return;
+                    if (success) {
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        barrierColor: Colors.black54,
+                        transitionDuration: const Duration(milliseconds: 400),
+                        pageBuilder: (_, __, ___) => const AddSuccessDialog(
+                          title: "Order Approved",
+                          message: "The order has been approved.",
+                        ),
+                        transitionBuilder: (_, anim, __, child) =>
+                            ScaleTransition(
+                              scale: CurvedAnimation(
+                                parent: anim,
+                                curve: Curves.easeOutBack,
+                              ),
+                              child: child,
+                            ),
+                      );
+
+                      Future.delayed(const Duration(seconds: 2), () {
+                        if (!context.mounted) return;
+                        Navigator.of(context, rootNavigator: true).pop();
+                        Navigator.of(context).pop();
+                      });
+                    } else {
+                      if (context.mounted) Navigator.pop(context);
+                    }
                   },
                 ),
               ),
@@ -94,8 +151,35 @@ class PendingActionFooterWithCallback extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 final orderProvider = context.read<OrderProvider>();
-                await orderProvider.completeOrder(order.id);
-                if (context.mounted) Navigator.pop(context);
+                final success = await orderProvider.completeOrder(order.id);
+                if (!context.mounted) return;
+                if (success) {
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    barrierColor: Colors.black54,
+                    transitionDuration: const Duration(milliseconds: 400),
+                    pageBuilder: (_, __, ___) => const AddSuccessDialog(
+                      title: "Order Completed",
+                      message: "The order has been marked completed.",
+                    ),
+                    transitionBuilder: (_, anim, __, child) => ScaleTransition(
+                      scale: CurvedAnimation(
+                        parent: anim,
+                        curve: Curves.easeOutBack,
+                      ),
+                      child: child,
+                    ),
+                  );
+
+                  Future.delayed(const Duration(seconds: 2), () {
+                    if (!context.mounted) return;
+                    Navigator.of(context, rootNavigator: true).pop();
+                    Navigator.of(context).pop();
+                  });
+                } else {
+                  if (context.mounted) Navigator.pop(context);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2D2926),

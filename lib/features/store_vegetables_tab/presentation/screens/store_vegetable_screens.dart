@@ -8,8 +8,7 @@ import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.d
 import '../widgets/status_row_holder.dart';
 import '../widgets/vege_item_card.dart';
 
-/// Displays available and unavailable vegetables/products for the store.
-/// Uses [ProductProvider] to manage state and Firebase for persistence.
+
 class StoreVegetableScreens extends StatefulWidget {
   const StoreVegetableScreens({super.key});
 
@@ -26,7 +25,6 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // Initialize ProductProvider with current store ID.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = context.read<AuthProvider>();
       final productProvider = context.read<ProductProvider>();
@@ -55,8 +53,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
         child: Column(
           children: [
             const SizedBox(height: 6),
-            // Pass the controller so the TabBar inside StatusRowHolder
-            // is connected to the TabBarView below.
+            
             StatusRowHolder(tabController: _tabController),
             Expanded(
               child: Consumer<ProductProvider>(
@@ -129,9 +126,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
         return VegetableItemCard(
           product: product,
           onEdit: () => _showEditSheet(context, product),
-          // The card shows the confirmation dialog; when confirmed we call
-          // the provider directly to delete the product so no second dialog
-          // is shown.
+     
           onDelete: () =>
               context.read<ProductProvider>().deleteProduct(product.id),
           onToggleAvailability: () => _toggleAvailability(context, product),
@@ -140,9 +135,6 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Edit — opens the same full-form sheet as "Add New Vegetable"
-  // ---------------------------------------------------------------------------
 
   void _showEditSheet(BuildContext context, product) {
     showModalBottomSheet(
@@ -156,11 +148,7 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
     );
   }
 
-  // (delete confirmation is handled inside `VegetableItemCard`'s dialog)
 
-  // ---------------------------------------------------------------------------
-  // Toggle availability
-  // ---------------------------------------------------------------------------
 
   void _toggleAvailability(BuildContext context, product) {
     context.read<ProductProvider>().toggleAvailability(product);

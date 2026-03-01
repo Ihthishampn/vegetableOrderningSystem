@@ -23,6 +23,7 @@ class StatusFilterBar extends StatelessWidget {
       OrderStatus.approved,
       OrderStatus.completed,
       OrderStatus.rejected,
+      OrderStatus.cancelled,
     ];
 
     return SingleChildScrollView(

@@ -15,6 +15,7 @@ class OrderProvider extends ChangeNotifier {
   List<Order> _approvedOrders = [];
   List<Order> _completedOrders = [];
   List<Order> _rejectedOrders = [];
+  List<Order> _cancelledOrders = [];
   bool _isLoading = false;
   String? _error;
   String? _storeId;
@@ -25,6 +26,7 @@ class OrderProvider extends ChangeNotifier {
   List<Order> get approvedOrders => _approvedOrders;
   List<Order> get completedOrders => _completedOrders;
   List<Order> get rejectedOrders => _rejectedOrders;
+  List<Order> get cancelledOrders => _cancelledOrders;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get storeId => _storeId;
@@ -66,6 +68,12 @@ class OrderProvider extends ChangeNotifier {
     String? notes,
     DateTime? scheduledDate,
   }) async {
+    // ensure we always store something in customerName so store panel can
+    // display a value. fall back to a generic label if the caller passed
+    // an empty string (UI should normally supply the shop's name).
+    if (customerName.trim().isEmpty) {
+      customerName = 'Shop';
+    }
     if (_storeId == null) return false;
 
     _isLoading = true;
@@ -150,6 +158,8 @@ class OrderProvider extends ChangeNotifier {
     if (_storeId == null) return false;
 
     try {
+      // the use case now treats this as a cancellation; status will be
+      // updated to `cancelled` rather than the document being removed.
       await useCase.deleteOrder(_storeId!, orderId);
       await fetchOrders();
       return true;
@@ -183,6 +193,9 @@ class OrderProvider extends ChangeNotifier {
         .toList();
     _rejectedOrders = _allOrders
         .where((o) => o.status == OrderStatus.rejected)
+        .toList();
+    _cancelledOrders = _allOrders
+        .where((o) => o.status == OrderStatus.cancelled)
         .toList();
   }
 

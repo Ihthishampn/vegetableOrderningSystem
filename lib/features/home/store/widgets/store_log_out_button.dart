@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/auth/presentation/screens/role_select.dart';
+import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
 
 class StoreLogoutButton extends StatelessWidget {
   const StoreLogoutButton({super.key});
@@ -9,16 +10,28 @@ class StoreLogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () async {
-        final auth = context.read<AuthProvider>();
-        await auth.logout();
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => CustomConfirmationDialog(
+            title: "Logout",
+            message: "Are you sure you want to logout?",
+            confirmText: "Yes",
+            cancelText: "Cancel",
+            primaryColor: Colors.red,
+            onConfirm: () async {
+              final auth = context.read<AuthProvider>();
+              await auth.logout();
 
-        if (!context.mounted) return;
+              if (!context.mounted) return;
 
-        // Navigate back to RoleSelect and remove all previous screens from stack
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const RoleSelect()),
-          (route) => false,
+              // Navigate back to RoleSelect and remove all previous screens from stack
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const RoleSelect()),
+                (route) => false,
+              );
+            },
+          ),
         );
       },
       style: TextButton.styleFrom(

@@ -130,6 +130,8 @@ class Order {
         return OrderStatus.completed;
       case 'rejected':
         return OrderStatus.rejected;
+      case 'cancelled':
+        return OrderStatus.cancelled;
       default:
         return OrderStatus.pending;
     }
@@ -178,4 +180,7 @@ class OrderItem {
 }
 
 /// Order status enum
-enum OrderStatus { pending, approved, completed, rejected }
+///
+/// A cancelled value has been added so that cancelled orders remain in the
+/// database and can be displayed rather than being hard-deleted.
+enum OrderStatus { pending, approved, completed, rejected, cancelled }

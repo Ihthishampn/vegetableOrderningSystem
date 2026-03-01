@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/features/store_orders_tab/domain/entities/order.dart';
 import 'order_list_item.dart';
+import '../../screens/order_products_overview_screen.dart';
 
 class ScheduledOrdersList extends StatelessWidget {
   final List<Order> orders;
@@ -25,7 +26,14 @@ class ScheduledOrdersList extends StatelessWidget {
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final o = orders[index];
-        return OrderListItem(order: o);
+        return OrderListItem(
+          order: o,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => ShopOrderOverview(order: o)),
+            );
+          },
+        );
       },
     );
   }

@@ -11,12 +11,10 @@ class FormActions extends StatelessWidget {
       barrierDismissible: false,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 400),
-      // ignore: unnecessary_underscores
       pageBuilder: (_, __, ___) => const AddSuccessDialog(
         message: "The vegetable has been successfully addedd.",
         title: "Added New Vegetable",
       ),
-      // ignore: unnecessary_underscores
       transitionBuilder: (_, anim, __, child) {
         return ScaleTransition(
           scale: CurvedAnimation(parent: anim, curve: Curves.easeOutBack),
@@ -25,12 +23,9 @@ class FormActions extends StatelessWidget {
       },
     );
 
-    // auto ayeett  message close aavum
     Future.delayed(const Duration(seconds: 2), () {
       if (!context.mounted) return;
-      // close dialog
       Navigator.of(context, rootNavigator: true).pop();
-      // close bottom sheet
       Navigator.of(context).pop();
     });
   }

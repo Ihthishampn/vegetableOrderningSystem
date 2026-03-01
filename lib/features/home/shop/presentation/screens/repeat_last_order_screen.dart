@@ -5,7 +5,9 @@ import 'package:vegetable_ordering_system/features/home/shop/presentation/provid
 import 'package:vegetable_ordering_system/features/store_orders_tab/presentation/provider/order_provider.dart';
 import 'package:vegetable_ordering_system/features/home/shop/presentation/screens/order_now_screen.dart';
 import 'package:vegetable_ordering_system/features/store_profile/presentation/provider/store_profile_provider.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/provider/product_provider.dart';
 import 'package:vegetable_ordering_system/features/store_vegetables_tab/domain/entities/product.dart';
+import 'package:vegetable_ordering_system/features/store_vegetables_tab/presentation/widgets/add_success_message.dart';
 
 import '../widgets/repeat_last_order_widget/order_action_button.dart';
 import '../widgets/repeat_last_order_widget/repeat_card_summary.dart';
@@ -17,7 +19,6 @@ class RepeatLastOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ensure order provider is initialized for supplier
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
     if (orderProv.storeId == null && auth.storeId != null) {
@@ -45,7 +46,6 @@ class RepeatLastOrder extends StatelessWidget {
           Consumer<OrderProvider>(
             builder: (context, orderProv, _) {
               final auth = Provider.of<AuthProvider>(context, listen: false);
-              // find most recent order placed by this customer
               final customerOrders = orderProv.allOrders
                   .where((o) => o.customerId == auth.uid)
                   .toList();
@@ -120,7 +120,6 @@ class RepeatLastOrder extends StatelessWidget {
               final auth = Provider.of<AuthProvider>(context, listen: false);
               final cart = Provider.of<CartProvider>(context, listen: false);
 
-              // determine last order again for callbacks
               final customerOrders = orderProv.allOrders
                   .where((o) => o.customerId == auth.uid)
                   .toList();
@@ -132,42 +131,106 @@ class RepeatLastOrder extends StatelessWidget {
 
               return OrderActionButtons(
                 onEdit: () {
-                  // load items into cart for user to modify, then go to summary
                   cart.clearCart();
+                  final prodProv = Provider.of<ProductProvider>(
+                    context,
+                    listen: false,
+                  );
                   for (final item in last.items) {
-                    // create a minimal Product object for editing purposes
-                    cart.addToCart(
-                      Product(
+                    final current = prodProv.allProducts.firstWhere(
+                      (p) => p.id == item.productId,
+                      orElse: () => Product(
                         id: item.productId,
                         storeId: last.storeId,
                         name: item.productName,
                         unit: '',
                         imageUrl: null,
-                        isAvailable: true,
+                        isAvailable: false,
                         createdAt: DateTime.now(),
                         updatedAt: DateTime.now(),
+                      ),
+                    );
+                    if (!current.isAvailable) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${item.productName} is out of stock. Cannot edit or repeat this order.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                  }
+                  for (final item in last.items) {
+                    final current = prodProv.allProducts.firstWhere(
+                      (p) => p.id == item.productId,
+                    );
+                    cart.addToCart(
+                      Product(
+                        id: current.id,
+                        storeId: current.storeId,
+                        name: current.name,
+                        unit: current.unit,
+                        imageUrl: current.imageUrl,
+                        isAvailable: current.isAvailable,
+                        createdAt: current.createdAt,
+                        updatedAt: current.updatedAt,
                       ),
                       item.quantity,
                       '',
                     );
                   }
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const OrderNowScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => OrderNowScreen(cartProvider: cart),
+                    ),
                   );
                 },
                 onConfirm: () async {
-                  // repeat the order directly
+                  final prodProv = Provider.of<ProductProvider>(
+                    context,
+                    listen: false,
+                  );
+                  for (final item in last.items) {
+                    final current = prodProv.allProducts.firstWhere(
+                      (p) => p.id == item.productId,
+                      orElse: () => Product(
+                        id: item.productId,
+                        storeId: last.storeId,
+                        name: item.productName,
+                        unit: '',
+                        imageUrl: null,
+                        isAvailable: false,
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ),
+                    );
+                    if (!current.isAvailable) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${item.productName} is out of stock. Cannot repeat this order.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                  }
                   final profileProv = Provider.of<StoreProfileProvider>(
                     context,
                     listen: false,
                   );
-                  String customerName = '';
-                  String deliveryAddress = '';
-                  String customerPhone = auth.phoneNumber ?? '';
-                  if (profileProv.storeProfile != null) {
-                    customerName = profileProv.storeProfile!.storeName;
-                    deliveryAddress = profileProv.storeProfile!.address;
+                  String customerName = auth.storeName?.trim() ?? '';
+                  if (customerName.isEmpty) {
+                    customerName =
+                        profileProv.storeProfile?.storeName.trim() ?? '';
                   }
+                  if (customerName.isEmpty) {
+                    customerName = auth.storeId ?? 'Shop';
+                  }
+                  String deliveryAddress =
+                      profileProv.storeProfile?.address ?? '';
+                  String customerPhone = auth.phoneNumber ?? '';
                   final success = await orderProv.addOrder(
                     customerId: auth.uid ?? '',
                     customerName: customerName,
@@ -178,10 +241,31 @@ class RepeatLastOrder extends StatelessWidget {
                     scheduledDate: last.scheduledDate,
                   );
                   if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Order repeated')),
+                    showGeneralDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      barrierColor: Colors.black54,
+                      transitionDuration: const Duration(milliseconds: 400),
+                      pageBuilder: (_, __, ___) => const AddSuccessDialog(
+                        title: "Order Repeated",
+                        message: "Your previous order has been repeated.",
+                      ),
+                      transitionBuilder: (_, anim, __, child) =>
+                          ScaleTransition(
+                            scale: CurvedAnimation(
+                              parent: anim,
+                              curve: Curves.easeOutBack,
+                            ),
+                            child: child,
+                          ),
                     );
-                    Navigator.of(context).pop();
+                    Future.delayed(const Duration(seconds: 2), () {
+                      if (!context.mounted) return;
+                      Navigator.of(context, rootNavigator: true).pop();
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    });
                   }
                 },
               );

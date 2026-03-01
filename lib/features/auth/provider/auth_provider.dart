@@ -11,6 +11,8 @@ class AuthProvider with ChangeNotifier {
   String? _userId;
   String? _storeId;
 
+  String? _storeName; // name pulled from users collection during store login
+
   bool get isLoading => _isLoading;
   String? get error => _error;
   String? get userRole => _userRole;
@@ -20,6 +22,9 @@ class AuthProvider with ChangeNotifier {
 
   /// Phone number used during login (if any)
   String? get phoneNumber => _phoneNumber;
+
+  /// Store name retrieved from users collection on login
+  String? get storeName => _storeName;
 
   String? _phoneNumber;
 
@@ -34,9 +39,11 @@ class AuthProvider with ChangeNotifier {
 
       // For shop login, check the shops collection for the phone number
       if (selectedRole == 'shop') {
+        // Remove '+' prefix if present to match Firebase phone format
+        final cleanPhone = phone.replaceAll('+', '');
         final shopQuery = await _firestore
             .collection('shops')
-            .where('phone', isEqualTo: phone)
+            .where('phone', isEqualTo: cleanPhone)
             .limit(1)
             .get();
 
@@ -54,6 +61,9 @@ class AuthProvider with ChangeNotifier {
         _userRole = 'shop';
         _userId = shopId; // Use shopId as userId for shops
         _storeId = shopData['storeId'] ?? shopId;
+        _storeName =
+            shopData['shopName'] ??
+            ''; // capture shop name from shops collection
 
         _isLoading = false;
         notifyListeners();
@@ -87,6 +97,7 @@ class AuthProvider with ChangeNotifier {
       _userRole = dbRole;
       _userId = query.docs.first.id;
       _storeId = data["storeId"] ?? _userId;
+      _storeName = data["storename"] ?? '';
 
       _isLoading = false;
       notifyListeners();
@@ -112,6 +123,9 @@ class AuthProvider with ChangeNotifier {
     await prefs.setString("phone", _phoneNumber ?? "");
     await prefs.setString("userId", _userId ?? "");
     await prefs.setString("storeId", _storeId ?? "");
+    if (_storeName != null) {
+      await prefs.setString("storename", _storeName!);
+    }
 
     return true;
   }
@@ -127,6 +141,7 @@ class AuthProvider with ChangeNotifier {
         _phoneNumber = prefs.getString("phone");
         _userId = prefs.getString("userId");
         _storeId = prefs.getString("storeId");
+        _storeName = prefs.getString("storename");
         notifyListeners();
       }
     } catch (e) {

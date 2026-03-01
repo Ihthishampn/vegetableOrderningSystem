@@ -71,6 +71,7 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
             );
           }
 
+          // if there are no orders in the system at all, show generic message
           if (provider.allOrders.isEmpty) {
             return Center(
               child: Column(
@@ -91,6 +92,40 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
               .where((o) => o.status == _selectedStatus)
               .toList();
 
+          // if we have orders overall but none for the selected status, show
+          // a status-specific empty message instead of an empty list
+          if (filtered.isEmpty) {
+            String label = '';
+            switch (_selectedStatus) {
+              case OrderStatus.pending:
+                label = 'pending';
+                break;
+              case OrderStatus.approved:
+                label = 'approved';
+                break;
+              case OrderStatus.completed:
+                label = 'completed';
+                break;
+              case OrderStatus.rejected:
+                label = 'rejected';
+                break;
+              case OrderStatus.cancelled:
+                label = 'cancelled';
+                break;
+            }
+            final message = label.isNotEmpty ? 'No $label yet' : 'No orders';
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.inbox_outlined, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(message, style: TextStyle(color: Colors.grey[600])),
+                ],
+              ),
+            );
+          }
+
           // overview counts removed (no overview chips)
 
           return Column(
@@ -102,11 +137,14 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final order = filtered[index];
+                    final name = order.customerName.isNotEmpty
+                        ? order.customerName
+                        : 'Shop';
                     return GestureDetector(
                       onTap: () => _openOrderOverview(order),
                       child: StoreOrderCard(
                         storeNumber: index + 1,
-                        storeName: order.customerName,
+                        storeName: name,
                         orderId: order.id,
                         orderStatus: order.status.toString().split('.').last,
                         totalPrice: order.totalPrice,

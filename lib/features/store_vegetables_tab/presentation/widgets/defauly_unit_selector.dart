@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'unit_chip.dart';
 
 class DefaultUnitSelector extends StatefulWidget {
@@ -9,7 +8,7 @@ class DefaultUnitSelector extends StatefulWidget {
   const DefaultUnitSelector({
     super.key,
     this.onUnitSelected,
-    this.initialUnit = 'Kg',
+    this.initialUnit, // remove default 'Kg'
   });
 
   @override
@@ -17,12 +16,13 @@ class DefaultUnitSelector extends StatefulWidget {
 }
 
 class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
-  late String _selectedUnit;
+  String? _selectedUnit; // nullable now
   final List<String> _units = ['Kg', 'Box', 'Bag', 'Packet'];
 
   @override
   void initState() {
     super.initState();
+    // Default to 'Kg' if no initial unit provided
     _selectedUnit = widget.initialUnit ?? 'Kg';
   }
 
@@ -39,7 +39,7 @@ class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Select Default Unit *",
+          "Default Unit",
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 11,
@@ -51,7 +51,10 @@ class _DefaultUnitSelectorState extends State<DefaultUnitSelector> {
           children: _units.map((unit) {
             return GestureDetector(
               onTap: () => _selectUnit(unit),
-              child: UnitChip(label: unit, isSelected: _selectedUnit == unit),
+              child: UnitChip(
+                label: unit,
+                isSelected: _selectedUnit == unit, // only selected if tapped
+              ),
             );
           }).toList(),
         ),

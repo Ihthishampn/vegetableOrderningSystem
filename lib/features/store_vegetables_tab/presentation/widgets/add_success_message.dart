@@ -55,7 +55,6 @@ class _AddSuccessDialogState extends State<AddSuccessDialog>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 30),
         decoration: BoxDecoration(
-          // Subtle gradient to match your style
           gradient: LinearGradient(
             colors: [const Color(0xFFD4DCFF).withOpacity(0.3), Colors.white],
             begin: Alignment.topLeft,
@@ -66,7 +65,6 @@ class _AddSuccessDialogState extends State<AddSuccessDialog>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Animated Icon Circle
             Container(
               width: 85,
               height: 85,

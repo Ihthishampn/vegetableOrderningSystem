@@ -14,12 +14,10 @@ class ShopProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get shop ID from auth (userId is shopId for shops)
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final storeId = auth.storeId;
     final shopId = auth.userId;
 
-    // Fetch shop data when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (storeId != null && shopId != null) {
         Provider.of<ShopProvider>(
@@ -65,12 +63,10 @@ class ShopProfileScreen extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
-                //   Profile Card
                 const ProfileHeaderCard(),
 
                 const SizedBox(height: 24),
 
-                //  Account  Section
                 const ShopProfileSeccionHeader(
                   icon: Icons.shield_outlined,
                   title: "Account Information",
@@ -102,7 +98,6 @@ class ShopProfileScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Staff Management Section
                 const ShopProfileSeccionHeader(title: "Staff Management"),
                 const StaffManagementTile(),
 
