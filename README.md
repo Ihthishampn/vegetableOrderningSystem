@@ -17,6 +17,7 @@
 > **Shop Login Credentials (Shop Panel):**
 > - Phone Number: **9999999992**
 > - OTP: **123456**
+> - Phone Number: **9999999993** (This shop is deactivated now. You can activate it through Store Panel → Shop Management)
 >
 > **Adding a New Shop:**
 > One shop account is already created (credentials above).
@@ -76,16 +77,15 @@ UI code clean and testable.
 3. Add an Android and/or iOS app and download configuration files:
    * `google-services.json` → place in `android/app/`
    * `GoogleService-Info.plist` → add to `ios/Runner`
-4. Enable Cloud Firestore (Native mode).
-5. Run `flutterfire configure` to generate
-   `lib/firebase_options.dart`.
+4. Enable **Cloud Firestore (Native mode)**.  
+5. Run `flutterfire configure` to generate `lib/firebase_options.dart`.
 
-No additional API keys are required since auth is in test mode.
+   No additional API keys are required since authentication is in **test mode**.
 
 ## Setup & Installation Instructions
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Ihthishampn/vegetableOrderningSystem.git
 cd vegetable_ordering_system
 flutter pub get
 ```
