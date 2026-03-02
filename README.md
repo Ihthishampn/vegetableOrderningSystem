@@ -20,7 +20,7 @@
 > - Phone Number: **9999999993** (This shop is deactivated now. You can activate it through Store Panel → Shop Management)
 >
 > **Adding a New Shop:**
-> One shop account is already created (credentials above).
+> 2 shop account is already created (credentials above).
 > A new shop can be added from:
 > **Store Panel → Menu → Shop Management**
 
