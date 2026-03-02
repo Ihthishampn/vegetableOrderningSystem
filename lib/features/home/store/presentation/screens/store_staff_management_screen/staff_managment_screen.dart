@@ -29,21 +29,32 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final padding = screenWidth > 600 ? screenWidth * 0.05 : 16.0;
+    final separatorHeight = screenHeight > 800 ? 20.0 : 16.0;
+    final buttonHeight = screenHeight > 800 ? 65.0 : 55.0;
+    final buttonPadding = screenHeight > 800 ? 24.0 : 20.0;
+    final listPaddingBottom = screenHeight > 800 ? 120.0 : 100.0;
+    final titleFontSize = screenWidth > 600 ? 20.0 : 18.0;
+    final iconSize = screenWidth > 600 ? 24.0 : 20.0;
+    final buttonFontSize = screenWidth > 600 ? 18.0 : 16.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: iconSize),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Staff",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: titleFontSize,
           ),
         ),
         centerTitle: true,
@@ -56,7 +67,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
               if (staffProv.error != null) {
-                return Center(child: Text('Error: \\${staffProv.error}'));
+                return Center(child: Text('Error: ${staffProv.error}'));
               }
               final staffList = staffProv.staffList;
               if (staffList.isEmpty) {
@@ -68,10 +79,10 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 );
               }
               return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
+                padding: EdgeInsets.fromLTRB(padding, 10, padding, listPaddingBottom),
                 itemCount: staffList.length,
                 separatorBuilder: (context, index) =>
-                    const SizedBox(height: 16),
+                    SizedBox(height: separatorHeight),
                 itemBuilder: (context, index) {
                   final Staff staff = staffList[index];
                   return StaffCard(staff: staff);
@@ -84,7 +95,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(buttonPadding),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -110,16 +121,16 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2D2926),
-                  minimumSize: const Size(double.infinity, 55),
+                  minimumSize: Size(double.infinity, buttonHeight),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "+ Add New Staff",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: buttonFontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -130,6 +141,5 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       ),
     );
   }
-
 }
 

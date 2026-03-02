@@ -60,13 +60,10 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
   }
 
   Future<void> _submitForm() async {
-    // Clear image error (image is optional)
     setState(() => _imageError = null);
 
-    // Run all TextFormField validators.
     final formValid = _formKey.currentState!.validate();
 
-    // Stop if form validation failed.
     if (!formValid) {
       return;
     }
@@ -131,7 +128,6 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Row(
                 children: [
                   IconButton(
@@ -154,7 +150,6 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
               ),
               const SizedBox(height: 20),
 
-              // Image picker
               ImagePickerBox(
                 initialImageUrl: _selectedImageUrl,
                 onImageSelected: (url) {
@@ -164,7 +159,6 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
                   });
                 },
               ),
-              // Image validation error
               if (_imageError != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -174,7 +168,6 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
               ],
               const SizedBox(height: 20),
 
-              // Sort Number — must be a positive integer
               LabelAndField(
                 label: "Sort Number *",
                 hint: "Enter sort number",
@@ -195,7 +188,6 @@ class _EditVegetablePageState extends State<EditVegetablePage> {
               ),
               const SizedBox(height: 15),
 
-              // Vegetable Name — required, letters/spaces only
               LabelAndField(
                 label: "Vegetable Name *",
                 hint: "e.g., Tomato",

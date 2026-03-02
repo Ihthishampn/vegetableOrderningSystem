@@ -105,7 +105,6 @@ class VegetableItemCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
 
-              // EDIT BUTTON
               SizedBox(
                 height: 36,
                 child: OutlinedButton.icon(
@@ -129,7 +128,6 @@ class VegetableItemCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
 
-              // STATUS SWITCH
               Container(
                 height: 36,
                 padding: const EdgeInsets.symmetric(horizontal: 8),

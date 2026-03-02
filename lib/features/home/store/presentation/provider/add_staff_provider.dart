@@ -3,12 +3,6 @@ import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/
 import 'package:vegetable_ordering_system/features/store_staff/domain/entities/staff.dart';
 import 'package:vegetable_ordering_system/features/store_staff/presentation/provider/staff_provider.dart';
 
-/// Provider backing the "add/edit staff" form.
-///
-/// Keeps all controllers, validation state and loading flag. Exposes a
-/// `submit` method which performs Firestore duplicate checks and delegates to
-/// [StaffProvider]. UI code should call `submit` and then display dialogs or
-/// snackbars depending on the returned result and `lastError`.
 class AddStaffProvider extends ChangeNotifier {
   final StaffProvider staffProvider;
   final AuthViewModel auth;
@@ -77,7 +71,6 @@ class AddStaffProvider extends ChangeNotifier {
     if (!(formKey.currentState?.validate() ?? false)) return false;
 
     final now = DateTime.now();
-    // duplicate check could be added here if necessary (e.g., email/phone)
 
     try {
       isLoading = true;

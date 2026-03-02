@@ -82,8 +82,6 @@ class _StoreVegetableScreensState extends State<StoreVegetableScreens>
                   }
 
                   return TabBarView(
-                    // Attach the controller so tab switching is in sync with
-                    // the TabBar above.
                     controller: _tabController,
                     children: [
                       _buildVegetableList(context, provider.availableProducts),

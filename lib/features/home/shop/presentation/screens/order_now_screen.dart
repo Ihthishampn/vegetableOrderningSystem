@@ -21,16 +21,24 @@ class OrderNowScreen extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final titleFontSize = screenWidth > 600 ? 20.0 : 18.0;
+    final iconSize = screenWidth > 600 ? 24.0 : 20.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: iconSize),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Summary",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: titleFontSize,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,

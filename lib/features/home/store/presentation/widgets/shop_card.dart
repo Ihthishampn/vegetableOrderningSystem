@@ -4,13 +4,35 @@ import 'package:vegetable_ordering_system/features/store_shops/domain/entities/s
 import 'package:vegetable_ordering_system/features/store_shops/presentation/provider/shop_provider.dart';
 import 'package:vegetable_ordering_system/features/home/store/presentation/pages/add_shop_page.dart';
 
-class ShopCard extends StatelessWidget {
+class ShopCard extends StatefulWidget {
   final Shop shop;
   const ShopCard({super.key, required this.shop});
 
   @override
+  State<ShopCard> createState() => _ShopCardState();
+}
+
+class _ShopCardState extends State<ShopCard> {
+  late bool active;
+
+  @override
+  void initState() {
+    super.initState();
+    active = widget.shop.isActive;
+  }
+
+  Future<void> _toggle(bool val) async {
+    setState(() => active = val);
+    final provider = Provider.of<ShopProvider>(context, listen: false);
+    try {
+      await provider.toggleShopStatus(widget.shop.id, val);
+    } catch (_) {
+      if (mounted) setState(() => active = !val);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    bool active = shop.isActive;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -28,17 +50,17 @@ class ShopCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            shop.shopName,
+            widget.shop.shopName,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15),
 
-          _buildInfoRow('Contact Person', shop.managerName ?? ''),
-          _buildInfoRow('Mobile Number', shop.phone),
-          _buildInfoRow('Location', shop.address),
+          _buildInfoRow('Contact Person', widget.shop.managerName ?? ''),
+          _buildInfoRow('Mobile Number', widget.shop.phone),
+          _buildInfoRow('Location', widget.shop.address),
           _buildInfoRow(
             'Added Date',
-            '${shop.createdAt.day}/${shop.createdAt.month}/${shop.createdAt.year}',
+            '${widget.shop.createdAt.day}/${widget.shop.createdAt.month}/${widget.shop.createdAt.year}',
           ),
 
           const SizedBox(height: 15),
@@ -53,7 +75,7 @@ class ShopCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AddShopPage(shop: shop),
+                        builder: (context) => AddShopPage(shop: widget.shop),
                       ),
                     );
                   },
@@ -77,18 +99,16 @@ class ShopCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
 
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
                 height: 32,
                 padding: const EdgeInsets.only(left: 10, right: 2),
                 decoration: BoxDecoration(
-                  color: active
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
+                  color: active ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: active
-                        ? Colors.green.withOpacity(0.2)
-                        : Colors.red.withOpacity(0.2),
+                    color: active ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
                   ),
                 ),
                 child: Row(
@@ -108,13 +128,7 @@ class ShopCard extends StatelessWidget {
                       child: Switch(
                         value: active,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (val) async {
-                          final provider = Provider.of<ShopProvider>(
-                            context,
-                            listen: false,
-                          );
-                          await provider.toggleShopStatus(shop.id, val);
-                        },
+                        onChanged: (val) => _toggle(val),
                         activeColor: Colors.green,
                         activeTrackColor: Colors.green.withOpacity(0.5),
                       ),

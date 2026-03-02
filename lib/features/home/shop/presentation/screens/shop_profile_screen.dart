@@ -14,6 +14,14 @@ class ShopProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = screenHeight > 800 ? 140.0 : 120.0;
+    final titleFontSize = screenWidth > 600 ? 22.0 : 20.0;
+    final iconSize = screenWidth > 600 ? 24.0 : 20.0;
+    final sectionSpacing = screenHeight > 800 ? 28.0 : 24.0;
+    final bottomSpacing = screenHeight > 800 ? 48.0 : 40.0;
+
     final auth = Provider.of<AuthViewModel>(context, listen: false);
     final storeId = auth.storeId;
     final shopId = auth.userId;
@@ -32,14 +40,18 @@ class ShopProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF4A68FF),
         elevation: 0,
-        toolbarHeight: 120,
+        toolbarHeight: appBarHeight,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: iconSize),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Profile",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: titleFontSize,
+          ),
         ),
         centerTitle: true,
       ),
@@ -65,7 +77,7 @@ class ShopProfileScreen extends StatelessWidget {
               children: [
                 const ProfileHeaderCard(),
 
-                const SizedBox(height: 24),
+                SizedBox(height: sectionSpacing),
 
                 const ShopProfileSeccionHeader(
                   icon: Icons.shield_outlined,
@@ -96,15 +108,15 @@ class ShopProfileScreen extends StatelessWidget {
                   value: "${shop.address}, ${shop.city}",
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: sectionSpacing),
 
                 const ShopProfileSeccionHeader(title: "Staff Management"),
                 const StaffManagementTile(),
 
-                const SizedBox(height: 40),
+                SizedBox(height: bottomSpacing),
 
                 const ShopProfileLogOutButton(),
-                const SizedBox(height: 20),
+                SizedBox(height: sectionSpacing * 0.5),
               ],
             ),
           );

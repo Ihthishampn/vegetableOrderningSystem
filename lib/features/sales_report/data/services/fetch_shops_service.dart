@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Handles fetching shops from Firestore and normalizing their data.
-/// Extracted from the provider to keep it focused on state management.
 class FetchShopsService {
   final FirebaseFirestore firestore;
 
@@ -26,7 +24,6 @@ class FetchShopsService {
         final data = doc.data();
         final mapData = Map<String, dynamic>.from(data);
 
-        // Normalize shop name field (handle multiple possible field names)
         if ((mapData['shopName'] == null ||
                 (mapData['shopName'] as String).isEmpty) &&
             mapData['shopname'] != null) {
@@ -41,7 +38,6 @@ class FetchShopsService {
         return Shop.fromFirestore(mapData, doc.id);
       }).toList();
 
-      // Sort alphabetically by shop name
       shops.sort(
         (a, b) => a.shopName.toLowerCase().compareTo(b.shopName.toLowerCase()),
       );
@@ -53,7 +49,6 @@ class FetchShopsService {
   }
 }
 
-/// Simple data class for shop info. Mirrors the Shop entity from store_shops.
 class Shop {
   final String id;
   final String storeId;

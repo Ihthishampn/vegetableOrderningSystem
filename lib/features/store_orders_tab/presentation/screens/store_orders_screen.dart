@@ -40,6 +40,12 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final padding = screenWidth > 600 ? screenWidth * 0.05 : 16.0;
+    final iconSize = screenHeight > 800 ? 72.0 : 64.0;
+    final spacingAfterIcon = screenHeight > 800 ? 20.0 : 16.0;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -67,7 +73,7 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(color: Colors.red),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: spacingAfterIcon),
                         ElevatedButton(
                           onPressed: provider.fetchOrders,
                           child: const Text('Retry'),
@@ -84,10 +90,10 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                       children: [
                         Icon(
                           Icons.inbox_outlined,
-                          size: 64,
+                          size: iconSize,
                           color: Colors.grey[400],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: spacingAfterIcon),
                         Text(
                           'No orders yet',
                           style: TextStyle(color: Colors.grey[600]),
@@ -129,10 +135,10 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                       children: [
                         Icon(
                           Icons.inbox_outlined,
-                          size: 64,
+                          size: iconSize,
                           color: Colors.grey[400],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: spacingAfterIcon),
                         Text(
                           message,
                           style: TextStyle(color: Colors.grey[600]),
@@ -143,7 +149,7 @@ class _StoreOrdersScreenState extends State<StoreOrdersScreen> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(padding),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final order = filtered[index];

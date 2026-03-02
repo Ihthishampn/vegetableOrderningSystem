@@ -48,8 +48,17 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final titleFontSize = screenWidth > 600 ? 22.0 : 20.0;
+
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('Sales Reports')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Sales Reports',
+          style: TextStyle(fontSize: titleFontSize),
+        ),
+      ),
       body: SalesReportBody(
         selectedDate: selectedDate,
         onDateTap: _showCalendar,

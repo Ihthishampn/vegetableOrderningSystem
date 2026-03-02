@@ -68,7 +68,6 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
         _stores = ['All', ...names];
       });
     } catch (e) {
-      //
     }
   }
 

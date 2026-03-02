@@ -28,7 +28,6 @@ class AddShopProvider extends ChangeNotifier {
       ),
       addressController = TextEditingController(text: shop?.address ?? ''),
       cityController = TextEditingController(text: shop?.city ?? '') {
-    // Recalculate canSubmit when controllers change
     nameController.addListener(_onControllersChanged);
     managerController.addListener(_onControllersChanged);
     phoneController.addListener(_onControllersChanged);
@@ -70,7 +69,6 @@ class AddShopProvider extends ChangeNotifier {
     final entered = phoneController.text.trim();
     final phoneToCheck = '91' + entered;
 
-    // Check for duplicates in Firestore
     try {
       isLoading = true;
       notifyListeners();

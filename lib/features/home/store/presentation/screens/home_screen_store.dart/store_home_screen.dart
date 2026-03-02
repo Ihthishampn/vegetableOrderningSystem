@@ -36,14 +36,19 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+    final appBarHeight = screenHeight * 0.12;
+    final statusCardsHeight = screenHeight * 0.11;
+    final horizontalPadding = screenWidth > 600 ? screenWidth * 0.05 : 16.0;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          StoreHomeAppBar(expandedHeight: size.height * 0.12),
-          StoreStatusCardsSection(toolbarHeight: size.height * 0.11),
+          StoreHomeAppBar(expandedHeight: appBarHeight),
+          StoreStatusCardsSection(toolbarHeight: statusCardsHeight),
           const SliverToBoxAdapter(child: OrdersHeader()),
           StoreOrdersList(formatDate: _formatDate),
         ],

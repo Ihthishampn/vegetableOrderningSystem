@@ -65,6 +65,11 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth > 600 ? screenWidth * 0.05 : 15.0;
+    final verticalGap = screenHeight > 800 ? 12.0 : 8.0;
+
     return ChangeNotifierProvider.value(
       value: _localCartProvider,
       child: PopScope(
@@ -75,9 +80,9 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 80.0,
-                collapsedHeight: 80.0,
-                toolbarHeight: 80.0,
+                expandedHeight: screenHeight * 0.12,
+                collapsedHeight: screenHeight * 0.1,
+                toolbarHeight: screenHeight * 0.1,
                 pinned: true,
                 elevation: 0,
                 backgroundColor: Colors.transparent,
@@ -86,14 +91,14 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
               ),
 
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    const SizedBox(height: 1),
+                    SizedBox(height: verticalGap * 0.1),
                     ShopAddressRow(
                       storeNameFromFirebase: _storeNameFromFirebase,
                     ),
-                    const SizedBox(height: 1),
+                    SizedBox(height: verticalGap * 0.1),
                     ShopActionBanner(
                       onTap: () {
                         Navigator.of(context).push(
@@ -107,7 +112,7 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
                       color: const Color(0xFFFFF9E5),
                       iconColor: const Color.fromARGB(255, 136, 82, 1),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: verticalGap),
                     ShopActionBanner(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
@@ -119,7 +124,7 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
                       color: const Color(0xFFE8F5E9),
                       iconColor: const Color.fromARGB(255, 58, 134, 61),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: verticalGap),
                     SearchBarWidget(
                       controller: _searchController,
                       onChanged: (val) {
@@ -133,9 +138,9 @@ class _ShopHomeScreenState extends State<ShopHomeScreen> {
                         });
                       },
                     ),
-                    const SizedBox(height: 7),
+                    SizedBox(height: verticalGap * 0.8),
                     ShopProductList(searchTerm: _searchTerm),
-                    const SizedBox(height: 10),
+                    SizedBox(height: verticalGap),
                   ]),
                 ),
               ),

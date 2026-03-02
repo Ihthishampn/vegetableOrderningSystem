@@ -53,6 +53,12 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth > 600 ? screenWidth * 0.05 : 16.0;
+    final verticalPadding = 8.0;
+    final titleFontSize = screenWidth > 600 ? 20.0 : 18.0;
+    final iconSize = screenWidth > 600 ? 24.0 : 20.0;
+
     final auth = Provider.of<AuthViewModel>(context, listen: false);
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
 
@@ -67,11 +73,15 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: iconSize),
         ),
-        title: const Text(
+        title: Text(
           "Schedule Order",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: titleFontSize,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -80,11 +90,20 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: DatePickerField(initialDate: _dateText, onTap: _selectDate),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: verticalPadding,
+            ),
+            child: DatePickerField(
+              initialDate: _dateText,
+              onTap: _selectDate,
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: verticalPadding,
+            ),
             child: SearchBarWidget(
               controller: _searchController,
               onChanged: (val) {

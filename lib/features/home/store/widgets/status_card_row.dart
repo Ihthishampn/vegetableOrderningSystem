@@ -43,8 +43,6 @@ class StatusCardsRow extends StatelessWidget {
   }
 }
 
-// status card ivideeee
-
 class StatusCard extends StatelessWidget {
   final String label, value;
   final Color color;
