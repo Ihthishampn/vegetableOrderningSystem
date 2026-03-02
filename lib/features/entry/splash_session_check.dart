@@ -21,6 +21,8 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
   }
 
   Future<void> _checkSession() async {
+    await Future.delayed(const Duration(seconds: 2));
+
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     final role = prefs.getString('role');
@@ -58,13 +60,19 @@ class _SplashSessionCheckState extends State<SplashSessionCheck> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            const Text('Loading...'),
+            Image.asset(
+              'assets/images/no_bg.png',
+              width: 550,
+              height: 550,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 40),
+          
           ],
         ),
       ),

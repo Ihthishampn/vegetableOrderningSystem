@@ -93,7 +93,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashSessionCheck(),
+      //  home: const SplashSessionCheck(),
+      home: SplashSessionCheck(),
     );
   }
 }
