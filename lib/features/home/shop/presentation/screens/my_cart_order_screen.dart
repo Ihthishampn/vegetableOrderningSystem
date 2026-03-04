@@ -67,8 +67,7 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
       setState(() {
         _stores = ['All', ...names];
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _closeDropdown() {
@@ -187,8 +186,7 @@ class _MyCartOrdersScreenState extends State<MyCartOrdersScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SearchBarWidget(
               controller: _orderSearchController,
-              onClear: () {
-              },
+              onClear: () {},
             ),
           ),
 

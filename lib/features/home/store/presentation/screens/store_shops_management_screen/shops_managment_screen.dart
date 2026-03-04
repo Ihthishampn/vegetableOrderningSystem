@@ -56,19 +56,24 @@ class _ShopsManagmentScreenState extends State<ShopsManagmentScreen> {
           Selector<ShopProvider, bool>(
             selector: (_, p) => p.isLoading,
             builder: (context, isLoading, _) {
-              if (isLoading) return const Center(child: CircularProgressIndicator());
+              if (isLoading)
+                return const Center(child: CircularProgressIndicator());
               return Selector<ShopProvider, int>(
                 selector: (_, p) => p.shopList.length,
                 builder: (context, length, _) {
-                  if (length == 0) return const Center(child: Text('No shops yet.'));
+                  if (length == 0)
+                    return const Center(child: Text('No shops yet.'));
                   return Padding(
                     padding: EdgeInsets.all(padding),
                     child: ListView.separated(
                       itemCount: length,
-                      separatorBuilder: (_, unused) => SizedBox(height: separatorHeight),
+                      separatorBuilder: (_, unused) =>
+                          SizedBox(height: separatorHeight),
                       itemBuilder: (context, index) {
                         return Selector<ShopProvider, Shop?>(
-                          selector: (_, p) => p.shopList.length > index ? p.shopList[index] : null,
+                          selector: (_, p) => p.shopList.length > index
+                              ? p.shopList[index]
+                              : null,
                           builder: (context, shop, __) {
                             if (shop == null) return const SizedBox.shrink();
                             return ShopCard(key: ValueKey(shop.id), shop: shop);

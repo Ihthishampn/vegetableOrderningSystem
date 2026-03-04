@@ -17,7 +17,7 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
   @override
   void initState() {
     super.initState();
-   
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadStoreProfile());
   }
 

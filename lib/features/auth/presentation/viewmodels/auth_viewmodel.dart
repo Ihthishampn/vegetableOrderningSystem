@@ -111,6 +111,16 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+
+//   Future<void> verifyOtp(String smsCode) async {
+//   final credential = PhoneAuthProvider.credential(
+//     verificationId: _verificationId,
+//     smsCode: smsCode,
+//   );
+
+//   await FirebaseAuth.instance.signInWithCredential(credential);
+// }
+
   Future<bool> verifyOtp(String otp) async {
     if (otp != "123456") {
       _error = "Incorrect OTP";

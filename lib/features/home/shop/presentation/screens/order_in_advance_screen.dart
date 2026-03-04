@@ -94,10 +94,7 @@ class _OrderInAdvanceScreenState extends State<OrderInAdvanceScreen> {
               horizontal: horizontalPadding,
               vertical: verticalPadding,
             ),
-            child: DatePickerField(
-              initialDate: _dateText,
-              onTap: _selectDate,
-            ),
+            child: DatePickerField(initialDate: _dateText, onTap: _selectDate),
           ),
           Padding(
             padding: EdgeInsets.symmetric(

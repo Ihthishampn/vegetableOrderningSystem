@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
 import '../../domain/entities/product.dart';
 
-
 class VegetableItemCard extends StatelessWidget {
   final Product product;
   final VoidCallback onEdit;
@@ -63,8 +62,6 @@ class VegetableItemCard extends StatelessWidget {
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-            
-                   
                   ],
                 ),
               ),

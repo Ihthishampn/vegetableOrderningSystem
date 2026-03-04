@@ -79,7 +79,12 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                 );
               }
               return ListView.separated(
-                padding: EdgeInsets.fromLTRB(padding, 10, padding, listPaddingBottom),
+                padding: EdgeInsets.fromLTRB(
+                  padding,
+                  10,
+                  padding,
+                  listPaddingBottom,
+                ),
                 itemCount: staffList.length,
                 separatorBuilder: (context, index) =>
                     SizedBox(height: separatorHeight),
@@ -142,4 +147,3 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     );
   }
 }
-

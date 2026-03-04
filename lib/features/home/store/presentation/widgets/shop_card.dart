@@ -105,10 +105,14 @@ class _ShopCardState extends State<ShopCard> {
                 height: 32,
                 padding: const EdgeInsets.only(left: 10, right: 2),
                 decoration: BoxDecoration(
-                  color: active ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                  color: active
+                      ? Colors.green.withOpacity(0.1)
+                      : Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: active ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+                    color: active
+                        ? Colors.green.withOpacity(0.2)
+                        : Colors.red.withOpacity(0.2),
                   ),
                 ),
                 child: Row(

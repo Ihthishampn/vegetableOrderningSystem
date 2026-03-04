@@ -38,10 +38,8 @@ class _StoreHomeScreenState extends State<StoreHomeScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
-    final screenWidth = screenSize.width;
     final appBarHeight = screenHeight * 0.12;
     final statusCardsHeight = screenHeight * 0.11;
-    final horizontalPadding = screenWidth > 600 ? screenWidth * 0.05 : 16.0;
 
     return Scaffold(
       backgroundColor: Colors.white,

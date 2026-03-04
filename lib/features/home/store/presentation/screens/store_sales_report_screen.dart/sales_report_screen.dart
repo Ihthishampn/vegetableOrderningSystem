@@ -54,10 +54,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          'Sales Reports',
-          style: TextStyle(fontSize: titleFontSize),
-        ),
+        title: Text('Sales Reports', style: TextStyle(fontSize: titleFontSize)),
       ),
       body: SalesReportBody(
         selectedDate: selectedDate,

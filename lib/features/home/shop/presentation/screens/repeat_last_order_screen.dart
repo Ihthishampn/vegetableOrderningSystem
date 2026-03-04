@@ -53,7 +53,9 @@ class RepeatLastOrder extends StatelessWidget {
           SizedBox(height: headerSpacing),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+              padding: const EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
