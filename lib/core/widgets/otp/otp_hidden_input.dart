@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../features/auth/presentation/providers/otp_provider.dart';
+import '../../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../features/auth/presentation/providers/otp_provider.dart';
 
 class OtpHiddenInput extends StatelessWidget {
   final TextEditingController controller;

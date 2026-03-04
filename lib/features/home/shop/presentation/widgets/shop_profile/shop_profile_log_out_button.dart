@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vegetable_ordering_system/features/auth/provider/auth_provider.dart';
 import 'package:vegetable_ordering_system/features/auth/presentation/screens/role_select.dart';
-import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
+import 'package:vegetable_ordering_system/core/widgets/otp/confirm_confirmation_dilogue.dart';
 
 import '../../../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 

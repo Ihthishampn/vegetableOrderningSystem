@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class ShopInfoTile extends StatelessWidget {
   final IconData icon;
   final Color iconColor;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
-import '../../features/auth/presentation/providers/otp_provider.dart';
+import '../../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../features/auth/presentation/providers/otp_provider.dart';
 
 class OtpVerifyButton extends StatelessWidget {
   final Color buttonColor;

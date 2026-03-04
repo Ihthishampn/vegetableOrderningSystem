@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegetable_ordering_system/core/widgets/otp_verification_sheet.dart';
+import 'package:vegetable_ordering_system/core/widgets/otp/otp_verification_sheet.dart';
 import 'package:vegetable_ordering_system/features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 import 'login_title_store.dart';

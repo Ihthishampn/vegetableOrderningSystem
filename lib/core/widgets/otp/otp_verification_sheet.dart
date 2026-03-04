@@ -5,9 +5,9 @@ import 'otp_header.dart';
 import 'otp_digit_display.dart';
 import 'otp_hidden_input.dart';
 import 'otp_error_message.dart';
+import 'otp_verify_button.dart';
 import 'otp_resend_footer.dart';
 import 'otp_sheet_decoration.dart';
-import 'otp_verify_button.dart';
 
 class OtpVerificationSheet extends StatefulWidget {
   final String role;

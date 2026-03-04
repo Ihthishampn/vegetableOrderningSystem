@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class OtpErrorMessage extends StatelessWidget {
   const OtpErrorMessage({super.key});

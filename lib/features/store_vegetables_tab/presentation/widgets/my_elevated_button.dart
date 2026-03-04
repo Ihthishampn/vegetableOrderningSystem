@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vegetable_ordering_system/core/constants/my_colors/my_colors.dart';
+import 'package:vegetable_ordering_system/core/my_colors/my_colors.dart';
 
 import '../screens/add_vegitable_form.dart';
 

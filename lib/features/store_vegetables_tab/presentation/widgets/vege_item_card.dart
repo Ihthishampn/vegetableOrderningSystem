@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vegetable_ordering_system/core/widgets/confirm_confirmation_dilogue.dart';
+import 'package:vegetable_ordering_system/core/widgets/otp/confirm_confirmation_dilogue.dart';
 import '../../domain/entities/product.dart';
 
 class VegetableItemCard extends StatelessWidget {
